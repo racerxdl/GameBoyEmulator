@@ -23,7 +23,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         #region CPU Instructions
         private static readonly List<Action<CPU>> opcodes = new List<Action<CPU>> {
-            // 0x00
+            #region 0x00 Group
             (cpu) => CPUInstructions.NOP(cpu),
             (cpu) => CPUInstructions.LD__nn(cpu, "B", "C"),
             (cpu) => CPUInstructions.LD__m_(cpu, "B", "C", "A"),
@@ -40,7 +40,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.DECr(cpu, "C"),
             (cpu) => CPUInstructions.LDrn_(cpu, "C"),
             (cpu) => CPUInstructions.RRCA(cpu),
-            // 0x10
+            #endregion
+            #region 0x10 Group
             (cpu) => CPUInstructions.DJNZn(cpu),
             (cpu) => CPUInstructions.LD__nn(cpu, "D", "E"),
             (cpu) => CPUInstructions.LD__m_(cpu, "D", "E", "A"),
@@ -57,7 +58,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.DECr(cpu, "E"),
             (cpu) => CPUInstructions.LDrn_(cpu, "E"),
             (cpu) => CPUInstructions.RRA(cpu),
-            // 0x20
+            #endregion
+            #region 0x20 Group
             (cpu) => CPUInstructions.JRNZn(cpu),
             (cpu) => CPUInstructions.LD__nn(cpu, "H", "L"),
             (cpu) => CPUInstructions.LDHLIA(cpu),
@@ -74,7 +76,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.DECr(cpu, "L"),
             (cpu) => CPUInstructions.LDrn_(cpu, "L"),
             (cpu) => CPUInstructions.CPL(cpu),
-            // 0x30
+            #endregion
+            #region 0x30 Group
             (cpu) => CPUInstructions.JRNCn(cpu),
             (cpu) => CPUInstructions.LDSPnn(cpu),
             (cpu) => CPUInstructions.LDHLDA(cpu),
@@ -91,7 +94,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.DECr(cpu, "A"),
             (cpu) => CPUInstructions.LDrn_(cpu, "A"),
             (cpu) => CPUInstructions.CCF(cpu),
-            // 0x40
+            #endregion
+            #region 0x40 Group
             (cpu) => CPUInstructions.LDrr(cpu, "B", "B"),
             (cpu) => CPUInstructions.LDrr(cpu, "B", "C"),
             (cpu) => CPUInstructions.LDrr(cpu, "B", "D"),
@@ -108,7 +112,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.LDrr(cpu, "C", "L"),
             (cpu) => CPUInstructions.LDrHLm_(cpu, "C"),
             (cpu) => CPUInstructions.LDrr(cpu, "C", "A"),
-            // 0x50
+            #endregion
+            #region 0x50 Group
             (cpu) => CPUInstructions.LDrr(cpu, "D", "B"),
             (cpu) => CPUInstructions.LDrr(cpu, "D", "C"),
             (cpu) => CPUInstructions.LDrr(cpu, "D", "D"),
@@ -125,7 +130,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.LDrr(cpu, "E", "L"),
             (cpu) => CPUInstructions.LDrHLm_(cpu, "E"),
             (cpu) => CPUInstructions.LDrr(cpu, "E", "A"),
-            // 0x60
+            #endregion
+            #region 0x60 Group
             (cpu) => CPUInstructions.LDrr(cpu, "H", "B"),
             (cpu) => CPUInstructions.LDrr(cpu, "H", "C"),
             (cpu) => CPUInstructions.LDrr(cpu, "H", "D"),
@@ -142,7 +148,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.LDrr(cpu, "L", "L"),
             (cpu) => CPUInstructions.LDrHLm_(cpu, "L"),
             (cpu) => CPUInstructions.LDrr(cpu, "L", "A"),
-            // 0x70
+            #endregion
+            #region 0x70 Group
             (cpu) => CPUInstructions.LDHLmr_(cpu, "B"),
             (cpu) => CPUInstructions.LDHLmr_(cpu, "C"),
             (cpu) => CPUInstructions.LDHLmr_(cpu, "D"),
@@ -159,7 +166,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.LDrr(cpu, "A", "L"),
             (cpu) => CPUInstructions.LDrHLm_(cpu, "A"),
             (cpu) => CPUInstructions.LDrr(cpu, "A", "A"),
-            // 0x80
+            #endregion
+            #region 0x80 Group
             (cpu) => CPUInstructions.ADDr(cpu, "B"),
             (cpu) => CPUInstructions.ADDr(cpu, "C"),
             (cpu) => CPUInstructions.ADDr(cpu, "D"),
@@ -176,7 +184,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.ADCr(cpu, "L"),
             (cpu) => CPUInstructions.ADCHL(cpu),
             (cpu) => CPUInstructions.ADCr(cpu, "A"),
-            // 0x90
+            #endregion
+            #region 0x90 Group
             (cpu) => CPUInstructions.SUBr(cpu, "B"),
             (cpu) => CPUInstructions.SUBr(cpu, "C"),
             (cpu) => CPUInstructions.SUBr(cpu, "D"),
@@ -193,7 +202,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.SBCr(cpu, "L"),
             (cpu) => CPUInstructions.SBCHL(cpu),
             (cpu) => CPUInstructions.SBCr(cpu, "A"),
-            // 0xA0
+            #endregion
+            #region 0xA0 Group
             (cpu) => CPUInstructions.ANDr(cpu, "B"),
             (cpu) => CPUInstructions.ANDr(cpu, "C"),
             (cpu) => CPUInstructions.ANDr(cpu, "D"),
@@ -210,7 +220,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.XORr(cpu, "L"),
             (cpu) => CPUInstructions.XORHL(cpu),
             (cpu) => CPUInstructions.XORr(cpu, "A"),
-            // 0xB0
+            #endregion
+            #region 0xB0 Group
             (cpu) => CPUInstructions.ORr(cpu, "B"),
             (cpu) => CPUInstructions.ORr(cpu, "C"),
             (cpu) => CPUInstructions.ORr(cpu, "D"),
@@ -227,7 +238,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.CPr(cpu, "L"),
             (cpu) => CPUInstructions.CPHL(cpu),
             (cpu) => CPUInstructions.CPr(cpu, "A"),
-            // 0xC0
+            #endregion
+            #region 0xC0 Group
             (cpu) => CPUInstructions.RETNZ(cpu),
             (cpu) => CPUInstructions.POP(cpu, "B", "C"),
             (cpu) => CPUInstructions.JPNZnn(cpu),
@@ -239,12 +251,13 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.RETZ(cpu),
             (cpu) => CPUInstructions.RET(cpu),
             (cpu) => CPUInstructions.JPZnn(cpu),
-            (cpu) => CPUInstructions.MAPcb(cpu),
+            (cpu) => CPUInstructions.CBCall(cpu),
             (cpu) => CPUInstructions.CALLZnn(cpu),
             (cpu) => CPUInstructions.CALLnn(cpu),
             (cpu) => CPUInstructions.ADCn(cpu),
             (cpu) => CPUInstructions.RSTXX(cpu, 0x08),
-            // 0xD0
+            #endregion
+            #region 0xD0 Group
             (cpu) => CPUInstructions.RETNC(cpu),
             (cpu) => CPUInstructions.POP(cpu, "D", "E"),
             (cpu) => CPUInstructions.JPNCnn(cpu),
@@ -261,7 +274,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.NOP(cpu),
             (cpu) => CPUInstructions.SBCn(cpu),
             (cpu) => CPUInstructions.RSTXX(cpu, 0x18),
-            // 0xE0
+            #endregion
+            #region 0xE0 Group
             (cpu) => CPUInstructions.LDIOnA(cpu),
             (cpu) => CPUInstructions.POP(cpu, "H", "L"),
             (cpu) => CPUInstructions.LDIOCA(cpu),
@@ -278,7 +292,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.NOP(cpu),
             (cpu) => CPUInstructions.ORn(cpu),
             (cpu) => CPUInstructions.RSTXX(cpu, 0x28),
-            // 0xF0
+            #endregion
+            #region 0xF0 Group
             (cpu) => CPUInstructions.LDAIOn(cpu),
             (cpu) => CPUInstructions.POP(cpu, "A", "F"),
             (cpu) => CPUInstructions.LDAIOC(cpu),
@@ -295,6 +310,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.NOP(cpu),
             (cpu) => CPUInstructions.CPn(cpu),
             (cpu) => CPUInstructions.RSTXX(cpu, 0x38),
+            #endregion
         };
         #endregion
     }

@@ -1,4 +1,7 @@
-﻿namespace GameBoyEmulator.Desktop.GBC {
+﻿using System;
+using System.Collections.Generic;
+
+namespace GameBoyEmulator.Desktop.GBC {
     public static class CPUInstructions {
         #region Load / Store Instructions
         /// <summary>
@@ -819,6 +822,49 @@
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
+
+        internal static void CPL(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A = (byte) ((~reg.A) & 0xFF);
+            ResetFlag(cpu, reg.A, true);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
+        internal static void NEG(CPU cpu) {
+            var reg = cpu.reg;
+
+            var v = 0 - reg.A;
+            ResetFlag(cpu, v, true);
+
+            if (v < 0) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (v & 0xFF);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        internal static void CCF(CPU cpu) {
+            var reg = cpu.reg;
+            var ci = (reg.F & 0x10) != 0x00 ? 0x10 : 0x00;
+
+            reg.F = (byte) ((reg.F & 0xEF) + ci);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
+        internal static void SCF(CPU cpu) {
+            var reg = cpu.reg;
+            reg.F |= 0x10;
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
         #endregion
         #region Interrupt Calls
         internal static void RSTXX(CPU cpu, ushort addr) {
@@ -860,6 +906,286 @@
         #endregion
         #region Jumps
 
+        internal static void JPnn(CPU cpu) {
+            var reg = cpu.reg;
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void JPHL(CPU cpu) {
+            var reg = cpu.reg;
+            reg.PC = reg.HL;
+
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void JPNZnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x80) != 0x00) {
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                reg.PC += 2;
+                return;
+            }
+            
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+        
+        internal static void JPZnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x80) != 0x80) {
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                reg.PC += 2;
+                return;
+            }
+            
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+        
+        internal static void JPNCnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x10) != 0x00) {
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                reg.PC += 2;
+                return;
+            }
+            
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+        
+        internal static void JPCnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x10) != 0x10) {
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                reg.PC += 2;
+                return;
+            }
+            
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+
+        internal static void JRn(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int)cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+
+            if (v > 127) {
+                v = -((~v + 1) & 0xFF);
+            }
+
+            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+
+        internal static void JRNZn(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int)cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+
+            if (v > 127) {
+                v = -((~v + 1) & 0xFF);
+            }
+
+            if ((reg.F & 0x80) != 0x00) {
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
+                return;
+            }
+            
+            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+
+        internal static void JRZn(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int)cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+
+            if (v > 127) {
+                v = -((~v + 1) & 0xFF);
+            }
+
+            if ((reg.F & 0x80) != 0x80) {
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
+                return;
+            }
+            
+            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+        
+        internal static void JRNCn(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int)cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+
+            if (v > 127) {
+                v = -((~v + 1) & 0xFF);
+            }
+
+            if ((reg.F & 0x10) != 0x00) {
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
+                return;
+            }
+            
+            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+
+        internal static void JRCn(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int)cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+
+            if (v > 127) {
+                v = -((~v + 1) & 0xFF);
+            }
+
+            if ((reg.F & 0x10) != 0x10) {
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
+                return;
+            }
+            
+            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+
+        internal static void DJNZn(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int)cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+
+            if (v > 127) {
+                v = -((~v + 1) & 0xFF);
+            }
+
+            reg.B--;
+
+            if (reg.B == 0x00) {
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
+                return;
+            }
+            
+            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+
+        internal static void CALLnn(CPU cpu) {
+            var reg = cpu.reg;
+            reg.SP -= 2;
+            cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
+        }
+
+        internal static void CALLNZnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x80) != 0x00) {
+                reg.PC += 2;
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                return;
+            }
+
+            reg.SP -= 2;
+            cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
+        }
+
+        internal static void CALLZnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x80) != 0x80) {
+                reg.PC += 2;
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                return;
+            }
+
+            reg.SP -= 2;
+            cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
+        }
+
+        internal static void CALLNCnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x10) != 0x00) {
+                reg.PC += 2;
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                return;
+            }
+
+            reg.SP -= 2;
+            cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
+        }
+
+        internal static void CALLCnn(CPU cpu) {
+            var reg = cpu.reg;
+
+            if ((reg.F & 0x10) != 0x10) {
+                reg.PC += 2;
+                reg.lastClockM = 3;
+                reg.lastClockT = 12;
+                return;
+            }
+
+            reg.SP -= 2;
+            cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
+            reg.PC = cpu.memory.ReadWord(reg.PC);
+
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
+        }
+        
         internal static void RET(CPU cpu) {
             var reg = cpu.reg;
             reg.PC = cpu.memory.ReadWord(reg.SP);
@@ -973,6 +1299,401 @@
             }
 
             reg.F |= (byte) (isUnderflow ? 0x40 : 0x00);
+        }
+        #endregion
+        #region 0xCB Calls
+
+        static void RLCr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var v = (int) reg.GetRegister(regI);
+            var ci = (v & 0x80) != 0 ? 0x01 : 0x00;
+            var co = (v & 0x80) != 0 ? 0x80 : 0x00;
+
+            v = (v << 1) + ci;
+            reg.SetRegister(regI, (byte)(v & 0xFF));
+            ResetFlag(cpu, v & 0xFF, false);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        static void RLCHL(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int) cpu.memory.ReadByte(reg.HL);
+            var ci = (v & 0x80) != 0 ? 0x01 : 0x00;
+            var co = (v & 0x80) != 0 ? 0x80 : 0x00;
+
+            v = (v << 1) + ci;
+            cpu.memory.WriteByte(reg.HL, (byte) (v & 0xFF));
+            ResetFlag(cpu, v & 0xFF, false);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+
+        static void RRr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = reg.GetRegister(regI);
+            var ci = (reg.F & 0x10) != 0x00 ? 0x80 : 0x00;
+            var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
+
+            b = (byte) (((b >> 1) + ci) & 0xFF);
+            ResetFlag(cpu, b, false);
+
+            reg.SetRegister(regI, b);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        static void RRHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = cpu.memory.ReadByte(reg.HL);
+            var ci = (reg.F & 0x10) != 0x00 ? 0x80 : 0x00;
+            var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
+
+            b = (byte) (((b >> 1) + ci) & 0xFF);
+            ResetFlag(cpu, b, false);
+
+            cpu.memory.WriteByte(reg.HL, b);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+        
+        static void RRCr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = reg.GetRegister(regI);
+            var ci = (b & 0x01) != 0 ? 0x80 : 0x00;
+            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            
+            b = (byte) (((b >> 1) + ci) & 0xFF);
+            ResetFlag(cpu, b, false);
+            reg.SetRegister(regI, b);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        static void RRCHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = cpu.memory.ReadByte(reg.HL);
+            var ci = (b & 0x01) != 0 ? 0x80 : 0x00;
+            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            
+            b = (byte) (((b >> 1) + ci) & 0xFF);
+            ResetFlag(cpu, b, false);
+            cpu.memory.WriteByte(reg.HL, b);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+        
+        private static readonly List<Action<CPU>> CBOPS = new List<Action<CPU>> {
+            #region CB00 Group
+            (cpu) => RLCr(cpu, "B"),
+            (cpu) => RLCr(cpu, "C"),
+            (cpu) => RLCr(cpu, "D"),
+            (cpu) => RLCr(cpu, "E"),
+            (cpu) => RLCr(cpu, "H"),
+            (cpu) => RLCr(cpu, "L"),
+            (cpu) => RLCHL(cpu),
+            (cpu) => RLCr(cpu, "A"),
+            (cpu) => RRCr(cpu, "B"),
+            (cpu) => RRCr(cpu, "C"),
+            (cpu) => RRCr(cpu, "D"),
+            (cpu) => RRCr(cpu, "E"),
+            (cpu) => RRCr(cpu, "H"),
+            (cpu) => RRCr(cpu, "L"),
+            (cpu) => RRCHL(cpu),
+            (cpu) => RRCr(cpu, "A"),
+            #endregion
+            #region CB10 Group
+            (cpu) => RLr(cpu, "B"),
+            (cpu) => RLr(cpu, "C"),
+            (cpu) => RLr(cpu, "D"),
+            (cpu) => RLr(cpu, "E"),
+            (cpu) => RLr(cpu, "H"),
+            (cpu) => RLr(cpu, "L"),
+            (cpu) => RLHL(cpu),
+            (cpu) => RLr(cpu, "A"),
+            (cpu) => RRr(cpu, "B"),
+            (cpu) => RRr(cpu, "C"),
+            (cpu) => RRr(cpu, "D"),
+            (cpu) => RRr(cpu, "E"),
+            (cpu) => RRr(cpu, "H"),
+            (cpu) => RRr(cpu, "L"),
+            (cpu) => RRHL(cpu),
+            (cpu) => RRr(cpu, "A"),
+            #endregion
+            #region CB20 Group
+            (cpu) => SLAr(cpu, "B"),
+            (cpu) => SLAr(cpu, "C"),
+            (cpu) => SLAr(cpu, "D"),
+            (cpu) => SLAr(cpu, "E"),
+            (cpu) => SLAr(cpu, "H"),
+            (cpu) => SLAr(cpu, "L"),
+            (cpu) => SLAHL(cpu),
+            (cpu) => SLAr(cpu, "A"),
+            (cpu) => SRAr(cpu, "B"),
+            (cpu) => SRAr(cpu, "C"),
+            (cpu) => SRAr(cpu, "D"),
+            (cpu) => SRAr(cpu, "E"),
+            (cpu) => SRAr(cpu, "H"),
+            (cpu) => SRAr(cpu, "L"),
+            (cpu) => SRAHL(cpu),
+            (cpu) => SRAr(cpu, "A"),
+            #endregion
+            #region CB30 Group
+            (cpu) => SWAPr(cpu, "B"),
+            (cpu) => SWAPr(cpu, "C"),
+            (cpu) => SWAPr(cpu, "D"),
+            (cpu) => SWAPr(cpu, "E"),
+            (cpu) => SWAPr(cpu, "H"),
+            (cpu) => SWAPr(cpu, "L"),
+            (cpu) => SWAPHL(cpu),
+            (cpu) => SWAPr(cpu, "A"),
+            (cpu) => SRLr(cpu, "B"),
+            (cpu) => SRLr(cpu, "C"),
+            (cpu) => SRLr(cpu, "D"),
+            (cpu) => SRLr(cpu, "E"),
+            (cpu) => SRLr(cpu, "H"),
+            (cpu) => SRLr(cpu, "L"),
+            (cpu) => SRLHL(cpu),
+            (cpu) => SRLr(cpu, "A"),
+            #endregion
+            #region CB40 Group
+            (cpu) => BIT(cpu, 0, "B"),
+            (cpu) => BIT(cpu, 0, "C"),
+            (cpu) => BIT(cpu, 0, "D"),
+            (cpu) => BIT(cpu, 0, "E"),
+            (cpu) => BIT(cpu, 0, "H"),
+            (cpu) => BIT(cpu, 0, "L"),
+            (cpu) => BITm(cpu, 0),
+            (cpu) => BIT(cpu, 0, "A"),
+            (cpu) => BIT(cpu, 1, "B"),
+            (cpu) => BIT(cpu, 1, "C"),
+            (cpu) => BIT(cpu, 1, "D"),
+            (cpu) => BIT(cpu, 1, "E"),
+            (cpu) => BIT(cpu, 1, "H"),
+            (cpu) => BIT(cpu, 1, "L"),
+            (cpu) => BITm(cpu, 1),
+            (cpu) => BIT(cpu, 1, "A"),
+            #endregion
+            #region CB50 Group
+            (cpu) => BIT(cpu, 2, "B"),
+            (cpu) => BIT(cpu, 2, "C"),
+            (cpu) => BIT(cpu, 2, "D"),
+            (cpu) => BIT(cpu, 2, "E"),
+            (cpu) => BIT(cpu, 2, "H"),
+            (cpu) => BIT(cpu, 2, "L"),
+            (cpu) => BITm(cpu, 2),
+            (cpu) => BIT(cpu, 2, "A"),
+            (cpu) => BIT(cpu, 3, "B"),
+            (cpu) => BIT(cpu, 3, "C"),
+            (cpu) => BIT(cpu, 3, "D"),
+            (cpu) => BIT(cpu, 3, "E"),
+            (cpu) => BIT(cpu, 3, "H"),
+            (cpu) => BIT(cpu, 3, "L"),
+            (cpu) => BITm(cpu, 3),
+            (cpu) => BIT(cpu, 3, "A"),
+            #endregion
+            #region CB60
+            (cpu) => BIT(cpu, 4, "B"),
+            (cpu) => BIT(cpu, 4, "C"),
+            (cpu) => BIT(cpu, 4, "D"),
+            (cpu) => BIT(cpu, 4, "E"),
+            (cpu) => BIT(cpu, 4, "H"),
+            (cpu) => BIT(cpu, 4, "L"),
+            (cpu) => BITm(cpu, 4),
+            (cpu) => BIT(cpu, 4, "A"),
+            (cpu) => BIT(cpu, 5, "B"),
+            (cpu) => BIT(cpu, 5, "C"),
+            (cpu) => BIT(cpu, 5, "D"),
+            (cpu) => BIT(cpu, 5, "E"),
+            (cpu) => BIT(cpu, 5, "H"),
+            (cpu) => BIT(cpu, 5, "L"),
+            (cpu) => BITm(cpu, 5),
+            (cpu) => BIT(cpu, 5, "A"),
+            #endregion
+            #region CB70 Group
+            (cpu) => BIT(cpu, 6, "B"),
+            (cpu) => BIT(cpu, 6, "C"),
+            (cpu) => BIT(cpu, 6, "D"),
+            (cpu) => BIT(cpu, 6, "E"),
+            (cpu) => BIT(cpu, 6, "H"),
+            (cpu) => BIT(cpu, 6, "L"),
+            (cpu) => BITm(cpu, 6),
+            (cpu) => BIT(cpu, 6, "A"),
+            (cpu) => BIT(cpu, 7, "B"),
+            (cpu) => BIT(cpu, 7, "C"),
+            (cpu) => BIT(cpu, 7, "D"),
+            (cpu) => BIT(cpu, 7, "E"),
+            (cpu) => BIT(cpu, 7, "H"),
+            (cpu) => BIT(cpu, 7, "L"),
+            (cpu) => BITm(cpu, 7),
+            (cpu) => BIT(cpu, 7, "A"),
+            #endregion
+            #region CB80 Group
+            (cpu) => RES(cpu, 0, "B"),
+            (cpu) => RES(cpu, 0, "C"),
+            (cpu) => RES(cpu, 0, "D"),
+            (cpu) => RES(cpu, 0, "E"),
+            (cpu) => RES(cpu, 0, "H"),
+            (cpu) => RES(cpu, 0, "L"),
+            (cpu) => RESHL(cpu, 0),
+            (cpu) => RES(cpu, 0, "A"),
+            (cpu) => RES(cpu, 1, "B"),
+            (cpu) => RES(cpu, 1, "C"),
+            (cpu) => RES(cpu, 1, "D"),
+            (cpu) => RES(cpu, 1, "E"),
+            (cpu) => RES(cpu, 1, "H"),
+            (cpu) => RES(cpu, 1, "L"),
+            (cpu) => RESHL(cpu, 1),
+            (cpu) => RES(cpu, 1, "A"),
+            #endregion
+            #region CB90 Group
+            (cpu) => RES(cpu, 2, "B"),
+            (cpu) => RES(cpu, 2, "C"),
+            (cpu) => RES(cpu, 2, "D"),
+            (cpu) => RES(cpu, 2, "E"),
+            (cpu) => RES(cpu, 2, "H"),
+            (cpu) => RES(cpu, 2, "L"),
+            (cpu) => RESHL(cpu, 2),
+            (cpu) => RES(cpu, 2, "A"),
+            (cpu) => RES(cpu, 3, "B"),
+            (cpu) => RES(cpu, 3, "C"),
+            (cpu) => RES(cpu, 3, "D"),
+            (cpu) => RES(cpu, 3, "E"),
+            (cpu) => RES(cpu, 3, "H"),
+            (cpu) => RES(cpu, 3, "L"),
+            (cpu) => RESHL(cpu, 3),
+            (cpu) => RES(cpu, 3, "A"),
+            #endregion
+            #region CBA0 Group
+            (cpu) => RES(cpu, 4, "B"),
+            (cpu) => RES(cpu, 4, "C"),
+            (cpu) => RES(cpu, 4, "D"),
+            (cpu) => RES(cpu, 4, "E"),
+            (cpu) => RES(cpu, 4, "H"),
+            (cpu) => RES(cpu, 4, "L"),
+            (cpu) => RESHL(cpu, 4),
+            (cpu) => RES(cpu, 4, "A"),
+            (cpu) => RES(cpu, 6, "B"),
+            (cpu) => RES(cpu, 6, "C"),
+            (cpu) => RES(cpu, 6, "D"),
+            (cpu) => RES(cpu, 6, "E"),
+            (cpu) => RES(cpu, 6, "H"),
+            (cpu) => RES(cpu, 6, "L"),
+            (cpu) => RESHL(cpu, 6),
+            (cpu) => RES(cpu, 6, "A"),
+            #endregion
+            #region CBB0 Group
+            (cpu) => RES(cpu, 6, "B"),
+            (cpu) => RES(cpu, 6, "C"),
+            (cpu) => RES(cpu, 6, "D"),
+            (cpu) => RES(cpu, 6, "E"),
+            (cpu) => RES(cpu, 6, "H"),
+            (cpu) => RES(cpu, 6, "L"),
+            (cpu) => RESHL(cpu, 6),
+            (cpu) => RES(cpu, 6, "A"),
+            (cpu) => RES(cpu, 7, "B"),
+            (cpu) => RES(cpu, 7, "C"),
+            (cpu) => RES(cpu, 7, "D"),
+            (cpu) => RES(cpu, 7, "E"),
+            (cpu) => RES(cpu, 7, "H"),
+            (cpu) => RES(cpu, 7, "L"),
+            (cpu) => RESHL(cpu, 7),
+            (cpu) => RES(cpu, 7, "A"),
+            #endregion
+            #region CBC0 Group
+            (cpu) => SET(cpu, 0, "B"),
+            (cpu) => SET(cpu, 0, "C"),
+            (cpu) => SET(cpu, 0, "D"),
+            (cpu) => SET(cpu, 0, "E"),
+            (cpu) => SET(cpu, 0, "H"),
+            (cpu) => SET(cpu, 0, "L"),
+            (cpu) => SETHL(cpu, 0),
+            (cpu) => SET(cpu, 0, "A"),
+            (cpu) => SET(cpu, 1, "B"),
+            (cpu) => SET(cpu, 1, "C"),
+            (cpu) => SET(cpu, 1, "D"),
+            (cpu) => SET(cpu, 1, "E"),
+            (cpu) => SET(cpu, 1, "H"),
+            (cpu) => SET(cpu, 1, "L"),
+            (cpu) => SETHL(cpu, 1),
+            (cpu) => SET(cpu, 1, "A"),
+            #endregion
+            #region CBD0 Group
+            (cpu) => SET(cpu, 2, "B"),
+            (cpu) => SET(cpu, 2, "C"),
+            (cpu) => SET(cpu, 2, "D"),
+            (cpu) => SET(cpu, 2, "E"),
+            (cpu) => SET(cpu, 2, "H"),
+            (cpu) => SET(cpu, 2, "L"),
+            (cpu) => SETHL(cpu, 2),
+            (cpu) => SET(cpu, 2, "A"),
+            (cpu) => SET(cpu, 3, "B"),
+            (cpu) => SET(cpu, 3, "C"),
+            (cpu) => SET(cpu, 3, "D"),
+            (cpu) => SET(cpu, 3, "E"),
+            (cpu) => SET(cpu, 3, "H"),
+            (cpu) => SET(cpu, 3, "L"),
+            (cpu) => SETHL(cpu, 3),
+            (cpu) => SET(cpu, 3, "A"),
+            #endregion
+            #region CBE0 Group
+            (cpu) => SET(cpu, 4, "B"),
+            (cpu) => SET(cpu, 4, "C"),
+            (cpu) => SET(cpu, 4, "D"),
+            (cpu) => SET(cpu, 4, "E"),
+            (cpu) => SET(cpu, 4, "H"),
+            (cpu) => SET(cpu, 4, "L"),
+            (cpu) => SETHL(cpu, 4),
+            (cpu) => SET(cpu, 4, "A"),
+            (cpu) => SET(cpu, 5, "B"),
+            (cpu) => SET(cpu, 5, "C"),
+            (cpu) => SET(cpu, 5, "D"),
+            (cpu) => SET(cpu, 5, "E"),
+            (cpu) => SET(cpu, 5, "H"),
+            (cpu) => SET(cpu, 5, "L"),
+            (cpu) => SETHL(cpu, 5),
+            (cpu) => SET(cpu, 5, "A"),
+            #endregion
+            #region CBF0 Group
+            (cpu) => SET(cpu, 6, "B"),
+            (cpu) => SET(cpu, 6, "C"),
+            (cpu) => SET(cpu, 6, "D"),
+            (cpu) => SET(cpu, 6, "E"),
+            (cpu) => SET(cpu, 6, "H"),
+            (cpu) => SET(cpu, 6, "L"),
+            (cpu) => SETHL(cpu, 6),
+            (cpu) => SET(cpu, 6, "A"),
+            (cpu) => SET(cpu, 7, "B"),
+            (cpu) => SET(cpu, 7, "C"),
+            (cpu) => SET(cpu, 7, "D"),
+            (cpu) => SET(cpu, 7, "E"),
+            (cpu) => SET(cpu, 7, "H"),
+            (cpu) => SET(cpu, 7, "L"),
+            (cpu) => SETHL(cpu, 7),
+            (cpu) => SET(cpu, 7, "A")
+            #endregion
+        };
+        internal static void CBCall(CPU cpu) {
+            var reg = cpu.reg;
+            var v = cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            CBOPS[v](cpu);
         }
         #endregion
     }
