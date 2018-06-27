@@ -22,7 +22,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         #region CPU Instructions
-        private static List<Action<CPU>> ops = new List<Action<CPU>> {
+        private static readonly List<Action<CPU>> opcodes = new List<Action<CPU>> {
             // 0x00
             (cpu) => CPUInstructions.NOP(cpu),
             (cpu) => CPUInstructions.LD__nn(cpu, "B", "C"),

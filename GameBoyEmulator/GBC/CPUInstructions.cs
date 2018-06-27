@@ -535,7 +535,41 @@
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
-        
+
+        internal static void CPr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var a = (int) reg.A;
+            a -= reg.GetRegister(regI);
+            fz(cpu, a, true);
+
+            if (a < 0) {
+                reg.F |= 0x10;
+            }
+        }
+
+        internal static void CPHL(CPU cpu) {
+            var reg = cpu.reg;
+            var a = (int) reg.A;
+            a -= cpu.memory.ReadByte(reg.HL);
+            fz(cpu, a, true);
+
+            if (a < 0) {
+                reg.F |= 0x10;
+            }
+        }
+
+        internal static void CPn(CPU cpu) {
+            var reg = cpu.reg;
+            var a = (int) reg.A;
+            a -= cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            fz(cpu, a, true);
+
+            if (a < 0) {
+                reg.F |= 0x10;
+            }
+        }
+         
         #endregion
         #region Interrupt Calls
         internal static void RSTXX(CPU cpu, ushort addr) {
