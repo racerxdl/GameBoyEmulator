@@ -545,6 +545,8 @@
             if (a < 0) {
                 reg.F |= 0x10;
             }
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
         }
 
         internal static void CPHL(CPU cpu) {
@@ -556,6 +558,8 @@
             if (a < 0) {
                 reg.F |= 0x10;
             }
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
 
         internal static void CPn(CPU cpu) {
@@ -568,8 +572,94 @@
             if (a < 0) {
                 reg.F |= 0x10;
             }
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
-         
+
+        internal static void ANDr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            reg.A &= reg.GetRegister(regI);
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void ANDHL(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A &= cpu.memory.ReadByte(reg.HL);
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        internal static void ANDn(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A &= cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        internal static void ORr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            reg.A |= reg.GetRegister(regI);
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void ORHL(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A |= cpu.memory.ReadByte(reg.HL);
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        internal static void ORn(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A |= cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        internal static void XORr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            reg.A ^= reg.GetRegister(regI);
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void XORHL(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A ^= cpu.memory.ReadByte(reg.HL);
+            fz(cpu, reg.A, false);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        internal static void XORn(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A ^= cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            fz(cpu, reg.A, false);
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
         #endregion
         #region Interrupt Calls
         internal static void RSTXX(CPU cpu, ushort addr) {
