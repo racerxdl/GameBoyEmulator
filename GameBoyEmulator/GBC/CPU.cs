@@ -42,8 +42,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.RRCA(cpu),
             // 0x10
             (cpu) => CPUInstructions.DJNZn(cpu),
-            (cpu) => CPUInstructions.LDDEnn(cpu),
-            (cpu) => CPUInstructions.LDDEmA(cpu),
+            (cpu) => CPUInstructions.LD__nn(cpu, "D", "E"),
+            (cpu) => CPUInstructions.LD__m_(cpu, "D", "E", "A"),
             (cpu) => CPUInstructions.INC(cpu, "D", "E"),
             (cpu) => CPUInstructions.INCr(cpu, "D"),
             (cpu) => CPUInstructions.DECr(cpu, "D"),
@@ -51,7 +51,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.RLA(cpu),
             (cpu) => CPUInstructions.JRn(cpu),
             (cpu) => CPUInstructions.ADDHL(cpu, "D", "E"),
-            (cpu) => CPUInstructions.LDADEm(cpu),
+            (cpu) => CPUInstructions.LD___m(cpu, "A", "D", "E"),
             (cpu) => CPUInstructions.DEC(cpu, "D", "E"),
             (cpu) => CPUInstructions.INCr(cpu, "E"),
             (cpu) => CPUInstructions.DECr(cpu, "E"),
@@ -59,7 +59,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => CPUInstructions.RRA(cpu),
             // 0x20
             (cpu) => CPUInstructions.JRNZn(cpu),
-            (cpu) => CPUInstructions.LDHLnn(cpu),
+            (cpu) => CPUInstructions.LD__nn(cpu, "H", "L"),
             (cpu) => CPUInstructions.LDHLIA(cpu),
             (cpu) => CPUInstructions.INCHL(cpu),
             (cpu) => CPUInstructions.INCr(cpu, "H"),

@@ -225,6 +225,32 @@
             reg.lastClockT = 8;
         }
 
+        internal static void LDHLDA(CPU cpu) {
+            var reg = cpu.reg;
+            cpu.memory.WriteByte(reg.HL, reg.A);
+            var v = reg.L - 1;
+            reg.L = (byte) (v & 0xFF);
+            if (v < 0) {
+                reg.H--;
+            }
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        internal static void LDAHLD(CPU cpu) {
+            var reg = cpu.reg;
+            reg.A = cpu.memory.ReadByte(reg.HL);
+            var v = reg.L - 1;
+            reg.L = (byte) (v & 0xFF);
+            if (v < 0) {
+                reg.H--;
+            }
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
         internal static void LDAIOn(CPU cpu) {
             var reg = cpu.reg;
             var addr = cpu.memory.ReadByte(reg.PC) + 0xFF00;
@@ -246,7 +272,7 @@
             reg.lastClockT = 12;
         }
 
-        internal static void LDCIOn(CPU cpu) {
+        internal static void LDAIOC(CPU cpu) {
             var reg = cpu.reg;
             var addr = cpu.memory.ReadByte(reg.C) + 0xFF00;
             var b = cpu.memory.ReadByte(addr);
@@ -256,10 +282,9 @@
             reg.lastClockT = 8;
         }
 
-        internal static void LDIOnC(CPU cpu) {
+        internal static void LDIOCA(CPU cpu) {
             var reg = cpu.reg;
-            var addr = cpu.memory.ReadByte(reg.C) + 0xFF00;
-            cpu.memory.WriteByte(addr, reg.A);
+            cpu.memory.WriteByte(0xFF00 + reg.C, reg.A);
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -747,7 +772,53 @@
             reg.lastClockT = 4;
         }
 
-        
+        #endregion
+        #region Bit Manipulation
+
+        internal static void RLA(CPU cpu) {
+            var reg = cpu.reg;
+            var ci = (reg.F & 0x10) != 0x00 ? 0x01 : 0x00;
+            var co = (reg.A & 0x80) != 0x00 ? 0x10 : 0x00;
+
+            reg.A = (byte) ((reg.A << 1) + ci);
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }  
+        internal static void RLCA(CPU cpu) {
+            var reg = cpu.reg;
+            var ci = (reg.A & 0x80) != 0x00 ? 0x01 : 0x00;
+            var co = (reg.A & 0x80) != 0x00 ? 0x10 : 0x00;
+
+            reg.A = (byte) ((reg.A << 1) + ci);
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        internal static void RRA(CPU cpu) {
+            var reg = cpu.reg;
+            var ci = (reg.F & 0x10) != 0 ? 0x80 : 0x00;
+            var co = (reg.A & 0x01) != 0 ? 0x10 : 0x00;
+
+            reg.A = (byte) ((reg.A >> 1) + ci);
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        internal static void RRCA(CPU cpu) {
+            var reg = cpu.reg;
+            var ci = (reg.A & 0x01) != 0 ? 0x80 : 0x00;
+            var co = (reg.A & 0x01) != 0 ? 0x10 : 0x00;
+
+            reg.A = (byte) ((reg.A >> 1) + ci);
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
         #endregion
         #region Interrupt Calls
         internal static void RSTXX(CPU cpu, ushort addr) {
