@@ -397,6 +397,144 @@
             reg.lastClockM = 4;
             reg.lastClockT = 16;
         }
+
+        internal static void ADCr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = (int) reg.GetRegister(regI);
+            var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
+            fz(cpu, sum, false);
+            if (sum > 255) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
+        internal static void ADCHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = (int) cpu.memory.ReadByte(reg.HL);
+            var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
+            fz(cpu, sum, false);
+            if (sum > 255) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
+        internal static void ADCn(CPU cpu) {
+            var reg = cpu.reg;
+            var b = (int) cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
+            fz(cpu, sum, false);
+            if (sum > 255) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
+        internal static void SUBr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = (int) reg.GetRegister(regI);
+            var sum = reg.A - b;
+            fz(cpu, sum, true);
+            if (sum < 0) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void SUBHL(CPU cpu) {
+            var reg = cpu.reg;
+            var z = (int) cpu.memory.ReadByte(reg.HL);
+            var sum = reg.A - z;
+            fz(cpu, sum, true);
+            if (sum < 0) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        internal static void SUBn(CPU cpu) {
+            var reg = cpu.reg;
+            var z = (int) cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            var sum = reg.A - z;
+            fz(cpu, sum, true);
+            if (sum > 255) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        internal static void SBCr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = (int) reg.GetRegister(regI);
+            var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
+            fz(cpu, sum, true);
+            if (sum < 0) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void SBCHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = (int) cpu.memory.ReadByte(reg.HL);
+            var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
+            fz(cpu, sum, true);
+            if (sum < 0) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void SBCn(CPU cpu) {
+            var reg = cpu.reg;
+            var b = (int) cpu.memory.ReadByte(reg.PC);
+            reg.PC++;
+            var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
+            fz(cpu, sum, true);
+            if (sum < 0) {
+                reg.F |= 0x10;
+            }
+
+            reg.A = (byte) (sum & 0xFF);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
         
         #endregion
         #region Interrupt Calls
@@ -544,14 +682,14 @@
         }
         #endregion
         #region Helper Functions
-        internal static void fz(CPU cpu, int v, bool a) {
+        internal static void fz(CPU cpu, int v, bool isUnderflow) {
             var reg = cpu.reg;
             reg.F = 0;
             if (v != 0) {
                 reg.F |= 128;
             }
 
-            reg.F |= (byte) (a ? 0x40 : 0x00);
+            reg.F |= (byte) (isUnderflow ? 0x40 : 0x00);
         }
         #endregion
     }
