@@ -303,7 +303,7 @@
             var reg = cpu.reg;
             var z = (int)reg.GetRegister(regI);
             var sum = reg.A + z;
-            fz(cpu, sum, false);
+            ResetFlag(cpu, sum, false);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
@@ -318,7 +318,7 @@
             var reg = cpu.reg;
             var z = (int) cpu.memory.ReadByte(reg.HL);
             var sum = reg.A + z;
-            fz(cpu, sum, false);
+            ResetFlag(cpu, sum, false);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
@@ -334,7 +334,7 @@
             var z = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             var sum = reg.A + z;
-            fz(cpu, sum, false);
+            ResetFlag(cpu, sum, false);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
@@ -402,7 +402,7 @@
             var reg = cpu.reg;
             var b = (int) reg.GetRegister(regI);
             var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            fz(cpu, sum, false);
+            ResetFlag(cpu, sum, false);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
@@ -417,7 +417,7 @@
             var reg = cpu.reg;
             var b = (int) cpu.memory.ReadByte(reg.HL);
             var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            fz(cpu, sum, false);
+            ResetFlag(cpu, sum, false);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
@@ -433,7 +433,7 @@
             var b = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            fz(cpu, sum, false);
+            ResetFlag(cpu, sum, false);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
@@ -448,7 +448,7 @@
             var reg = cpu.reg;
             var b = (int) reg.GetRegister(regI);
             var sum = reg.A - b;
-            fz(cpu, sum, true);
+            ResetFlag(cpu, sum, true);
             if (sum < 0) {
                 reg.F |= 0x10;
             }
@@ -463,7 +463,7 @@
             var reg = cpu.reg;
             var z = (int) cpu.memory.ReadByte(reg.HL);
             var sum = reg.A - z;
-            fz(cpu, sum, true);
+            ResetFlag(cpu, sum, true);
             if (sum < 0) {
                 reg.F |= 0x10;
             }
@@ -479,7 +479,7 @@
             var z = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             var sum = reg.A - z;
-            fz(cpu, sum, true);
+            ResetFlag(cpu, sum, true);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
@@ -494,7 +494,7 @@
             var reg = cpu.reg;
             var b = (int) reg.GetRegister(regI);
             var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            fz(cpu, sum, true);
+            ResetFlag(cpu, sum, true);
             if (sum < 0) {
                 reg.F |= 0x10;
             }
@@ -509,7 +509,7 @@
             var reg = cpu.reg;
             var b = (int) cpu.memory.ReadByte(reg.HL);
             var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            fz(cpu, sum, true);
+            ResetFlag(cpu, sum, true);
             if (sum < 0) {
                 reg.F |= 0x10;
             }
@@ -525,7 +525,7 @@
             var b = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            fz(cpu, sum, true);
+            ResetFlag(cpu, sum, true);
             if (sum < 0) {
                 reg.F |= 0x10;
             }
@@ -540,7 +540,7 @@
             var reg = cpu.reg;
             var a = (int) reg.A;
             a -= reg.GetRegister(regI);
-            fz(cpu, a, true);
+            ResetFlag(cpu, a, true);
 
             if (a < 0) {
                 reg.F |= 0x10;
@@ -553,7 +553,7 @@
             var reg = cpu.reg;
             var a = (int) reg.A;
             a -= cpu.memory.ReadByte(reg.HL);
-            fz(cpu, a, true);
+            ResetFlag(cpu, a, true);
 
             if (a < 0) {
                 reg.F |= 0x10;
@@ -567,7 +567,7 @@
             var a = (int) reg.A;
             a -= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            fz(cpu, a, true);
+            ResetFlag(cpu, a, true);
 
             if (a < 0) {
                 reg.F |= 0x10;
@@ -579,7 +579,7 @@
         internal static void ANDr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A &= reg.GetRegister(regI);
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -588,7 +588,7 @@
         internal static void ANDHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A &= cpu.memory.ReadByte(reg.HL);
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -598,7 +598,7 @@
             var reg = cpu.reg;
             reg.A &= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -607,7 +607,7 @@
         internal static void ORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A |= reg.GetRegister(regI);
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -616,7 +616,7 @@
         internal static void ORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.HL);
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -626,7 +626,7 @@
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -635,7 +635,7 @@
         internal static void XORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A ^= reg.GetRegister(regI);
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -644,7 +644,7 @@
         internal static void XORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.HL);
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -654,11 +654,99 @@
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            fz(cpu, reg.A, false);
+            ResetFlag(cpu, reg.A, false);
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
+
+        internal static void INCr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var v = reg.GetRegister(regI) + 1; 
+            ResetFlag(cpu, v, false);
+            reg.SetRegister(regI, (byte) (v & 0xFF));
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void INCHLm(CPU cpu) {
+            var reg = cpu.reg;
+            var v = cpu.memory.ReadByte(reg.HL) + 1;
+            ResetFlag(cpu, v, false);
+            cpu.memory.WriteByte(reg.HL, (byte) (v & 0xFF));
+            
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+        
+        internal static void DECr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var v = reg.GetRegister(regI) - 1; 
+            ResetFlag(cpu, v, true);
+            reg.SetRegister(regI, (byte) (v & 0xFF));
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void DECHLm(CPU cpu) {
+            var reg = cpu.reg;
+            var v = cpu.memory.ReadByte(reg.HL) - 1;
+            ResetFlag(cpu, v, true);
+            cpu.memory.WriteByte(reg.HL, (byte) (v & 0xFF));
+            
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+        
+        internal static void INC(CPU cpu, string regA, string regB) {
+            var reg = cpu.reg;
+            var v = reg.GetRegister(regB) + 1; 
+            reg.SetRegister(regB, (byte) (v & 0xFF));
+
+            if ((v & 0xFF) == 0) {
+                reg.SetRegister(regA, (byte) ((reg.GetRegister(regA) + 1) & 0xFF));
+            }
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void INCHL(CPU cpu) {
+            INC(cpu, "H", "L");
+        }
+
+        internal static void INCSP(CPU cpu) {
+            var reg = cpu.reg;
+            reg.SP++;
+
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
+        internal static void DEC(CPU cpu, string regA, string regB) {
+            var reg = cpu.reg;
+            var v = reg.GetRegister(regB) - 1;
+            reg.SetRegister(regB, (byte)(v & 0xFF));
+
+            if (v < 0) {
+                reg.SetRegister(regA, (byte) ((reg.GetRegister(regA) - 1) & 0xFF));
+            }
+        }
+        
+        internal static void DECHL(CPU cpu) {
+            DEC(cpu, "H", "L");
+        }
+        
+        internal static void DECSP(CPU cpu) {
+            var reg = cpu.reg;
+            reg.SP--;
+
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
         
         #endregion
         #region Interrupt Calls
@@ -806,7 +894,7 @@
         }
         #endregion
         #region Helper Functions
-        internal static void fz(CPU cpu, int v, bool isUnderflow) {
+        internal static void ResetFlag(CPU cpu, int v, bool isUnderflow) {
             var reg = cpu.reg;
             reg.F = 0;
             if (v != 0) {
