@@ -1,24 +1,94 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class CPU {
-        private int clockM = 0;
-        private int clockT = 0;
+        private const int CPU_CLOCK = 8400000;
+        private const float CPU_PERIOD_MS = 1000f / CPU_CLOCK;
+
+        private DateTime LastUpdate;
+        
+        internal int clockM;
+        internal int clockT;
         internal CPURegisters reg;
         internal Memory memory;
         internal bool _halt;
+        internal GPU gpu;
+        internal bool running;
+
+        internal Thread cpuThread;
+
+        internal Mutex mtx;
 
         public CPU() {
             reg = new CPURegisters();
-            memory = new Memory();
+            memory = new Memory(this);
+            gpu = new GPU(this);
+            mtx = new Mutex();
             Reset();
+            LastUpdate = DateTime.Now;
+            cpuThread = new Thread(() => Update());
+            cpuThread.IsBackground = true;
+            running = false;
+        }
+
+        public void Start() {
+            if (!running) {
+                Console.WriteLine("Starting");
+                running = true;
+                cpuThread.Start();
+                Console.WriteLine("CPU Thread Started");
+            }
+        }
+
+        public void Stop() {
+            if (running) {
+                Console.WriteLine("Stopping");
+                running = false;
+                cpuThread.Join();
+            }
         }
 
         public void Reset() {
+            mtx.WaitOne();
             _halt = false;
+            clockT = 0;
+            clockM = 0;
             reg.Reset();
             memory.Reset();
+            gpu.Reset();
+            mtx.ReleaseMutex();
+        }
+
+        public void Update() {
+            Console.WriteLine("CPU Update Thread Started");
+            while (running) {
+                if (!_halt) {
+                    var delta = DateTime.Now - LastUpdate;
+                    if (!(delta.TotalMilliseconds > CPU_PERIOD_MS)) continue;
+                    Cycle();
+                    LastUpdate = DateTime.Now;
+                } else {
+                    Thread.Sleep(10);
+                }
+            }
+            Console.WriteLine("CPU Update Thread Stopped");
+        }
+
+        public void Cycle() {
+            mtx.WaitOne();
+            reg.CycleCount++;
+            var pc = reg.PC;
+            reg.PC++;
+            var op = memory.ReadByte(pc);
+            opcodes[op](this);
+            clockM += reg.lastClockM;
+            clockT += reg.lastClockT;
+            
+            gpu.Cycle();
+            mtx.ReleaseMutex();
         }
 
         #region CPU Instructions

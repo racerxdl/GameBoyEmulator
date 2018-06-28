@@ -81,11 +81,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regI"></param>
         internal static void LD__m_(CPU cpu, string regH, string regL, string regI) {
             var reg = cpu.reg;
-            var h = reg.GetRegister(regH);
-            var l = reg.GetRegister(regL);
-            var hl = (h << 8) + l;
             var b = reg.GetRegister(regI);
-            cpu.memory.WriteByte(hl, b);
+            cpu.memory.WriteByte(reg.HL, b);
             reg.lastClockM += 2;
             reg.lastClockT += 8;
         }
@@ -112,10 +109,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regO"></param>
         internal static void LD___m(CPU cpu, string regO, string regH, string regL) {
             var reg = cpu.reg;
-            var h = reg.GetRegister(regH);
-            var l = reg.GetRegister(regL);
-            var hl = (h << 8) + l;
-            var b = cpu.memory.ReadByte(hl);
+            var b = cpu.memory.ReadByte(reg.HL);
             reg.PC += 2;
             reg.SetRegister(regO, b);
             reg.lastClockM = 2;
@@ -869,6 +863,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         #region Interrupt Calls
         internal static void RSTXX(CPU cpu, ushort addr) {
             var reg = cpu.reg;
+            reg.SaveRegs();
             reg.SP -= 2;
             cpu.memory.WriteWord(reg.SP, reg.PC);
             reg.PC = addr;
@@ -1197,9 +1192,10 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void RETI(CPU cpu) {
             var reg = cpu.reg;
+            reg.LoadRegs();
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.ime = 1;
+            reg.InterruptEnable = 1;
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1267,13 +1263,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void DI(CPU cpu) {
             var reg = cpu.reg;
-            reg.ime = 0;
+            reg.InterruptEnable = 0;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         internal static void EI(CPU cpu) {
             var reg = cpu.reg;
-            reg.ime = 1;
+            reg.InterruptEnable = 1;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }

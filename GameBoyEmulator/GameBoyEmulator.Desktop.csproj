@@ -21,6 +21,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -29,6 +30,9 @@
     <Compile Include="GBC\CPU.cs" />
     <Compile Include="GBC\CPUInstructions.cs" />
     <Compile Include="GBC\CPURegisters.cs" />
+    <Compile Include="GBC\GPU.cs" />
+    <Compile Include="GBC\GPUModes.cs" />
+    <Compile Include="GBC\GPUTile.cs" />
     <Compile Include="GBC\Memory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
