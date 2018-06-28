@@ -1303,6 +1303,37 @@ namespace GameBoyEmulator.Desktop.GBC {
         #endregion
         #region 0xCB Calls
 
+        #region Call Implementation
+        static void RLr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var v = (int) reg.GetRegister(regI);
+            var ci = (reg.F & 0x10) != 0 ? 0x01 : 0x00;
+            var co = (v & 0x80) != 0 ? 0x10 : 0x00;
+            v = (((v << 1) + ci) & 0xFF);
+            reg.SetRegister(regI, (byte) v);
+            ResetFlag(cpu, v, false);
+
+            reg.F = (byte) (((reg.F & 0xEF) + co) & 0xFF);
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        static void RLHL(CPU cpu) {
+            var reg = cpu.reg;
+            var v = (int) cpu.memory.ReadByte(reg.HL);
+            var ci = (reg.F & 0x10) != 0 ? 0x01 : 0x00;
+            var co = (v & 0x80) != 0 ? 0x10 : 0x00;
+            v = (((v << 1) + ci) & 0xFF);
+            cpu.memory.WriteByte(reg.HL, (byte) v);
+            ResetFlag(cpu, v, false);
+
+            reg.F = (byte) (((reg.F & 0xEF) + co) & 0xFF);
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
         static void RLCr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var v = (int) reg.GetRegister(regI);
@@ -1398,6 +1429,176 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockM = 4;
             reg.lastClockT = 16;
         }
+
+        static void SLAr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = reg.GetRegister(regI);
+            var co = (b & 0x80) != 0x00 ? 0x10 : 0x00;
+            b = (byte) ((b << 1) & 0xFF);
+            ResetFlag(cpu, b, false);
+            
+            reg.SetRegister(regI, b);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        static void SLAHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = cpu.memory.ReadByte(reg.HL);
+            var co = (b & 0x80) != 0x00 ? 0x10 : 0x00;
+            b = (byte) ((b << 1) & 0xFF);
+            ResetFlag(cpu, b, false);
+
+            cpu.memory.WriteByte(reg.HL, b);
+            
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+
+        static void SRAr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = reg.GetRegister(regI);
+            var co = (b & 0x80) != 0x00 ? 0x80 : 0x00;
+            var ci = (b & 0x01) != 0x00 ? 0x10 : 0x00;
+            b = (byte) (((b >> 1) + ci) & 0xFF);
+            ResetFlag(cpu, b, false);
+            
+            reg.SetRegister(regI, b);
+
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        static void SRAHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = cpu.memory.ReadByte(reg.HL);
+            var co = (b & 0x80) != 0x00 ? 0x80 : 0x00;
+            var ci = (b & 0x01) != 0x00 ? 0x10 : 0x00;
+            b = (byte) (((b >> 1) + ci) & 0xFF);
+            ResetFlag(cpu, b, false);
+
+            cpu.memory.WriteByte(reg.HL, b);
+            
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+
+        static void SWAPr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = reg.GetRegister(regI);
+            var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
+            reg.SetRegister(regI, (byte) swapped);
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+
+        static void SWAPHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = cpu.memory.ReadByte(reg.HL);
+            var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
+            cpu.memory.WriteByte(reg.HL, (byte) swapped);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        static void SRLr(CPU cpu, string regI) {
+            var reg = cpu.reg;
+            var b = reg.GetRegister(regI);
+            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            b = (byte) ((b >> 1) & 0xFF);
+            reg.SetRegister(regI, b);
+            ResetFlag(cpu, b, false);
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+
+        static void SRLHL(CPU cpu) {
+            var reg = cpu.reg;
+            var b = cpu.memory.ReadByte(reg.HL);
+            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            b = (byte) ((b >> 1) & 0xFF);
+            cpu.memory.WriteByte(reg.HL, b);
+            ResetFlag(cpu, b, false);
+            reg.F = (byte) ((reg.F & 0xEF) + co);
+            
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
+        }
+
+        static void BIT(CPU cpu, int n, string regI) {
+            var reg = cpu.reg;
+            ResetFlag(cpu, reg.GetRegister(regI) & (1 << n), false);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 4;
+        }
+        
+        static void BITm(CPU cpu, int n) {
+            var reg = cpu.reg;
+            ResetFlag(cpu, cpu.memory.ReadByte(reg.HL) & n, false);
+            
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+
+        static void RES(CPU cpu, int n, string regI) {
+            var reg = cpu.reg;
+
+            var b = reg.GetRegister(regI);
+            b &= (byte) (~(1 << n));
+            reg.SetRegister(regI, b);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        static void RESHL(CPU cpu, int n) {
+            var reg = cpu.reg;
+
+            var b = cpu.memory.ReadByte(reg.HL);
+            b &= (byte) (~(1 << n));
+            cpu.memory.WriteByte(reg.HL, b);
+            
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+
+        static void SET(CPU cpu, int n, string regI) {
+            var reg = cpu.reg;
+
+            var b = reg.GetRegister(regI);
+            b |= (byte) (1 << n);
+            reg.SetRegister(regI, b);
+            
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
+        }
+        
+        static void SETHL(CPU cpu, int n) {
+            var reg = cpu.reg;
+
+            var b = cpu.memory.ReadByte(reg.HL);
+            b |= (byte) (1 << n);
+            cpu.memory.WriteByte(reg.HL, b);
+            
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
+        }
+        
+        #endregion
         
         private static readonly List<Action<CPU>> CBOPS = new List<Action<CPU>> {
             #region CB00 Group
@@ -1508,7 +1709,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => BITm(cpu, 3),
             (cpu) => BIT(cpu, 3, "A"),
             #endregion
-            #region CB60
+            #region CB60 Group
             (cpu) => BIT(cpu, 4, "B"),
             (cpu) => BIT(cpu, 4, "C"),
             (cpu) => BIT(cpu, 4, "D"),
