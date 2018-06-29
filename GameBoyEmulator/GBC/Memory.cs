@@ -179,7 +179,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var b0 = ReadByte(addr);
             var b1 = ReadByte((ushort)(addr + 1));
 
-            return (ushort) (b1 << 8 + b0);
+            return (ushort) ((b1 << 8) + b0);
         }
 
         public void WriteWord(ushort addr, ushort val) {

@@ -34,6 +34,8 @@
     <Compile Include="GBC\GPUModes.cs" />
     <Compile Include="GBC\GPUTile.cs" />
     <Compile Include="GBC\Memory.cs" />
+    <Compile Include="KeyboardManager.cs" />
+    <Compile Include="KeyPressEvent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

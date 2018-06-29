@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class GPU {
@@ -25,13 +26,23 @@ namespace GameBoyEmulator.Desktop.GBC {
             Color.White,
         };
 
+        internal byte[] registers;
+
+        public Color[] TileBuffer;
+
         private GPUTile[] tileSet;
         
         public GPU(CPU cpu) {
             this.cpu = cpu;
+            TileBuffer = new Color[512 * 8 * 8];
+            for (var i = 0; i < TileBuffer.Length; i++) {
+                TileBuffer[i] = Color.White;
+            }
+            registers = new byte[0xFF];
         }
 
         public byte ReadByte(int addr) {
+            Console.WriteLine($"GPU 0x{addr:X4} Read");
             switch (addr) {
                 case 0xFF40:
                     return (byte) ((switchBg ? 0x01 : 0x00) | (bgMap ? 0x08 : 0x00) | (bgTile > 0 ? 0x10 : 0x00) | (switchLCD ? 0x80 : 0x00));
@@ -41,12 +52,15 @@ namespace GameBoyEmulator.Desktop.GBC {
                     return (byte) scrollX;
                 case 0xFF44:
                     return (byte) line;
+                default:
+                    return registers[addr - 0xFF40];
             }
 
             return 0x00;
         }
 
         public void WriteByte(int addr, byte val) {
+            Console.WriteLine($"GPU 0x{addr:X4} Write 0x{val:X2}");
             switch (addr) {
                 case 0xFF40:
                     switchBg = (val & 0x01) > 0;
@@ -61,6 +75,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                     scrollX = val;
                     break;
                 case 0xFF44:
+                    Console.WriteLine("Writting Pallete");
                     for (var i = 0; i < 4; i++) {
                         var b = (val >> (i * 2)) & 3;
                         switch (b) {
@@ -75,6 +90,9 @@ namespace GameBoyEmulator.Desktop.GBC {
                         }
                     }
                     break;
+                default:
+                    registers[addr - 0xFF40] = val;
+                    break;
             }
         }
 
@@ -85,8 +103,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             line = 0;
             bgMap = false;
             mode = GPUModes.OAM_READ;
-            tileSet = new GPUTile[384];
-            for (var i = 0; i < 384; i++) {
+            tileSet = new GPUTile[512];
+            for (var i = 0; i < 512; i++) {
                 tileSet[i] = new GPUTile();
             }
             bgTile = 0;
@@ -128,6 +146,20 @@ namespace GameBoyEmulator.Desktop.GBC {
             // TODO
         }
 
+        private void RefreshTileData() {
+            var i = 0;
+            foreach (var tileData in tileSet) {
+                // 128 x 96 Buffer
+                for (var y = 0; y < 8; y++) {
+                    for (var x = 0; x < 8; x++) {
+                        var p = y * 128 + x + i * 8;
+                        TileBuffer[i] = Pallete[tileData.TileData[y][x]];
+                    }
+                }
+                i++;
+            }
+        }
+
         public void UpdateTile(int addr) {
             var relAddr = addr - VRAM_OFFSET;
             if ((addr & 1) > 0) {
@@ -143,10 +175,12 @@ namespace GameBoyEmulator.Desktop.GBC {
                 var b1 = cpu.memory.ReadByte(addr+1);
                 tileSet[tile].TileData[y][x] = (byte) (((b0 & sx) != 0 ? 1 : 0) + ((b1 & sx) != 0 ? 2 : 0));
             }
-        }
+            RefreshTileData();
+        } 
         
         public void Cycle() {
             modeClocks += cpu.clockM;
+            //modeClocks++;
             
             switch (mode) {
                 case GPUModes.HBLANK:

@@ -1,13 +1,13 @@
-﻿namespace GameBoyEmulator.Desktop.GBC {
+﻿using System;
+
+namespace GameBoyEmulator.Desktop.GBC {
     public class CPURegisters {
         public byte A, B, C, D, E, H, L, F;
-        public byte _A, _B, _C, _D, _E, _H, _L, _F;
+        private byte _A, _B, _C, _D, _E, _H, _L, _F;
 
         public byte InterruptEnable;
         public int CycleCount;
-        public ushort HL {
-            get { return (ushort) ((H << 8) + L); }
-        }
+        public ushort HL => (ushort) ((H << 8) + L);
         public ushort PC, SP;
         public int lastClockM, lastClockT;
 
@@ -43,7 +43,9 @@
                 case "H": return H;
                 case "L": return L;
                 case "F": return F;
-                default: return 0x00;
+                default:
+                    Console.WriteLine($"Unknown Register: {reg}");
+                    return 0x00;
             }
         }
 
@@ -65,6 +67,9 @@
                     break;
                 case "F": F = val;
                     break;
+                default:
+                    Console.WriteLine($"Unknown Register: {reg}");
+                    break;
             }
         }
 
@@ -79,9 +84,11 @@
             L = 0;
             F = 0;
             PC = 0;
+            SP = 0;
             InterruptEnable = 0;
             lastClockM = 0;
             lastClockT = 0;
+            Console.WriteLine("Resetting Registers");
         }
     }
 }

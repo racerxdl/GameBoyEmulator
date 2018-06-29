@@ -17,11 +17,17 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal bool _halt;
         internal GPU gpu;
         internal bool running;
+        internal bool paused;
+        internal bool step;
 
         internal Thread cpuThread;
 
         internal Mutex mtx;
+        
+        public delegate void PauseEvent();
 
+        public event PauseEvent OnPause;
+        
         public CPU() {
             reg = new CPURegisters();
             memory = new Memory(this);
@@ -32,6 +38,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             cpuThread = new Thread(() => Update());
             cpuThread.IsBackground = true;
             running = false;
+            paused = true;
+            step = false;
         }
 
         public void Start() {
@@ -43,6 +51,26 @@ namespace GameBoyEmulator.Desktop.GBC {
             }
         }
 
+        public void Step() {
+            mtx.WaitOne();
+            paused = false;
+            step = true;
+            mtx.ReleaseMutex();
+        }
+
+        public void Continue() {
+            mtx.WaitOne();
+            paused = false;
+            mtx.ReleaseMutex();
+        }
+
+        public void Pause() {
+            mtx.WaitOne();
+            paused = true;
+            mtx.ReleaseMutex();
+            OnPause?.Invoke();
+        }
+        
         public void Stop() {
             if (running) {
                 Console.WriteLine("Stopping");
@@ -65,11 +93,17 @@ namespace GameBoyEmulator.Desktop.GBC {
         public void Update() {
             Console.WriteLine("CPU Update Thread Started");
             while (running) {
-                if (!_halt) {
+                if (!_halt && !paused) {
                     var delta = DateTime.Now - LastUpdate;
                     if (!(delta.TotalMilliseconds > CPU_PERIOD_MS)) continue;
                     Cycle();
                     LastUpdate = DateTime.Now;
+                    
+                    if (!step) continue;
+                    
+                    step = false;
+                    paused = true;
+                    OnPause?.Invoke();
                 } else {
                     Thread.Sleep(10);
                 }

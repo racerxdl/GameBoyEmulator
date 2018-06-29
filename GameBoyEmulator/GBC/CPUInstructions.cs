@@ -24,8 +24,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regO"></param>
         internal static void LDrHLm_(CPU cpu, string regO) {
             var reg = cpu.reg;
-            var hl = reg.HL;
-            var b = cpu.memory.ReadByte(hl);
+            var b = cpu.memory.ReadByte(reg.HL);
             reg.SetRegister(regO, b);
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -38,9 +37,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regI"></param>
         internal static void LDHLmr_(CPU cpu, string regI) {
             var reg = cpu.reg;
-            var hl = reg.HL;
             var b = reg.GetRegister(regI);
-            cpu.memory.WriteByte(hl, b);
+            cpu.memory.WriteByte(reg.HL, b);
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
@@ -82,7 +80,10 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void LD__m_(CPU cpu, string regH, string regL, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            cpu.memory.WriteByte(reg.HL, b);
+            var h = reg.GetRegister(regH);
+            var l = reg.GetRegister(regL);
+            var hl = (h << 8) + l;
+            cpu.memory.WriteByte(hl, b);
             reg.lastClockM += 2;
             reg.lastClockT += 8;
         }
@@ -95,7 +96,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void LDmm_(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            cpu.memory.WriteByte(reg.PC, b);
+            var addr = cpu.memory.ReadWord(reg.PC);
+            cpu.memory.WriteByte(addr, b);
             reg.lastClockM += 4;
             reg.lastClockT += 16;
         }
@@ -109,8 +111,10 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regO"></param>
         internal static void LD___m(CPU cpu, string regO, string regH, string regL) {
             var reg = cpu.reg;
-            var b = cpu.memory.ReadByte(reg.HL);
-            reg.PC += 2;
+            var h = reg.GetRegister(regH);
+            var l = reg.GetRegister(regL);
+            var hl = (h << 8) + l;
+            var b = cpu.memory.ReadByte(hl);
             reg.SetRegister(regO, b);
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -126,6 +130,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var addr = cpu.memory.ReadWord(reg.PC);
             var b = cpu.memory.ReadByte(addr);
             reg.SetRegister(regO, b);
+            reg.PC += 2;
             reg.lastClockM = 4;
             reg.lastClockT = 16;
         }
@@ -142,8 +147,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.PC++;
             var b1 = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            reg.SetRegister(regO1, b0);
-            reg.SetRegister(regO2, b1);
+            reg.SetRegister(regO1, b1);
+            reg.SetRegister(regO2, b0);
             reg.lastClockM = 3;
             reg.lastClockT = 12;
         }
@@ -175,18 +180,18 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 20;
         }
 
-        /// <summary>
-        /// Reads an address from PC position and writes word from H/L
-        /// </summary>
-        /// <param name="cpu"></param>
-        internal static void LDmmHL(CPU cpu) {
-            var reg = cpu.reg;
-            var u = cpu.memory.ReadWord(reg.PC);
-            reg.PC += 2;
-            cpu.memory.WriteWord(u, reg.HL);
-            reg.lastClockM = 5;
-            reg.lastClockT = 20;
-        }
+//        /// <summary>
+//        /// Reads an address from PC position and writes word from H/L
+//        /// </summary>
+//        /// <param name="cpu"></param>
+//        internal static void LDmmHL(CPU cpu) {
+//            var reg = cpu.reg;
+//            var u = cpu.memory.ReadWord(reg.PC);
+//            reg.PC += 2;
+//            cpu.memory.WriteWord(u, reg.HL);
+//            reg.lastClockM = 5;
+//            reg.lastClockT = 20;
+//        }
 
         /// <summary>
         /// Sets A to Memory at H/L and increments HL.
@@ -211,8 +216,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="cpu"></param>
         internal static void LDAHLI(CPU cpu) {
             var reg = cpu.reg;
-            var b = cpu.memory.ReadByte(reg.HL);
-            reg.A = b;
+            reg.A = cpu.memory.ReadByte(reg.HL);
             reg.L--;
             if (reg.L == 255) {
                 reg.H--;
@@ -225,9 +229,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void LDHLDA(CPU cpu) {
             var reg = cpu.reg;
             cpu.memory.WriteByte(reg.HL, reg.A);
-            var v = reg.L - 1;
-            reg.L = (byte) (v & 0xFF);
-            if (v < 0) {
+            if (reg.L == 255) {
                 reg.H--;
             }
 
@@ -238,9 +240,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void LDAHLD(CPU cpu) {
             var reg = cpu.reg;
             reg.A = cpu.memory.ReadByte(reg.HL);
-            var v = reg.L - 1;
-            reg.L = (byte) (v & 0xFF);
-            if (v < 0) {
+            reg.L--;
+            if (reg.L == 255) {
                 reg.H--;
             }
 
@@ -252,9 +253,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var addr = cpu.memory.ReadByte(reg.PC) + 0xFF00;
             reg.PC++;
-            var b = cpu.memory.ReadByte(addr);
-            reg.A = b;
-
+            reg.A = cpu.memory.ReadByte(addr);
+            
             reg.lastClockM = 3;
             reg.lastClockT = 12;
         }
@@ -271,9 +271,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void LDAIOC(CPU cpu) {
             var reg = cpu.reg;
-            var addr = cpu.memory.ReadByte(reg.C) + 0xFF00;
-            var b = cpu.memory.ReadByte(addr);
-            reg.A = b;
+            reg.A = cpu.memory.ReadByte(reg.C + 0xFF00);
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -302,35 +300,28 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockM = 3;
             reg.lastClockT = 12;
         }
-
-        /// <summary>
-        /// Swaps value in regS with memory at addres H/L
-        /// </summary>
-        /// <param name="cpu"></param>
-        /// <param name="regS"></param>
-        internal static void SWAPr__(CPU cpu, string regS) {
-            var reg = cpu.reg;
-            var tr = reg.GetRegister(regS);
-            var b = cpu.memory.ReadByte(reg.HL);
-            reg.SetRegister(regS, b);
-            cpu.memory.WriteByte(reg.HL, tr);
-
-            reg.lastClockM = 4;
-            reg.lastClockT = 16;
-        }
         #endregion
         #region Data Processing
 
         internal static void ADDr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var z = (int)reg.GetRegister(regI);
+            var a = reg.A;
             var sum = reg.A + z;
-            ResetFlag(cpu, sum, false);
+            
             if (sum > 255) {
                 reg.F |= 0x10;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
+            }
+
+            if (((reg.A ^ z ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            } 
 
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -339,13 +330,21 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void ADDHL(CPU cpu) {
             var reg = cpu.reg;
             var z = (int) cpu.memory.ReadByte(reg.HL);
+            var a = reg.A;
             var sum = reg.A + z;
-            ResetFlag(cpu, sum, false);
             if (sum > 255) {
                 reg.F |= 0x10;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            reg.A = (byte) sum;
+            
+            if (reg.A == 0) {
+                reg.F |= 0x80;
+            }
+
+            if (((reg.A ^ z ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            } 
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -354,14 +353,23 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void ADDn(CPU cpu) {
             var reg = cpu.reg;
             var z = (int) cpu.memory.ReadByte(reg.PC);
+            var a = reg.A;
             reg.PC++;
             var sum = reg.A + z;
-            ResetFlag(cpu, sum, false);
+            
             if (sum > 255) {
                 reg.F |= 0x10;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
+            }
+
+            if (((reg.A ^ z ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -381,8 +389,8 @@ namespace GameBoyEmulator.Desktop.GBC {
                 reg.F &= 0xEF;
             }
 
-            reg.H = (byte) ((sum >> 8) & 0xFF);
-            reg.L = (byte) (sum & 0xFF);
+            reg.H = (byte) (sum >> 8);
+            reg.L = (byte) sum;
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -399,8 +407,8 @@ namespace GameBoyEmulator.Desktop.GBC {
                 reg.F &= 0xEF;
             }
 
-            reg.H = (byte) ((sum >> 8) & 0xFF);
-            reg.L = (byte) (sum & 0xFF);
+            reg.H = (byte) (sum >> 8);
+            reg.L = (byte) sum;
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -422,14 +430,23 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void ADCr(CPU cpu, string regI) {
             var reg = cpu.reg;
+            var a = reg.A;
             var b = (int) reg.GetRegister(regI);
-            var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            ResetFlag(cpu, sum, false);
+            var sum = reg.A + b + ((reg.F & 0x10) != 0 ? 1 : 0);
+            
             if (sum > 255) {
-                reg.F |= 0x10;
+                reg.F = 0x10;
+            }
+           
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -437,14 +454,23 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void ADCHL(CPU cpu) {
             var reg = cpu.reg;
+            var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.HL);
-            var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            ResetFlag(cpu, sum, false);
+            var sum = reg.A + b + ((reg.F & 0x10) != 0 ? 1 : 0);
+            
             if (sum > 255) {
-                reg.F |= 0x10;
+                reg.F = 0x10;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
+            }
+
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -452,15 +478,20 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void ADCn(CPU cpu) {
             var reg = cpu.reg;
+            var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            var sum = reg.A + b + ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            ResetFlag(cpu, sum, false);
+            var sum = reg.A + b + ((reg.F & 0x10) != 0 ? 1 : 0);
+            
             if (sum > 255) {
-                reg.F |= 0x10;
+                reg.F = 0x10;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            reg.A = (byte) sum;
+            
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -468,14 +499,21 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void SUBr(CPU cpu, string regI) {
             var reg = cpu.reg;
+            var a = reg.A;
             var b = (int) reg.GetRegister(regI);
             var sum = reg.A - b;
-            ResetFlag(cpu, sum, true);
-            if (sum < 0) {
-                reg.F |= 0x10;
+            
+            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -483,14 +521,21 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void SUBHL(CPU cpu) {
             var reg = cpu.reg;
+            var a = reg.A;
             var z = (int) cpu.memory.ReadByte(reg.HL);
             var sum = reg.A - z;
-            ResetFlag(cpu, sum, true);
-            if (sum < 0) {
-                reg.F |= 0x10;
+            
+            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            if (((reg.A ^ z ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -498,15 +543,22 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void SUBn(CPU cpu) {
             var reg = cpu.reg;
+            var a = reg.A;
             var z = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             var sum = reg.A - z;
-            ResetFlag(cpu, sum, true);
-            if (sum > 255) {
-                reg.F |= 0x10;
+            
+            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            if (((reg.A ^ z ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -514,14 +566,21 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void SBCr(CPU cpu, string regI) {
             var reg = cpu.reg;
+            var a = reg.A;
             var b = (int) reg.GetRegister(regI);
-            var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            ResetFlag(cpu, sum, true);
-            if (sum < 0) {
-                reg.F |= 0x10;
+            var sum = reg.A - b - ((reg.F & 0x10) != 0 ? 1 : 0);
+
+            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -529,44 +588,67 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void SBCHL(CPU cpu) {
             var reg = cpu.reg;
+            var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.HL);
-            var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            ResetFlag(cpu, sum, true);
-            if (sum < 0) {
-                reg.F |= 0x10;
+            var sum = reg.A - b - ((reg.F & 0x10) != 0 ? 1 : 0);
+
+            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
             
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
         
         internal static void SBCn(CPU cpu) {
             var reg = cpu.reg;
+            var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            var sum = reg.A - b - ((reg.F & 0x10) == 0x10 ? 1 : 0);
-            ResetFlag(cpu, sum, true);
-            if (sum < 0) {
-                reg.F |= 0x10;
+            var sum = reg.A - b - ((reg.F & 0x10) != 0 ? 1 : 0);
+
+            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            
+            reg.A = (byte) sum;
+
+            if (reg.A == 0) {
+                reg.F |= 0x80;
             }
 
-            reg.A = (byte) (sum & 0xFF);
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
             
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
 
         internal static void CPr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var a = (int) reg.A;
-            a -= reg.GetRegister(regI);
-            ResetFlag(cpu, a, true);
+            var b = reg.GetRegister(regI);
+            a -= b;
 
-            if (a < 0) {
-                reg.F |= 0x10;
+            reg.F = a < 0 ? (byte) 0x50 : (byte) 0x40;
+
+            a = (byte) a;
+
+            if (a == 0) {
+                reg.F |= 0x80;
             }
+
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
+            
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
@@ -574,12 +656,21 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void CPHL(CPU cpu) {
             var reg = cpu.reg;
             var a = (int) reg.A;
-            a -= cpu.memory.ReadByte(reg.HL);
-            ResetFlag(cpu, a, true);
+            var b = cpu.memory.ReadByte(reg.HL);
+            a -= b;
 
-            if (a < 0) {
-                reg.F |= 0x10;
+            reg.F = a < 0 ? (byte) 0x50 : (byte) 0x40;
+
+            a = (byte) a;
+
+            if (a == 0) {
+                reg.F |= 0x80;
             }
+
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
+            }
+
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
@@ -587,12 +678,19 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void CPn(CPU cpu) {
             var reg = cpu.reg;
             var a = (int) reg.A;
-            a -= cpu.memory.ReadByte(reg.PC);
+            var b =  cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            ResetFlag(cpu, a, true);
+            a -= b;
+            reg.F = a < 0 ? (byte) 0x50 : (byte) 0x40;
 
-            if (a < 0) {
-                reg.F |= 0x10;
+            a = (byte) a;
+
+            if (a == 0) {
+                reg.F |= 0x80;
+            }
+
+            if (((reg.A ^ b ^ a) & 0x10) != 0) {
+                reg.F |= 0x20;
             }
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -601,7 +699,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void ANDr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A &= reg.GetRegister(regI);
-            ResetFlag(cpu, reg.A, false);
+
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -610,7 +709,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void ANDHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A &= cpu.memory.ReadByte(reg.HL);
-            ResetFlag(cpu, reg.A, false);
+            
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -620,7 +720,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.A &= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            ResetFlag(cpu, reg.A, false);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -629,7 +729,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void ORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A |= reg.GetRegister(regI);
-            ResetFlag(cpu, reg.A, false);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -638,7 +738,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void ORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.HL);
-            ResetFlag(cpu, reg.A, false);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -648,7 +748,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            ResetFlag(cpu, reg.A, false);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -657,7 +757,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void XORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A ^= reg.GetRegister(regI);
-            ResetFlag(cpu, reg.A, false);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -666,7 +766,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void XORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.HL);
-            ResetFlag(cpu, reg.A, false);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -676,7 +776,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            ResetFlag(cpu, reg.A, false);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -684,9 +784,10 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void INCr(CPU cpu, string regI) {
             var reg = cpu.reg;
-            var v = reg.GetRegister(regI) + 1; 
-            ResetFlag(cpu, v, false);
-            reg.SetRegister(regI, (byte) (v & 0xFF));
+            var v = (byte) (reg.GetRegister(regI) + 1);
+            reg.SetRegister(regI, v);
+
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -694,9 +795,10 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void INCHLm(CPU cpu) {
             var reg = cpu.reg;
-            var v = cpu.memory.ReadByte(reg.HL) + 1;
-            ResetFlag(cpu, v, false);
-            cpu.memory.WriteByte(reg.HL, (byte) (v & 0xFF));
+            var v = (byte) (cpu.memory.ReadByte(reg.HL) + 1);
+            cpu.memory.WriteByte(reg.HL, v);
+            
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -704,9 +806,10 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void DECr(CPU cpu, string regI) {
             var reg = cpu.reg;
-            var v = reg.GetRegister(regI) - 1; 
-            ResetFlag(cpu, v, true);
-            reg.SetRegister(regI, (byte) (v & 0xFF));
+            var v = (byte) (reg.GetRegister(regI) - 1); 
+            reg.SetRegister(regI, v);
+            
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -714,9 +817,10 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void DECHLm(CPU cpu) {
             var reg = cpu.reg;
-            var v = cpu.memory.ReadByte(reg.HL) - 1;
-            ResetFlag(cpu, v, true);
-            cpu.memory.WriteByte(reg.HL, (byte) (v & 0xFF));
+            var v = (byte)(cpu.memory.ReadByte(reg.HL) - 1);
+            cpu.memory.WriteByte(reg.HL, v);
+            
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -724,11 +828,12 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void INC(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
-            var v = reg.GetRegister(regB) + 1; 
-            reg.SetRegister(regB, (byte) (v & 0xFF));
+            var v = (byte) (reg.GetRegister(regB) + 1); 
+            reg.SetRegister(regB, v);
 
-            if ((v & 0xFF) == 0) {
-                reg.SetRegister(regA, (byte) ((reg.GetRegister(regA) + 1) & 0xFF));
+            if (v == 0) {
+                var z = (byte) (reg.GetRegister(regA) + 1);
+                reg.SetRegister(regA, z);
             }
             
             reg.lastClockM = 1;
@@ -749,12 +854,16 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void DEC(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
-            var v = reg.GetRegister(regB) - 1;
-            reg.SetRegister(regB, (byte)(v & 0xFF));
+            var v = (byte) (reg.GetRegister(regB) - 1);
+            reg.SetRegister(regB, v);
 
-            if (v < 0) {
-                reg.SetRegister(regA, (byte) ((reg.GetRegister(regA) - 1) & 0xFF));
+            if (v == 255) {
+                var z = (byte) (reg.GetRegister(regA) - 1);
+                reg.SetRegister(regA, z);
             }
+            
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
         }
         
         internal static void DECHL(CPU cpu) {
@@ -819,32 +928,31 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void CPL(CPU cpu) {
             var reg = cpu.reg;
-            reg.A = (byte) ((~reg.A) & 0xFF);
-            ResetFlag(cpu, reg.A, true);
+            reg.A = (byte) (0 - reg.A);
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-        internal static void NEG(CPU cpu) {
-            var reg = cpu.reg;
-
-            var v = 0 - reg.A;
-            ResetFlag(cpu, v, true);
-
-            if (v < 0) {
-                reg.F |= 0x10;
-            }
-
-            reg.A = (byte) (v & 0xFF);
-            
-            reg.lastClockM = 2;
-            reg.lastClockT = 8;
-        }
+//        internal static void NEG(CPU cpu) {
+//            var reg = cpu.reg;
+//            var v = 0 - reg.A;
+// 
+//            reg.F = v < 0 ? (byte) 0x10 : (byte) 0x00;
+//            reg.A = (byte) v;
+//
+//            if (reg.A == 0) {
+//                reg.F |= 0x80;
+//            }
+//
+//            reg.lastClockM = 2;
+//            reg.lastClockT = 8;
+//        }
 
         internal static void CCF(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.F & 0x10) != 0x00 ? 0x10 : 0x00;
+            var ci = (reg.F & 0x10) != 0x00 ? 0x00 : 0x0;
 
             reg.F = (byte) ((reg.F & 0xEF) + ci);
             
@@ -889,9 +997,9 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void POP(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
-            reg.SetRegister(regA, cpu.memory.ReadByte(reg.SP));
-            reg.SP++;
             reg.SetRegister(regB, cpu.memory.ReadByte(reg.SP));
+            reg.SP++;
+            reg.SetRegister(regA, cpu.memory.ReadByte(reg.SP));
             reg.SP++;
             
             reg.lastClockM = 3;
@@ -986,7 +1094,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+            reg.PC = (ushort)(reg.PC + v);
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1007,7 +1115,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 return;
             }
             
-            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+            reg.PC = (ushort)(reg.PC + v);
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1028,7 +1136,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 return;
             }
             
-            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+            reg.PC = (ushort)(reg.PC + v);
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1049,7 +1157,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 return;
             }
             
-            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+            reg.PC = (ushort)(reg.PC + v);
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1070,7 +1178,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 return;
             }
             
-            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+            reg.PC = (ushort)(reg.PC + v);
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1093,7 +1201,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 return;
             }
             
-            reg.PC = (ushort)((reg.PC + v) & 0xFFFF);
+            reg.PC = (ushort)(reg.PC + v);
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1204,7 +1312,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void RETNZ(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x80) {
+            if ((reg.F & 0x80) != 0x00) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1249,7 +1357,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void RETZ(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x00) {
+            if ((reg.F & 0x80) != 0x80) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1286,30 +1394,19 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 4;
         }
         #endregion
-        #region Helper Functions
-        internal static void ResetFlag(CPU cpu, int v, bool isUnderflow) {
-            var reg = cpu.reg;
-            reg.F = 0;
-            if (v != 0) {
-                reg.F |= 128;
-            }
-
-            reg.F |= (byte) (isUnderflow ? 0x40 : 0x00);
-        }
-        #endregion
         #region 0xCB Calls
 
         #region Call Implementation
         static void RLr(CPU cpu, string regI) {
             var reg = cpu.reg;
-            var v = (int) reg.GetRegister(regI);
+            var v = reg.GetRegister(regI);
             var ci = (reg.F & 0x10) != 0 ? 0x01 : 0x00;
             var co = (v & 0x80) != 0 ? 0x10 : 0x00;
-            v = (((v << 1) + ci) & 0xFF);
-            reg.SetRegister(regI, (byte) v);
-            ResetFlag(cpu, v, false);
+            v = (byte) ((v << 1) + ci);
+            reg.SetRegister(regI, v);
 
-            reg.F = (byte) (((reg.F & 0xEF) + co) & 0xFF);
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1317,14 +1414,14 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         static void RLHL(CPU cpu) {
             var reg = cpu.reg;
-            var v = (int) cpu.memory.ReadByte(reg.HL);
+            var v = cpu.memory.ReadByte(reg.HL);
             var ci = (reg.F & 0x10) != 0 ? 0x01 : 0x00;
             var co = (v & 0x80) != 0 ? 0x10 : 0x00;
-            v = (((v << 1) + ci) & 0xFF);
-            cpu.memory.WriteByte(reg.HL, (byte) v);
-            ResetFlag(cpu, v, false);
+            v = (byte) ((v << 1) + ci);
+            cpu.memory.WriteByte(reg.HL, v);
 
-            reg.F = (byte) (((reg.F & 0xEF) + co) & 0xFF);
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1332,14 +1429,14 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         static void RLCr(CPU cpu, string regI) {
             var reg = cpu.reg;
-            var v = (int) reg.GetRegister(regI);
+            var v = reg.GetRegister(regI);
             var ci = (v & 0x80) != 0 ? 0x01 : 0x00;
             var co = (v & 0x80) != 0 ? 0x80 : 0x00;
 
-            v = (v << 1) + ci;
-            reg.SetRegister(regI, (byte)(v & 0xFF));
-            ResetFlag(cpu, v & 0xFF, false);
+            v = (byte) ((v << 1) + ci);
+            reg.SetRegister(regI, v);
 
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 2;
@@ -1348,14 +1445,14 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         static void RLCHL(CPU cpu) {
             var reg = cpu.reg;
-            var v = (int) cpu.memory.ReadByte(reg.HL);
+            var v = cpu.memory.ReadByte(reg.HL);
             var ci = (v & 0x80) != 0 ? 0x01 : 0x00;
             var co = (v & 0x80) != 0 ? 0x80 : 0x00;
 
-            v = (v << 1) + ci;
-            cpu.memory.WriteByte(reg.HL, (byte) (v & 0xFF));
-            ResetFlag(cpu, v & 0xFF, false);
+            v = (byte) ((v << 1) + ci);
+            cpu.memory.WriteByte(reg.HL, v);
 
+            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 4;
@@ -1368,11 +1465,10 @@ namespace GameBoyEmulator.Desktop.GBC {
             var ci = (reg.F & 0x10) != 0x00 ? 0x80 : 0x00;
             var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
 
-            b = (byte) (((b >> 1) + ci) & 0xFF);
-            ResetFlag(cpu, b, false);
-
+            b = (byte) ((b >> 1) + ci);
             reg.SetRegister(regI, b);
 
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1385,11 +1481,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             var ci = (reg.F & 0x10) != 0x00 ? 0x80 : 0x00;
             var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
 
-            b = (byte) (((b >> 1) + ci) & 0xFF);
-            ResetFlag(cpu, b, false);
+            b = (byte) ((b >> 1) + ci);
 
             cpu.memory.WriteByte(reg.HL, b);
 
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -1402,10 +1498,10 @@ namespace GameBoyEmulator.Desktop.GBC {
             var ci = (b & 0x01) != 0 ? 0x80 : 0x00;
             var co = (b & 0x01) != 0 ? 0x10 : 0x00;
             
-            b = (byte) (((b >> 1) + ci) & 0xFF);
-            ResetFlag(cpu, b, false);
+            b = (byte) ((b >> 1) + ci);
             reg.SetRegister(regI, b);
 
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1417,10 +1513,10 @@ namespace GameBoyEmulator.Desktop.GBC {
             var ci = (b & 0x01) != 0 ? 0x80 : 0x00;
             var co = (b & 0x01) != 0 ? 0x10 : 0x00;
             
-            b = (byte) (((b >> 1) + ci) & 0xFF);
-            ResetFlag(cpu, b, false);
+            b = (byte) ((b >> 1) + ci);
             cpu.memory.WriteByte(reg.HL, b);
 
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             reg.lastClockM = 4;
             reg.lastClockT = 16;
@@ -1430,11 +1526,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
             var co = (b & 0x80) != 0x00 ? 0x10 : 0x00;
-            b = (byte) ((b << 1) & 0xFF);
-            ResetFlag(cpu, b, false);
+            b = (byte) (b << 1);
             
             reg.SetRegister(regI, b);
 
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1445,11 +1541,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
             var co = (b & 0x80) != 0x00 ? 0x10 : 0x00;
-            b = (byte) ((b << 1) & 0xFF);
-            ResetFlag(cpu, b, false);
+            b = (byte) (b << 1);
 
             cpu.memory.WriteByte(reg.HL, b);
             
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -1459,13 +1555,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SRAr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            var co = (b & 0x80) != 0x00 ? 0x80 : 0x00;
-            var ci = (b & 0x01) != 0x00 ? 0x10 : 0x00;
-            b = (byte) (((b >> 1) + ci) & 0xFF);
-            ResetFlag(cpu, b, false);
+            var ci = (b & 0x80) != 0x00 ? 0x01 : 0x00;
+            var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
+            b = (byte) ((b >> 1) + ci);
             
             reg.SetRegister(regI, b);
 
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1475,13 +1571,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SRAHL(CPU cpu) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
-            var co = (b & 0x80) != 0x00 ? 0x80 : 0x00;
-            var ci = (b & 0x01) != 0x00 ? 0x10 : 0x00;
-            b = (byte) (((b >> 1) + ci) & 0xFF);
-            ResetFlag(cpu, b, false);
+            var ci = (b & 0x80) != 0x00 ? 0x01 : 0x00;
+            var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
+            b = (byte) ((b >> 1) + ci);
 
             cpu.memory.WriteByte(reg.HL, b);
             
+            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -1493,6 +1589,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             var b = reg.GetRegister(regI);
             var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
             reg.SetRegister(regI, (byte) swapped);
+
+            reg.F = (byte) (swapped != 0 ? 0 : 0x80);
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -1504,6 +1602,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
             cpu.memory.WriteByte(reg.HL, (byte) swapped);
             
+            reg.F = (byte) (swapped != 0 ? 0 : 0x80);
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
@@ -1512,9 +1611,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
             var co = (b & 0x01) != 0 ? 0x10 : 0x00;
-            b = (byte) ((b >> 1) & 0xFF);
+            b = (byte) (b >> 1);
             reg.SetRegister(regI, b);
-            ResetFlag(cpu, b, false);
+            
+            
+            reg.F = (byte) (b != 0 ? 0 : 0x80);
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1525,9 +1626,10 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
             var co = (b & 0x01) != 0 ? 0x10 : 0x00;
-            b = (byte) ((b >> 1) & 0xFF);
+            b = (byte) (b >> 1);
             cpu.memory.WriteByte(reg.HL, b);
-            ResetFlag(cpu, b, false);
+            
+            reg.F = (byte) (b != 0 ? 0 : 0x80);
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -1536,7 +1638,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         static void BIT(CPU cpu, int n, string regI) {
             var reg = cpu.reg;
-            ResetFlag(cpu, reg.GetRegister(regI) & (1 << n), false);
+            reg.F = (reg.GetRegister(regI) & (1 << n)) != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 2;
             reg.lastClockT = 4;
@@ -1544,7 +1646,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         static void BITm(CPU cpu, int n) {
             var reg = cpu.reg;
-            ResetFlag(cpu, cpu.memory.ReadByte(reg.HL) & n, false);
+            reg.F = (cpu.memory.ReadByte(reg.HL) & (1 << n)) != 0 ? (byte) 0x00 : (byte) 0x80;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
