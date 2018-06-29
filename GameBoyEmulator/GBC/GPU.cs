@@ -19,13 +19,27 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal byte[] oam;
 
-        private Color[] Pallete = {
+        private Color[] BgPallete = {
+            Color.Black,
+            Color.DarkGray,
+            Color.Gray,
+            Color.White,
+        };
+        
+        private Color[] Obj0Pallete = {
             Color.Black,
             Color.DarkGray,
             Color.Gray,
             Color.White,
         };
 
+        private Color[] Obj1Pallete = {
+            Color.Black,
+            Color.DarkGray,
+            Color.Gray,
+            Color.White,
+        };
+        
         internal byte[] registers;
 
         public Color[] TileBuffer;
@@ -45,7 +59,12 @@ namespace GameBoyEmulator.Desktop.GBC {
             Console.WriteLine($"GPU 0x{addr:X4} Read");
             switch (addr) {
                 case 0xFF40:
-                    return (byte) ((switchBg ? 0x01 : 0x00) | (bgMap ? 0x08 : 0x00) | (bgTile > 0 ? 0x10 : 0x00) | (switchLCD ? 0x80 : 0x00));
+                    return (byte) (
+                        (switchBg ? 0x01 : 0x00) | 
+                        (bgMap ? 0x08 : 0x00) | 
+                        (bgTile > 0 ? 0x10 : 0x00) | 
+                        (switchLCD ? 0x80 : 0x00)
+                        );
                 case 0xFF42:
                     return (byte) scrollY;
                 case 0xFF43:
@@ -61,6 +80,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         public void WriteByte(int addr, byte val) {
             Console.WriteLine($"GPU 0x{addr:X4} Write 0x{val:X2}");
+            registers[addr - 0xFF40] = val;
             switch (addr) {
                 case 0xFF40:
                     switchBg = (val & 0x01) > 0;
@@ -74,24 +94,53 @@ namespace GameBoyEmulator.Desktop.GBC {
                 case 0xFF43:
                     scrollX = val;
                     break;
-                case 0xFF44:
-                    Console.WriteLine("Writting Pallete");
+                case 0xFF47:
+                    Console.WriteLine("Writting BG Pallete");
                     for (var i = 0; i < 4; i++) {
                         var b = (val >> (i * 2)) & 3;
                         switch (b) {
-                            case 0: Pallete[i] = Color.FromNonPremultiplied(255, 255, 255, 255);
+                            case 0: BgPallete[i] = Color.FromNonPremultiplied(255, 255, 255, 255);
                                 break;
-                            case 1: Pallete[i] = Color.FromNonPremultiplied(192, 192, 192, 255);
+                            case 1: BgPallete[i] = Color.FromNonPremultiplied(192, 192, 192, 255);
                                 break;
-                            case 2: Pallete[i] = Color.FromNonPremultiplied(96, 96, 96, 255);
+                            case 2: BgPallete[i] = Color.FromNonPremultiplied(96, 96, 96, 255);
                                 break;
-                            case 3: Pallete[i] = Color.FromNonPremultiplied(0, 0, 0, 0);
+                            case 3: BgPallete[i] = Color.FromNonPremultiplied(0, 0, 0, 255);
                                 break;
                         }
                     }
                     break;
-                default:
-                    registers[addr - 0xFF40] = val;
+                case 0xFF48:
+                    Console.WriteLine("Writting Obj0 Pallete");
+                    for (var i = 0; i < 4; i++) {
+                        var b = (val >> (i * 2)) & 3;
+                        switch (b) {
+                            case 0: Obj0Pallete[i] = Color.FromNonPremultiplied(255, 255, 255, 255);
+                                break;
+                            case 1: Obj0Pallete[i] = Color.FromNonPremultiplied(192, 192, 192, 255);
+                                break;
+                            case 2: Obj0Pallete[i] = Color.FromNonPremultiplied(96, 96, 96, 255);
+                                break;
+                            case 3: Obj0Pallete[i] = Color.FromNonPremultiplied(0, 0, 0, 255);
+                                break;
+                        }
+                    }
+                    break;
+                case 0xFF49:
+                    Console.WriteLine("Writting Obj1 Pallete");
+                    for (var i = 0; i < 4; i++) {
+                        var b = (val >> (i * 2)) & 3;
+                        switch (b) {
+                            case 0: Obj1Pallete[i] = Color.FromNonPremultiplied(255, 255, 255, 255);
+                                break;
+                            case 1: Obj1Pallete[i] = Color.FromNonPremultiplied(192, 192, 192, 255);
+                                break;
+                            case 2: Obj1Pallete[i] = Color.FromNonPremultiplied(96, 96, 96, 255);
+                                break;
+                            case 3: Obj1Pallete[i] = Color.FromNonPremultiplied(0, 0, 0, 255);
+                                break;
+                        }
+                    }
                     break;
             }
         }
@@ -112,32 +161,40 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         public void RenderScanline() {
-            var mapOffset = bgMap ? 0x1C00 : 0x1800;
-            mapOffset += ((line + scrollY) & 0xFF) >> 3;
+            if (switchLCD) {
+                if (switchBg) {
+                    var mapOffset = bgMap ? 0x1C00 : 0x1800;
+                    mapOffset += (((line + scrollY) & 0xFF) >> 3) << 5;
 
-            var lineOffset = scrollX >> 3;
-            var y = (line + scrollY) & 0x07;
-            var x = scrollX & 0x07;
+                    var lineOffset = (scrollX >> 3) & 31;
+                    var y = (line + scrollY) & 0x07;
+                    var x = scrollX & 0x07;
 
-            var bufferOffset = line * 160;
-            var tile = (int) cpu.memory.ReadByte(VRAM_OFFSET + mapOffset + lineOffset);
+                    var bufferOffset = line * 160;
+                    var tile = (int) cpu.memory.ReadByte(VRAM_OFFSET + mapOffset + lineOffset);
 
-            if (bgTile == 1 && tile < 128) {
-                tile += 256;
-            }
+                    if (bgTile == 1 && tile < 128) {
+                        tile += 256;
+                    }
 
-            for (var i = 0; i < 160; i++) {
-                var color = Pallete[tileSet[tile].TileData[y][x]];
-                cpu.memory.videoBuffer[bufferOffset] = color;
-                bufferOffset++;
-                x++;
-                if (x != 8) continue;
-                
-                x = 0;
-                lineOffset = (lineOffset + 1) & 31;
-                tile = (int) cpu.memory.ReadByte(VRAM_OFFSET + mapOffset + lineOffset);
-                if (bgTile == 1 && tile < 128) {
-                    tile += 256;
+                    var tileRow = tileSet[tile].TileData[y];
+
+                    for (var i = 0; i < 160; i++) {
+                        var color = BgPallete[tileRow[x]];
+                        cpu.memory.videoBuffer[bufferOffset] = color;
+                        bufferOffset++;
+                        x++;
+                        if (x != 8) continue;
+
+                        x = 0;
+                        lineOffset = (lineOffset + 1) & 31;
+                        tile = cpu.memory.ReadByte(VRAM_OFFSET + mapOffset + lineOffset);
+                        if (bgTile == 1 && tile < 128) {
+                            tile += 256;
+                        }
+
+                        tileRow = tileSet[tile].TileData[y];
+                    }
                 }
             }
         }
@@ -149,11 +206,15 @@ namespace GameBoyEmulator.Desktop.GBC {
         private void RefreshTileData() {
             var i = 0;
             foreach (var tileData in tileSet) {
-                // 128 x 96 Buffer
+                // 128 x 256 Buffer
+                // 16 x 32 tiles
                 for (var y = 0; y < 8; y++) {
                     for (var x = 0; x < 8; x++) {
-                        var p = y * 128 + x + i * 8;
-                        TileBuffer[i] = Pallete[tileData.TileData[y][x]];
+                        var px = (i % 16) * 8 + x;
+                        var py = (i / 16) * 8 + y;
+                        var p = py * 128 + px;
+                        
+                        TileBuffer[p] = BgPallete[tileData.TileData[y][x]];
                     }
                 }
                 i++;
@@ -161,7 +222,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         public void UpdateTile(int addr) {
-            var relAddr = addr - VRAM_OFFSET;
+            var relAddr = addr & 0x1FFF;
             if ((addr & 1) > 0) {
                 addr--;
                 relAddr--;
@@ -180,24 +241,22 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         public void Cycle() {
             modeClocks += cpu.clockM;
-            //modeClocks++;
             
             switch (mode) {
                 case GPUModes.HBLANK:
-                    if (modeClocks >= 204) {
+                    if (modeClocks >= 51) {
                         modeClocks = 0;
                         line++;
 
                         if (line == 143) {
                             mode = GPUModes.VBLANK;
-                            PutImage();
                         } else {
                             mode = GPUModes.OAM_READ;
                         }
                     }
                     break;
                 case GPUModes.VBLANK:
-                    if (modeClocks >= 456) {
+                    if (modeClocks >= 114) {
                         modeClocks = 0;
                         line++;
                         if (line > 153) {
@@ -208,13 +267,13 @@ namespace GameBoyEmulator.Desktop.GBC {
 
                     break;
                 case GPUModes.OAM_READ:
-                    if (modeClocks >= 80) {
+                    if (modeClocks >= 20) {
                         modeClocks = 0;
                         mode = GPUModes.VRAM_READ;
                     }
                     break;
                 case GPUModes.VRAM_READ:
-                    if (modeClocks >= 172) {
+                    if (modeClocks >= 43) {
                         modeClocks = 0;
                         mode = GPUModes.HBLANK;
                         

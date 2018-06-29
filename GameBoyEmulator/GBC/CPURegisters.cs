@@ -85,7 +85,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             F = 0;
             PC = 0;
             SP = 0;
-            InterruptEnable = 0;
+            InterruptEnable = 1;
             lastClockM = 0;
             lastClockT = 0;
             Console.WriteLine("Resetting Registers");

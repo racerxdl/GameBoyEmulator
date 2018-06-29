@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class CPU {
-        private const int CPU_CLOCK = 8400000;
+        private const int CPU_CLOCK = 4194304;
         private const float CPU_PERIOD_MS = 1000f / CPU_CLOCK;
 
         private DateTime LastUpdate;
