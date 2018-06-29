@@ -166,6 +166,16 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
+        internal static void LDmmSP(CPU cpu) {
+            var reg = cpu.reg;
+            var addr = cpu.memory.ReadWord(reg.PC);
+            reg.PC += 2;
+            cpu.memory.WriteWord(addr, reg.SP);
+
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
+        }
+
         /// <summary>
         /// Reads an address from PC position and writes addr to L and addr + 1 to H
         /// </summary>
@@ -299,6 +309,14 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
+        }
+
+        internal static void LDHLSPr(CPU cpu) {
+            var reg = cpu.reg;
+            reg.SP = reg.HL;
+
+            reg.lastClockM = 2;
+            reg.lastClockT = 4;
         }
         #endregion
         #region Data Processing
@@ -694,6 +712,24 @@ namespace GameBoyEmulator.Desktop.GBC {
             }
             reg.lastClockM = 2;
             reg.lastClockT = 8;
+        }
+
+        internal static void DAA(CPU cpu) {
+            var reg = cpu.reg;
+            var a = reg.A;
+            if (((reg.F & 0x10) != 0) || ((reg.A & 15) > 9)) {
+                reg.A += 6;
+            }
+
+            reg.F &= 0xEF;
+
+            if (((reg.F & 0x20) != 0) || (a > 0x99)) {
+                reg.A += 0x60;
+                reg.F |= 0x10;
+            }
+
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
         }
 
         internal static void ANDr(CPU cpu, string regI) {
@@ -1383,6 +1419,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
         internal static void NOP(CPU cpu) {
             var reg = cpu.reg;
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
+        }
+        
+        internal static void NOPWARN(CPU cpu, int opcode) {
+            var reg = cpu.reg;
+            Console.WriteLine($"Unimplemented Opcode!!! 0x{opcode:X2}");
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
