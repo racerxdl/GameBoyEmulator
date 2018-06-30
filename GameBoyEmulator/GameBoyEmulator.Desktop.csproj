@@ -32,6 +32,7 @@
     <Compile Include="GBC\CPURegisters.cs" />
     <Compile Include="GBC\GPU.cs" />
     <Compile Include="GBC\GPUModes.cs" />
+    <Compile Include="GBC\GPUObject.cs" />
     <Compile Include="GBC\GPUTile.cs" />
     <Compile Include="GBC\Memory.cs" />
     <Compile Include="KeyboardManager.cs" />

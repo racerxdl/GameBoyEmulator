@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class CPURegisters {
         public byte A, B, C, D, E, H, L, F;
         private byte _A, _B, _C, _D, _E, _H, _L, _F;
 
-        public byte InterruptEnable;
+        public bool InterruptEnable;
+        public byte EnabledInterrupts;
+        public byte TriggerInterrupts;
         public int CycleCount;
         public ushort HL => (ushort) ((H << 8) + L);
         public ushort PC, SP;
@@ -32,7 +35,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             L = _L;
             F = _F;
         }
-        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte GetRegister(string reg) {
             switch (reg.ToUpper()) {
                 case "A": return A;
@@ -48,7 +51,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                     return 0x00;
             }
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetRegister(string reg, byte val) {
             switch (reg.ToUpper()) {
                 case "A": A = val;
@@ -85,9 +88,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             F = 0;
             PC = 0;
             SP = 0;
-            InterruptEnable = 1;
+            InterruptEnable = true;
+            TriggerInterrupts = 0;
             lastClockM = 0;
             lastClockT = 0;
+            EnabledInterrupts = 0;
             Console.WriteLine("Resetting Registers");
         }
     }

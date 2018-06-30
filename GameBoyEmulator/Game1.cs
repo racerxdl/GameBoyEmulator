@@ -16,14 +16,14 @@ namespace GameBoyEmulator.Desktop {
         private CPU cpu;
         private Texture2D videoTexture;
         private Texture2D tileBuffer;
+        private Texture2D vramBuffer;
         private SpriteFont debuggerFont;
         private string Registers = "PC: 0\nA: 0x00 B: 0x00\nC: 0x00 D: 0x00\nE: 0x00 F: 0x00\nH: 0x00 L: 0x00";
         private KeyboardManager keyboardManager;
-        private Timer cpuTimer;
         
         public Game1() {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferHeight = 900;
             graphics.PreferredBackBufferWidth = 1280;
             Content.RootDirectory = "Content";
             cpu = new CPU();
@@ -50,7 +50,8 @@ namespace GameBoyEmulator.Desktop {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             videoTexture = new Texture2D(GraphicsDevice, 160, 144, false, SurfaceFormat.Color);
-            tileBuffer = new Texture2D(GraphicsDevice, 128, 256, false, SurfaceFormat.Color);
+            tileBuffer = new Texture2D(GraphicsDevice, 144, 288, false, SurfaceFormat.Color);
+            vramBuffer = new Texture2D(GraphicsDevice, 256, 256, false, SurfaceFormat.Color);
             tileBuffer.SetData(cpu.gpu.TileBuffer);
             debuggerFont = Content.Load<SpriteFont>("Debugger");
             var f = File.ReadAllBytes("opus5.gb");
@@ -70,7 +71,8 @@ namespace GameBoyEmulator.Desktop {
 
         private void OnPause() {
             Console.WriteLine("On Pause");
-            tileBuffer.SetData(cpu.gpu.TileBuffer);
+            // cpu.gpu.UpdateVRAM();
+            // tileBuffer.SetData(cpu.gpu.TileBuffer);
         }
 
         private void OnKeyPress(object sender, KeyPressEvent keyEvent) {
@@ -105,13 +107,35 @@ namespace GameBoyEmulator.Desktop {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime) {
             keyboardManager.Update();
-            
+            tileBuffer.SetData(cpu.gpu.TileBuffer);
             videoTexture.SetData(cpu.memory.GetVideoBuffer());
+            cpu.gpu.UpdateVRAM();
+            vramBuffer.SetData(cpu.gpu.VRamBuffer);
             var reg = cpu.reg;
-            Registers = $"PC: {reg.PC}\nSP: 0x{reg.SP:X4}\nClock: {cpu.clockM}\nA: 0x{reg.A:X2} B: 0x{reg.B:X2}\nC: 0x{reg.C:X2} D: 0x{reg.D:X2}\nE: 0x{reg.E:X2} F: 0x{reg.F:X2}\nH: 0x{reg.H:X2} L: 0x{reg.L:X2}";
+            Registers = $"PC: {reg.PC}\n" +
+                        $"SP: 0x{reg.SP:X4}\n" +
+                        $"Cycles: {cpu.reg.CycleCount}\n" +
+                        $"A: 0x{reg.A:X2} B: 0x{reg.B:X2}\n" +
+                        $"C: 0x{reg.C:X2} D: 0x{reg.D:X2}\n" +
+                        $"E: 0x{reg.E:X2}\n" +
+                        $"H: 0x{reg.H:X2} L: 0x{reg.L:X2}\n" +
+                        $"F: 0b{Convert.ToString(reg.F, 2).PadLeft(8, '0')}\n" +
+                        $"In BIOS: {cpu.memory.inBIOS}\n" +
+                        $"Interrupts Enabled: {reg.InterruptEnable}\n" +
+                        $"Enabled Interrupts: 0b{Convert.ToString(reg.EnabledInterrupts, 2).PadLeft(8, '0')}\n" +
+                        $"Trigger Interrupts: 0b{Convert.ToString(reg.TriggerInterrupts, 2).PadLeft(8, '0')}\n" +
+                        $"Last Cycle Time: {cpu.lastCycleTimeMs:F3} ms\n" +
+                        $"Last Cycle Frequency: {(1000.0 / cpu.lastCycleTimeMs):F0} Hz\n" +
+                        "\nGPU:\n" +
+                        $"SCX: {cpu.gpu.scrollX:D4} SCY: {cpu.gpu.scrollY:D4}\n" +
+                        $"BG On: {cpu.gpu.switchBg}\n" +
+                        $"Screen On: {cpu.gpu.switchLCD}\n" +
+                        $"Obj On: {cpu.gpu.switchObj}\n" +
+                        $"Obj Big: {cpu.gpu.objSize}\n" +
+                        $"BG Tile Base: {cpu.gpu.bgTileBase:X4}\n" +
+                        $"BG Map Base: {cpu.gpu.bgMapBase:X4}\n" +
+                        $"BG Win Map Base: {cpu.gpu.winMapBase:X4}\n";
             
-            // TODO: Add your update logic here
-
             base.Update(gameTime);
         }
 
@@ -124,16 +148,21 @@ namespace GameBoyEmulator.Desktop {
 
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
             // spriteBatch.Draw(videoTexture, new Vector2(100, 100), null, Color.White);
-            spriteBatch.Draw(videoTexture, new Rectangle(20, 20, videoTexture.Width * 2, videoTexture.Height * 2),
-                Color.White);
-            spriteBatch.DrawString(debuggerFont, Registers, new Vector2(videoTexture.Width * 2 + 50, 20), Color.Black);
+            spriteBatch.DrawString(debuggerFont, "LCD", new Vector2(10, 10), Color.Black);
+            spriteBatch.Draw(videoTexture, new Rectangle(10, 40, videoTexture.Width * 2, videoTexture.Height * 2), Color.White);
             
-            spriteBatch.Draw(tileBuffer, new Rectangle(600, 20, tileBuffer.Width * 2, tileBuffer.Height * 2),
-                Color.White);
+            spriteBatch.DrawString(debuggerFont, "Registers", new Vector2(videoTexture.Width * 2 + 50, 10), Color.Black);
+            spriteBatch.DrawString(debuggerFont, Registers, new Vector2(videoTexture.Width * 2 + 50, 30), Color.Black);
+            
+            spriteBatch.DrawString(debuggerFont, "Tile Memory", new Vector2(750, 10), Color.Black);
+            spriteBatch.Draw(tileBuffer, new Rectangle(750, 30, tileBuffer.Width * 2, tileBuffer.Height * 2), Color.White);
+
+            spriteBatch.DrawString(debuggerFont, "GPU VRAM", new Vector2(10, 400), Color.Black);
+            spriteBatch.Draw(vramBuffer, new Rectangle(10, 420, vramBuffer.Width, vramBuffer.Height), Color.White);
+            
             spriteBatch.End();
             
-            // TODO: Add your drawing code here
-
+           
             base.Draw(gameTime);
         }
     }

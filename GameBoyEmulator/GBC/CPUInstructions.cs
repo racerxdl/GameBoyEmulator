@@ -97,6 +97,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
             var addr = cpu.memory.ReadWord(reg.PC);
+            reg.PC += 2;
             cpu.memory.WriteByte(addr, b);
             reg.lastClockM += 4;
             reg.lastClockT += 16;
@@ -143,12 +144,15 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regO2"></param>
         internal static void LD__nn(CPU cpu, string regO1, string regO2) {
             var reg = cpu.reg;
-            var b0 = cpu.memory.ReadByte(reg.PC);
+            
+            var b = cpu.memory.ReadByte(reg.PC);
+            reg.SetRegister(regO2, b);
             reg.PC++;
-            var b1 = cpu.memory.ReadByte(reg.PC);
+            
+            b = cpu.memory.ReadByte(reg.PC);
+            reg.SetRegister(regO1, b);
             reg.PC++;
-            reg.SetRegister(regO1, b1);
-            reg.SetRegister(regO2, b0);
+            
             reg.lastClockM = 3;
             reg.lastClockT = 12;
         }
@@ -176,19 +180,19 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 20;
         }
 
-        /// <summary>
-        /// Reads an address from PC position and writes addr to L and addr + 1 to H
-        /// </summary>
-        /// <param name="cpu"></param>
-        internal static void LDHLmm(CPU cpu) {
-            var reg = cpu.reg;
-            var u = cpu.memory.ReadWord(reg.PC);
-            reg.PC += 2;
-            reg.L = cpu.memory.ReadByte(u);
-            reg.H = cpu.memory.ReadByte(u + 1);
-            reg.lastClockM = 5;
-            reg.lastClockT = 20;
-        }
+//        /// <summary>
+//        /// Reads an address from PC position and writes addr to L and addr + 1 to H
+//        /// </summary>
+//        /// <param name="cpu"></param>
+//        internal static void LDHLmm(CPU cpu) {
+//            var reg = cpu.reg;
+//            var u = cpu.memory.ReadWord(reg.PC);
+//            reg.PC += 2;
+//            reg.L = cpu.memory.ReadByte(u);
+//            reg.H = cpu.memory.ReadByte(u + 1);
+//            reg.lastClockM = 5;
+//            reg.lastClockT = 20;
+//        }
 
 //        /// <summary>
 //        /// Reads an address from PC position and writes word from H/L
@@ -239,6 +243,9 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void LDHLDA(CPU cpu) {
             var reg = cpu.reg;
             cpu.memory.WriteByte(reg.HL, reg.A);
+            
+            reg.L--;
+
             if (reg.L == 255) {
                 reg.H--;
             }
@@ -304,8 +311,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             }
 
             v += reg.SP;
-            reg.H = (byte) ((v >> 8) & 0xFF);
-            reg.L = (byte) (v & 0xFF);
+            reg.H = (byte) (v >> 8);
+            reg.L = (byte) v;
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1006,6 +1013,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         #endregion
         #region Interrupt Calls
         internal static void RSTXX(CPU cpu, ushort addr) {
+            // Console.WriteLine($"Calling Interrupt 0x{addr:X4}");
             var reg = cpu.reg;
             reg.SaveRegs();
             reg.SP -= 2;
@@ -1339,7 +1347,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.LoadRegs();
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.InterruptEnable = 1;
+            reg.InterruptEnable = true;
 
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -1407,13 +1415,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         internal static void DI(CPU cpu) {
             var reg = cpu.reg;
-            reg.InterruptEnable = 0;
+            reg.InterruptEnable = false;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         internal static void EI(CPU cpu) {
             var reg = cpu.reg;
-            reg.InterruptEnable = 1;
+            reg.InterruptEnable = true;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
@@ -1431,6 +1439,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         internal static void HALT(CPU cpu) {
+            Console.WriteLine("HALT");
             var reg = cpu.reg;
             cpu._halt = true;
             reg.lastClockM = 1;

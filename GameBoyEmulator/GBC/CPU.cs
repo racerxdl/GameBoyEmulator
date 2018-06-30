@@ -23,6 +23,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal Thread cpuThread;
 
         internal Mutex mtx;
+        internal double lastCycleTimeMs;
         
         public delegate void PauseEvent();
 
@@ -40,6 +41,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             running = false;
             paused = true;
             step = false;
+            lastCycleTimeMs = 0;
         }
 
         public void Start() {
@@ -96,6 +98,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 if (!_halt && !paused) {
                     var delta = DateTime.Now - LastUpdate;
                     if (!(delta.TotalMilliseconds > CPU_PERIOD_MS)) continue;
+                    lastCycleTimeMs = delta.TotalMilliseconds;
                     Cycle();
                     LastUpdate = DateTime.Now;
                     
@@ -113,6 +116,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         public void Cycle() {
             mtx.WaitOne();
+            // Normal Cycle
             reg.CycleCount++;
             var pc = reg.PC;
             reg.PC++;
@@ -121,6 +125,41 @@ namespace GameBoyEmulator.Desktop.GBC {
             clockM += reg.lastClockM;
             clockT += reg.lastClockT;
             
+            // Check Interrupts
+            if (reg.InterruptEnable && reg.EnabledInterrupts != 0) {
+                _halt = false;
+                reg.InterruptEnable = false;
+                var interruptsFired = reg.EnabledInterrupts & reg.TriggerInterrupts;
+                if ((interruptsFired & 0x01) > 0) {
+                    reg.TriggerInterrupts &= 0xFE;
+                    CPUInstructions.RSTXX(this, 0x40);
+                    clockM += reg.lastClockM;
+                    clockT += reg.lastClockT;
+                } else if ((interruptsFired & 0x02) > 0) {
+                    reg.TriggerInterrupts &= 0xFD;
+                    CPUInstructions.RSTXX(this, 0x48);
+                    clockM += reg.lastClockM;
+                    clockT += reg.lastClockT;
+                } else if ((interruptsFired & 0x04) > 0) {
+                    reg.TriggerInterrupts &= 0xFB;
+                    CPUInstructions.RSTXX(this, 0x50);
+                    clockM += reg.lastClockM;
+                    clockT += reg.lastClockT;
+                } else if ((interruptsFired & 0x08) > 0) {
+                    reg.TriggerInterrupts &= 0xF7;
+                    CPUInstructions.RSTXX(this, 0x58);
+                    clockM += reg.lastClockM;
+                    clockT += reg.lastClockT;
+                } else if ((interruptsFired & 0x10) > 0) {
+                    reg.TriggerInterrupts &= 0xEF;
+                    CPUInstructions.RSTXX(this, 0x60);
+                    clockM += reg.lastClockM;
+                    clockT += reg.lastClockT;
+                } else {
+                    reg.InterruptEnable = true;
+                }
+            }
+            // GPU
             gpu.Cycle();
             mtx.ReleaseMutex();
         }

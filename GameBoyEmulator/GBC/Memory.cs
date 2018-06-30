@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 
 namespace GameBoyEmulator.Desktop.GBC {
@@ -23,17 +24,15 @@ namespace GameBoyEmulator.Desktop.GBC {
         };
         
         private readonly byte[] _videoRam = new byte[0x2000];
-        private readonly byte[] _workRam0 = new byte[0x2000];
-        private readonly byte[] _workRam1 = new byte[0x2000];
+        private readonly byte[] _workRam = new byte[0x2000];
         private readonly byte[] _highRam = new byte[0x7F];
-        private byte _interruptEnable;
         private byte[] _romData = new byte[0x8000];
         private byte[] _catridgeRam = new byte[0x2000];
         private byte _currentBank;
 
         internal Color[] videoBuffer;
 
-        private bool inBIOS;
+        internal bool inBIOS;
 
         private CPU cpu;
 
@@ -54,7 +53,6 @@ namespace GameBoyEmulator.Desktop.GBC {
         public void Reset() {
             _currentBank = 0;
             // _currentRamBank = 0;
-            _interruptEnable = 0;
 
             for (var i = 0; i < 0x7FFF; i++) {
                 _romData[i] = 0x00;
@@ -63,8 +61,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             for (var i = 0; i < 0x2000; i++) {
                 _videoRam[i] = 0x00;
                 _catridgeRam[i] = 0x00;
-                _workRam0[i] = 0x00;
-                _workRam1[i] = 0x00;
+                _workRam[i] = 0x00;
             }
             
             for (var i = 0; i < 0x7F; i++) {
@@ -75,28 +72,35 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         public void WriteByte(int addr, byte val) {
+            // Console.WriteLine($"Writting 0x{addr:X4} val 0x{val:X2}");
             if (addr <= 0x3FFF) {                          // Catridge ROM
                 // _romData[addr] = val;
             } else if (addr >= 0x4000 && addr <= 0x7FFF) { // Catridge Bank N
-                // _romData[addr - 0x4000 + 0x4000 * _currentBank] = val;
+                // _romData[addr + 0x4000 * _currentBank] = val;
             } else if (addr >= 0x8000 && addr <= 0x9FFF) { // Video RAM
                 _videoRam[addr - 0x8000] = val;
-                cpu.gpu.UpdateTile(addr);
+                cpu.gpu.UpdateTile(addr, val);
             } else if (addr >= 0xA000 && addr <= 0xBFFF) { // Catridge RAM
                 _catridgeRam[addr - 0xA000] = val;
-            } else if (addr >= 0xC000 && addr <= 0xCFFF) { // Work RAM Bank 0
-                _workRam0[addr - 0xC000] = val;
-            } else if (addr >= 0xD000 && addr <= 0xDFFF) { // Work RAM Bank 1
-                _workRam1[addr - 0xD000] = val;
-            } else if (addr >= 0xE000 && addr <= 0xFDFF) { // Mirror from 0xC000
-                _workRam0[addr - 0xE000] = val;
+            } else if (addr >= 0xC000 && addr <= 0xEFFF) { // Work RAM
+                _workRam[addr & 0x1FFF] = val;
             } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
+                cpu.gpu.UpdateOAM(addr, val);
                 cpu.gpu.oam[addr - 0xFE00] = val;
             } else if (addr >= 0xFEA0 && addr <= 0xFEFF) { // Not usable, ... yet ...
                 //
             } else if (addr >= 0xFF00 && addr <= 0xFF7F) { // I/O Ports
                 var baseAddr = addr - 0xFF00;
                 switch (baseAddr & 0x00F0) {
+                    case 0x00:
+                        if ((addr & 0xF) == 15) {
+                            cpu.reg.TriggerInterrupts = val;
+                        }
+                        break;
+                    case 0x10:
+                    case 0x20:
+                    case 0x30:
+                        break;
                     case 0x40:
                     case 0x50:
                     case 0x60:
@@ -106,36 +110,33 @@ namespace GameBoyEmulator.Desktop.GBC {
                 }
             } else if (addr >= 0xFF80 && addr <= 0xFFFE) { // High RAM
                 _highRam[addr - 0xFF80] = val;
-            } else if (addr == 0xFFFF) {                   // Interrupt Enable Register  
-                _interruptEnable = val;
+            } else if (addr == 0xFFFF) {                   // Interrupt Enable Register  p
+                cpu.reg.EnabledInterrupts = val;
             }
         }
 
         public byte ReadByte(int addr) {
-            Console.WriteLine($"Reading 0x{addr:X4}");
+            // Console.WriteLine($"Reading 0x{addr:X4}");
             if (addr <= 0x3FFF) {                          // Catridge ROM
                 if (inBIOS) {
                     if (addr < 0x100) {
                         return _bios[addr];
-                    } else if (cpu.reg.PC == 0x100) {
+                    }
+
+                    if (addr == 0x100) {
                         Console.WriteLine("Jumping out BIOS");
                         inBIOS = false;
                     }
                 }
                 return _romData[addr];
             } else if (addr >= 0x4000 && addr <= 0x7FFF) { // Catridge ROM Bank N
-                return _romData[addr - 0x4000 + 0x4000 * _currentBank];
+                return _romData[addr + 0x4000 * _currentBank];
             } else if (addr >= 0x8000 && addr <= 0x9FFF) { // Video RAM
                 return _videoRam[addr - 0x8000];
             } else if (addr >= 0xA000 && addr <= 0xBFFF) { // Catridge RAM
                 return _catridgeRam[addr - 0xA000];
-            } else if (addr >= 0xC000 && addr <= 0xCFFF) { // Work RAM Bank 0
-                return _workRam0[addr - 0xC000];
-            } else if (addr >= 0xD000 && addr <= 0xDFFF) { // Work RAM Bank 1
-                return _workRam1[addr - 0xD000];
-            } else if (addr >= 0xE000 && addr <= 0xFDFF) {
-                // Mirror from 0xC000
-                return _workRam0[addr - 0xE000];
+            } else if (addr >= 0xC000 && addr <= 0xEFFF) { // Work RAM
+                return _workRam[addr & 0x1FFF];
             } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
                 return cpu.gpu.oam[addr - 0xFE00];
             } else if (addr >= 0xFEA0 && addr <= 0xFEFF) { // Not usable, ... yet ...
@@ -143,6 +144,12 @@ namespace GameBoyEmulator.Desktop.GBC {
             } else if (addr >= 0xFF00 && addr <= 0xFF7F) { // I/O Ports
                 var baseAddr = addr - 0xFF00;
                 switch (baseAddr & 0x00F0) {
+                    case 0x00:
+                        return ((addr & 0xF) == 15) ? cpu.reg.TriggerInterrupts : (byte) 0x00;
+                    case 0x10:
+                    case 0x20:
+                    case 0x30:
+                        return 0;
                     case 0x40:
                     case 0x50:
                     case 0x60:
@@ -152,7 +159,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             } else if (addr >= 0xFF80 && addr <= 0xFFFE) { // High RAM
                 return _highRam[addr - 0xFF80];
             } else if (addr == 0xFFFF) {                   // Interrupt Enable Register  
-                return _interruptEnable;
+                return cpu.reg.EnabledInterrupts;
             }
 
             return 0x00;
@@ -160,13 +167,13 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         public ushort ReadWord(ushort addr) {
             var b0 = ReadByte(addr);
-            var b1 = ReadByte((ushort)(addr + 1));
+            var b1 = ReadByte(addr + 1);
 
             return (ushort) ((b1 << 8) + b0);
         }
 
         public void WriteWord(ushort addr, ushort val) {
-            var b0 = (byte) ((val & 0xFF00) >> 8);
+            var b0 = (byte) (val >> 8);
             var b1 = (byte) (val & 0xFF);
             WriteByte(addr, b1);
             WriteByte(addr + 1, b0);
