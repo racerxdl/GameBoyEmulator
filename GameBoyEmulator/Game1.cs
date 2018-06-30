@@ -20,6 +20,7 @@ namespace GameBoyEmulator.Desktop {
         private SpriteFont debuggerFont;
         private string Registers = "PC: 0\nA: 0x00 B: 0x00\nC: 0x00 D: 0x00\nE: 0x00 F: 0x00\nH: 0x00 L: 0x00";
         private KeyboardManager keyboardManager;
+        private string GameName = "Not loaded";
         
         public Game1() {
             graphics = new GraphicsDeviceManager(this);
@@ -56,6 +57,8 @@ namespace GameBoyEmulator.Desktop {
             debuggerFont = Content.Load<SpriteFont>("Debugger");
             var f = File.ReadAllBytes("opus5.gb");
             cpu.memory.LoadROM(f);
+            GameName = cpu.memory.GetRomName();
+            Window.Title = $"GameBoyEmulator: ({GameName}) [{cpu.memory.GetRomSize()} - {cpu.memory.GetCatridgeRamSize()}]";
             cpu.Start();
             keyboardManager.OnKeyPress += OnKeyPress;
             cpu.OnPause += OnPause;
@@ -107,6 +110,7 @@ namespace GameBoyEmulator.Desktop {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime) {
             keyboardManager.Update();
+            cpu.GbKeys.Update(Keyboard.GetState());
             tileBuffer.SetData(cpu.gpu.TileBuffer);
             videoTexture.SetData(cpu.memory.GetVideoBuffer());
             cpu.gpu.UpdateVRAM();

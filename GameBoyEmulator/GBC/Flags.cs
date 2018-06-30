@@ -1,0 +1,9 @@
+﻿namespace GameBoyEmulator.Desktop.GBC {
+    public static class Flags {
+        public static readonly byte INT_VBLANK = 0x01;
+        public static readonly byte INT_LCDSTAT = 0x02;
+        public static readonly byte INT_TIMER = 0x04;
+        public static readonly byte INT_SERIAL = 0x08;
+        public static readonly byte INT_JOYPAD = 0x10;
+    }
+}

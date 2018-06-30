@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 
@@ -93,6 +95,9 @@ namespace GameBoyEmulator.Desktop.GBC {
                 var baseAddr = addr - 0xFF00;
                 switch (baseAddr & 0x00F0) {
                     case 0x00:
+                        if ((addr & 0xF) == 0) {
+                            cpu.GbKeys.Write(val);
+                        }
                         if ((addr & 0xF) == 15) {
                             cpu.reg.TriggerInterrupts = val;
                         }
@@ -145,6 +150,9 @@ namespace GameBoyEmulator.Desktop.GBC {
                 var baseAddr = addr - 0xFF00;
                 switch (baseAddr & 0x00F0) {
                     case 0x00:
+                        if ((addr & 0xF) == 0) {
+                            return cpu.GbKeys.Read();
+                        }
                         return ((addr & 0xF) == 15) ? cpu.reg.TriggerInterrupts : (byte) 0x00;
                     case 0x10:
                     case 0x20:
@@ -177,6 +185,19 @@ namespace GameBoyEmulator.Desktop.GBC {
             var b1 = (byte) (val & 0xFF);
             WriteByte(addr, b1);
             WriteByte(addr + 1, b0);
+        }
+
+        public string GetRomName() {
+            var slice = _romData.Skip(0x134).Take(0xE).ToArray();
+            return Encoding.ASCII.GetString(slice);
+        }
+
+        public RamSize GetCatridgeRamSize() {
+            return (RamSize) _romData[0x149];
+        }
+
+        public RomSize GetRomSize() {
+            return (RomSize) _romData[0x148];
         }
 
         public void LoadROM(byte[] romData) {

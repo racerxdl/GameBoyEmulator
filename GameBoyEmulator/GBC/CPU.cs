@@ -14,6 +14,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal int clockT;
         internal CPURegisters reg;
         internal Memory memory;
+        internal GBKeys GbKeys;
         internal bool _halt;
         internal GPU gpu;
         internal bool running;
@@ -34,6 +35,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             memory = new Memory(this);
             gpu = new GPU(this);
             mtx = new Mutex();
+            GbKeys = new GBKeys(this);
             Reset();
             LastUpdate = DateTime.Now;
             cpuThread = new Thread(() => Update());
@@ -89,6 +91,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.Reset();
             memory.Reset();
             gpu.Reset();
+            GbKeys.Reset();
             mtx.ReleaseMutex();
         }
 
@@ -126,33 +129,33 @@ namespace GameBoyEmulator.Desktop.GBC {
             clockT += reg.lastClockT;
             
             // Check Interrupts
-            if (reg.InterruptEnable && reg.EnabledInterrupts != 0) {
+            if (reg.InterruptEnable && reg.EnabledInterrupts != 0 && reg.TriggerInterrupts != 0) {
                 _halt = false;
                 reg.InterruptEnable = false;
                 var interruptsFired = reg.EnabledInterrupts & reg.TriggerInterrupts;
-                if ((interruptsFired & 0x01) > 0) {
-                    reg.TriggerInterrupts &= 0xFE;
-                    CPUInstructions.RSTXX(this, 0x40);
+                if ((interruptsFired & Flags.INT_VBLANK) > 0) {
+                    reg.TriggerInterrupts &= (byte) ~Flags.INT_VBLANK;
+                    CPUInstructions.RSTXX(this, Addresses.INT_VBLANK); // V-Blank
                     clockM += reg.lastClockM;
                     clockT += reg.lastClockT;
-                } else if ((interruptsFired & 0x02) > 0) {
-                    reg.TriggerInterrupts &= 0xFD;
-                    CPUInstructions.RSTXX(this, 0x48);
+                } else if ((interruptsFired & Flags.INT_LCDSTAT) > 0) {
+                    reg.TriggerInterrupts &= (byte) ~Flags.INT_LCDSTAT;
+                    CPUInstructions.RSTXX(this, Addresses.INT_LCDSTAT); // LCD Stat
                     clockM += reg.lastClockM;
                     clockT += reg.lastClockT;
-                } else if ((interruptsFired & 0x04) > 0) {
-                    reg.TriggerInterrupts &= 0xFB;
-                    CPUInstructions.RSTXX(this, 0x50);
+                } else if ((interruptsFired & Flags.INT_TIMER) > 0) {
+                    reg.TriggerInterrupts &= (byte) ~Flags.INT_TIMER;
+                    CPUInstructions.RSTXX(this, Addresses.INT_TIMER); // Timer
                     clockM += reg.lastClockM;
                     clockT += reg.lastClockT;
-                } else if ((interruptsFired & 0x08) > 0) {
-                    reg.TriggerInterrupts &= 0xF7;
-                    CPUInstructions.RSTXX(this, 0x58);
+                } else if ((interruptsFired & Flags.INT_SERIAL) > 0) {
+                    reg.TriggerInterrupts &= (byte) ~Flags.INT_SERIAL;
+                    CPUInstructions.RSTXX(this, Addresses.INT_SERIAL); // Serial
                     clockM += reg.lastClockM;
                     clockT += reg.lastClockT;
-                } else if ((interruptsFired & 0x10) > 0) {
-                    reg.TriggerInterrupts &= 0xEF;
-                    CPUInstructions.RSTXX(this, 0x60);
+                } else if ((interruptsFired & Flags.INT_JOYPAD) > 0) {
+                    reg.TriggerInterrupts &= (byte) ~Flags.INT_JOYPAD;
+                    CPUInstructions.RSTXX(this, Addresses.INT_JOYPAD); // Joypad Interrupt
                     clockM += reg.lastClockM;
                     clockT += reg.lastClockT;
                 } else {

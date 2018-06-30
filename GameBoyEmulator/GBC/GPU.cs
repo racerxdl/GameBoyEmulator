@@ -5,9 +5,6 @@ using Microsoft.Xna.Framework;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class GPU {
-
-        private const int VRAM_OFFSET = 0x8000;
-
         private int modeClocks;
         private int line;
         private GPUModes mode;
@@ -231,7 +228,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             if (switchLCD) {
                 #region Background Draw
                 if (switchBg) {
-                    var vramOffset = VRAM_OFFSET;
+                    var vramOffset = Addresses.VRAMBASE;
                     vramOffset += bgMapBase;
                     vramOffset += (((line + scrollY) & 0xFF) / 8) * 32;
                     
@@ -336,7 +333,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 var py = (i / 256);
                 var px = (i % 256);
                 var tileNum = (px / 8) + ((py / 8) * 32);
-                var v = cpu.memory.ReadByte(VRAM_OFFSET + bgMapBase + tileNum);
+                var v = cpu.memory.ReadByte(Addresses.VRAMBASE + bgMapBase + tileNum);
                 var tile = tileSet[v];
                 var x = px % 8;
                 var y = py % 8;
@@ -423,26 +420,13 @@ namespace GameBoyEmulator.Desktop.GBC {
                     if (modeClocks >= 51) {
                         if (line == 143) {
                             mode = GPUModes.VBLANK;
-                            cpu.reg.TriggerInterrupts |= 1;
-//                            if ((enabledInterrupts & 0x02) > 0) {
-//                                interruptsFired |= 0x02;
-//                                cpu.reg.EnabledInterrupts |= 0x02;
-//                            }
+                            cpu.reg.TriggerInterrupts |= Flags.INT_VBLANK;
                         } else {
                             mode = GPUModes.OAM_READ;
-//                            if ((enabledInterrupts & 0x04) > 0) {
-//                                interruptsFired |= 0x04;
-//                                cpu.reg.EnabledInterrupts |= 0x04;
-//                            }
                         }
                         
                         modeClocks = 0;
                         line++;
-
-//                        if (line == raster && (enabledInterrupts & 0x08) > 0) {
-//                            interruptsFired |= 0x08;
-//                            cpu.reg.EnabledInterrupts |= 0x08;
-//                        }
                     }
                     break;
                 case GPUModes.VBLANK:
@@ -453,11 +437,6 @@ namespace GameBoyEmulator.Desktop.GBC {
                             mode = GPUModes.OAM_READ;
                             line = 0;
                         }
-
-//                        if ((enabledInterrupts & 0x04) > 0) {
-//                            interruptsFired |= 0x04;
-//                            cpu.reg.EnabledInterrupts |= 0x02;
-//                        }
                     }
 
                     break;
@@ -471,10 +450,6 @@ namespace GameBoyEmulator.Desktop.GBC {
                     if (modeClocks >= 43) {
                         modeClocks = 0;
                         mode = GPUModes.HBLANK;
-//                        if ((enabledInterrupts & 0x01) > 0) {
-//                            interruptsFired |= 0x01;
-//                            cpu.reg.EnabledInterrupts |= 0x02;
-//                        }
                         RenderScanline();
                     }
                     break;
