@@ -95,12 +95,18 @@ namespace GameBoyEmulator.Desktop.GBC {
                 var baseAddr = addr - 0xFF00;
                 switch (baseAddr & 0x00F0) {
                     case 0x00:
-                        if ((addr & 0xF) == 0) {
-                            cpu.GbKeys.Write(val);
+                        switch (addr) {
+                            case 0xFF00: cpu.GbKeys.Write(val);
+                                break;
+                            case 0xFF04:
+                            case 0xFF05:
+                            case 0xFF06:
+                            case 0xFF07: cpu.timer.Write(addr, val);
+                                break;
+                            case 0xFF0F: cpu.reg.TriggerInterrupts = val;
+                                break;
                         }
-                        if ((addr & 0xF) == 15) {
-                            cpu.reg.TriggerInterrupts = val;
-                        }
+
                         break;
                     case 0x10:
                     case 0x20:
@@ -147,17 +153,23 @@ namespace GameBoyEmulator.Desktop.GBC {
             } else if (addr >= 0xFEA0 && addr <= 0xFEFF) { // Not usable, ... yet ...
                 //
             } else if (addr >= 0xFF00 && addr <= 0xFF7F) { // I/O Ports
-                var baseAddr = addr - 0xFF00;
-                switch (baseAddr & 0x00F0) {
+                switch (addr & 0x00F0) {
                     case 0x00:
-                        if ((addr & 0xF) == 0) {
-                            return cpu.GbKeys.Read();
+                        switch (addr) {
+                            case 0xFF00: return cpu.GbKeys.Read();
+                            case 0xFF04:
+                            case 0xFF05:
+                            case 0xFF06:
+                            case 0xFF07:
+                                return cpu.timer.Read(addr);
+                            case 0xFF0F:
+                                return cpu.reg.TriggerInterrupts;
                         }
-                        return ((addr & 0xF) == 15) ? cpu.reg.TriggerInterrupts : (byte) 0x00;
+                        return 0x00;
                     case 0x10:
                     case 0x20:
                     case 0x30:
-                        return 0;
+                        return 0x00;
                     case 0x40:
                     case 0x50:
                     case 0x60:

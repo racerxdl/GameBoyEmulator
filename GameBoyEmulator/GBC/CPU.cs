@@ -15,6 +15,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal CPURegisters reg;
         internal Memory memory;
         internal GBKeys GbKeys;
+        internal GBTimer timer;
         internal bool _halt;
         internal GPU gpu;
         internal bool running;
@@ -36,6 +37,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             gpu = new GPU(this);
             mtx = new Mutex();
             GbKeys = new GBKeys(this);
+            timer = new GBTimer(this);
             Reset();
             LastUpdate = DateTime.Now;
             cpuThread = new Thread(() => Update());
@@ -92,13 +94,14 @@ namespace GameBoyEmulator.Desktop.GBC {
             memory.Reset();
             gpu.Reset();
             GbKeys.Reset();
+            timer.Reset();
             mtx.ReleaseMutex();
         }
 
         public void Update() {
             Console.WriteLine("CPU Update Thread Started");
             while (running) {
-                if (!_halt && !paused) {
+                if (!paused) {
                     var delta = DateTime.Now - LastUpdate;
                     if (!(delta.TotalMilliseconds > CPU_PERIOD_MS)) continue;
                     lastCycleTimeMs = delta.TotalMilliseconds;
@@ -121,13 +124,19 @@ namespace GameBoyEmulator.Desktop.GBC {
             mtx.WaitOne();
             // Normal Cycle
             reg.CycleCount++;
-            var pc = reg.PC;
-            reg.PC++;
-            var op = memory.ReadByte(pc);
-            opcodes[op](this);
-            clockM += reg.lastClockM;
-            clockT += reg.lastClockT;
-            
+            var totalClockM = 0;
+            var totalClockT = 0;
+            if (_halt) {
+                totalClockM += 1;
+                totalClockT += 4;
+            } else {
+                var op = memory.ReadByte(reg.PC);
+                reg.PC++;
+                opcodes[op](this);
+                totalClockM += reg.lastClockM;
+                totalClockT += reg.lastClockT;
+            }
+
             // Check Interrupts
             if (reg.InterruptEnable && reg.EnabledInterrupts != 0 && reg.TriggerInterrupts != 0) {
                 _halt = false;
@@ -136,34 +145,42 @@ namespace GameBoyEmulator.Desktop.GBC {
                 if ((interruptsFired & Flags.INT_VBLANK) > 0) {
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_VBLANK;
                     CPUInstructions.RSTXX(this, Addresses.INT_VBLANK); // V-Blank
-                    clockM += reg.lastClockM;
-                    clockT += reg.lastClockT;
+                    totalClockM += reg.lastClockM;
+                    totalClockT += reg.lastClockT;
                 } else if ((interruptsFired & Flags.INT_LCDSTAT) > 0) {
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_LCDSTAT;
                     CPUInstructions.RSTXX(this, Addresses.INT_LCDSTAT); // LCD Stat
-                    clockM += reg.lastClockM;
-                    clockT += reg.lastClockT;
+                    totalClockM += reg.lastClockM;
+                    totalClockT += reg.lastClockT;
                 } else if ((interruptsFired & Flags.INT_TIMER) > 0) {
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_TIMER;
                     CPUInstructions.RSTXX(this, Addresses.INT_TIMER); // Timer
-                    clockM += reg.lastClockM;
-                    clockT += reg.lastClockT;
+                    totalClockM += reg.lastClockM;
+                    totalClockT += reg.lastClockT;
                 } else if ((interruptsFired & Flags.INT_SERIAL) > 0) {
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_SERIAL;
                     CPUInstructions.RSTXX(this, Addresses.INT_SERIAL); // Serial
-                    clockM += reg.lastClockM;
-                    clockT += reg.lastClockT;
+                    totalClockM += reg.lastClockM;
+                    totalClockT += reg.lastClockT;
                 } else if ((interruptsFired & Flags.INT_JOYPAD) > 0) {
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_JOYPAD;
                     CPUInstructions.RSTXX(this, Addresses.INT_JOYPAD); // Joypad Interrupt
-                    clockM += reg.lastClockM;
-                    clockT += reg.lastClockT;
+                    totalClockM += reg.lastClockM;
+                    totalClockT += reg.lastClockT;
                 } else {
                     reg.InterruptEnable = true;
                 }
             }
+            
+            clockM += totalClockM;
+            clockT += totalClockT;
+            
             // GPU
             gpu.Cycle();
+            
+            // Timers
+            timer.Increment();
+            
             mtx.ReleaseMutex();
         }
 

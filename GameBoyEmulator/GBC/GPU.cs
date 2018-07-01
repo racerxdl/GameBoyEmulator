@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using Microsoft.Xna.Framework;
 
 namespace GameBoyEmulator.Desktop.GBC {
@@ -18,6 +19,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private byte raster;
         private byte enabledInterrupts;
         private byte interruptsFired;
+        private byte[] currentRow;
 
         internal ushort bgTileBase;
         internal ushort bgMapBase;
@@ -65,6 +67,10 @@ namespace GameBoyEmulator.Desktop.GBC {
                 TileBuffer[i] = (x % 9 == 8) || (y % 9 == 8) ? Color.Transparent : Color.White;
             }
             registers = new byte[0xFF];
+            currentRow = new byte[160];
+            for (var i = 0; i < 160; i++) {
+                currentRow[i] = 0x00;
+            }
             Reset();
         }
 
@@ -247,6 +253,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
                     for (var i = 0; i < 160; i++) {
                         var color = BgPallete[tileRow[x]];
+                        currentRow[i] = tileRow[x];
                         cpu.memory.videoBuffer[bufferOffset] = color;
                         bufferOffset++;
                         x++;
@@ -278,8 +285,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                             var bufferOffset = (line * 160) + obj.X;
                             for (var x = 0; x < 8; x++) {
                                 var color = obj.XFlip ? pallete[tileRow[7 - x]] : pallete[tileRow[x]];
-                                if (obj.X + x >= 0 && obj.X + x < 160) {
-                                    // TODO: Prio
+                                if (tileRow[x] != 0x00 && obj.X + x >= 0 && obj.X + x < 160 && (obj.Prio || currentRow[x] == 0x00)) {
                                     cpu.memory.videoBuffer[bufferOffset] = color;
                                 }
 
@@ -413,7 +419,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
         
         public void Cycle() {
-            modeClocks += cpu.clockM;
+            modeClocks += cpu.reg.lastClockM;
             
             switch (mode) {
                 case GPUModes.HBLANK:

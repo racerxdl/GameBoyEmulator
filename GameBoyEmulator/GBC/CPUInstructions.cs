@@ -268,9 +268,9 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void LDAIOn(CPU cpu) {
             var reg = cpu.reg;
-            var addr = cpu.memory.ReadByte(reg.PC) + 0xFF00;
+            var addr = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            reg.A = cpu.memory.ReadByte(addr);
+            reg.A = cpu.memory.ReadByte(0xFF00 + addr);
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -278,9 +278,9 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void LDIOnA(CPU cpu) {
             var reg = cpu.reg;
-            var addr = cpu.memory.ReadByte(reg.PC) + 0xFF00;
+            var addr = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            cpu.memory.WriteByte(addr, reg.A);
+            cpu.memory.WriteByte(0xFF00 + addr, reg.A);
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -288,7 +288,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal static void LDAIOC(CPU cpu) {
             var reg = cpu.reg;
-            reg.A = cpu.memory.ReadByte(reg.C + 0xFF00);
+            reg.A = cpu.memory.ReadByte(0xFF00 + reg.C);
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1057,8 +1057,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
         }
         
         internal static void JPHL(CPU cpu) {
@@ -1072,7 +1072,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void JPNZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x00) {
+            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -1087,7 +1087,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void JPZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x80) {
+            if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -1102,7 +1102,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void JPNCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x10) != 0x00) {
+            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -1153,7 +1153,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & 0x80) != 0x00) {
+            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1174,7 +1174,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & 0x80) != 0x80) {
+            if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1195,7 +1195,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & 0x10) != 0x00) {
+            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1216,7 +1216,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & 0x10) != 0x10) {
+            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1264,7 +1264,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void CALLNZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x00) {
+            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1282,7 +1282,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void CALLZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x80) {
+            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1300,7 +1300,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void CALLNCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x10) != 0x00) {
+            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1318,7 +1318,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void CALLCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x10) != 0x10) {
+            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1356,7 +1356,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal static void RETNZ(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x00) {
+            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1364,14 +1364,14 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 2;
-            reg.lastClockT = 8;
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
         }
 
         internal static void RETNC(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x10) != 0x00) {
+            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1379,14 +1379,14 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 2;
-            reg.lastClockT = 8;
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
         }
         
         internal static void RETC(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x10) != 0x10) {
+            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1394,14 +1394,14 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 2;
-            reg.lastClockT = 8;
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
         }
 
         internal static void RETZ(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x80) != 0x80) {
+            if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1409,8 +1409,8 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 2;
-            reg.lastClockT = 8;
+            reg.lastClockM = 3;
+            reg.lastClockT = 12;
         }
         
         internal static void DI(CPU cpu) {
@@ -1690,7 +1690,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         static void BIT(CPU cpu, int n, string regI) {
             var reg = cpu.reg;
-            reg.F = (reg.GetRegister(regI) & (1 << n)) != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = (reg.GetRegister(regI) & (1 << n)) != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 2;
             reg.lastClockT = 4;
@@ -1698,7 +1698,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         static void BITm(CPU cpu, int n) {
             var reg = cpu.reg;
-            reg.F = (cpu.memory.ReadByte(reg.HL) & (1 << n)) != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = (cpu.memory.ReadByte(reg.HL) & (1 << n)) != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
