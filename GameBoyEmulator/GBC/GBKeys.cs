@@ -25,8 +25,8 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         public byte Read() {
             switch (selectedInput) {
-                case 0x10: return directional;
-                case 0x20: return keys;
+                case 0x10: return keys;
+                case 0x20: return directional;
                 case 0x30: return (byte) (keys | directional);
                 default: return 0x00;
             }
@@ -54,15 +54,15 @@ namespace GameBoyEmulator.Desktop.GBC {
             var bDirectional = directional;
             var bKeys = keys;
             
-//            SetDirectionalBit(0, !state.IsKeyDown(Keys.Right));
-//            SetDirectionalBit(1, !state.IsKeyDown(Keys.Left));
-//            SetDirectionalBit(2, !state.IsKeyDown(Keys.Up));
-//            SetDirectionalBit(3, !state.IsKeyDown(Keys.Down));
-//
-//            SetKeysBit(0, !state.IsKeyDown(Keys.Z));
-//            SetKeysBit(1, !state.IsKeyDown(Keys.X));
-//            SetKeysBit(2, !state.IsKeyDown(Keys.Space));
-//            SetKeysBit(3, !state.IsKeyDown(Keys.Enter));
+            SetDirectionalBit(0, !state.IsKeyDown(Keys.Right));
+            SetDirectionalBit(1, !state.IsKeyDown(Keys.Left));
+            SetDirectionalBit(2, !state.IsKeyDown(Keys.Up));
+            SetDirectionalBit(3, !state.IsKeyDown(Keys.Down));
+
+            SetKeysBit(0, !state.IsKeyDown(Keys.Z));
+            SetKeysBit(1, !state.IsKeyDown(Keys.X));
+            SetKeysBit(2, !state.IsKeyDown(Keys.Space));
+            SetKeysBit(3, !state.IsKeyDown(Keys.Enter));
             
             if ((bDirectional != directional) || (bKeys != keys)) {
 //                Console.WriteLine("Trigger Joy Interrupt");

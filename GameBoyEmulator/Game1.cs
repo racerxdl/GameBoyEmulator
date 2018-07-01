@@ -151,7 +151,6 @@ namespace GameBoyEmulator.Desktop {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-            // spriteBatch.Draw(videoTexture, new Vector2(100, 100), null, Color.White);
             spriteBatch.DrawString(debuggerFont, "LCD", new Vector2(10, 10), Color.Black);
             spriteBatch.Draw(videoTexture, new Rectangle(10, 40, videoTexture.Width * 2, videoTexture.Height * 2), Color.White);
             

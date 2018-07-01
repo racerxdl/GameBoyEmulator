@@ -10,7 +10,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="cpu"></param>
         /// <param name="regI"></param>
         /// <param name="regO"></param>
-        internal static void LDrr(CPU cpu, string regI, string regO) {
+        private static void LDrr(CPU cpu, string regI, string regO) {
             var reg = cpu.reg;
             reg.SetRegister(regI, reg.GetRegister(regO));
             reg.lastClockM = 1;
@@ -22,7 +22,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// </summary>
         /// <param name="cpu"></param>
         /// <param name="regO"></param>
-        internal static void LDrHLm_(CPU cpu, string regO) {
+        private static void LDrHLm_(CPU cpu, string regO) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
             reg.SetRegister(regO, b);
@@ -35,7 +35,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// </summary>
         /// <param name="cpu"></param>
         /// <param name="regI"></param>
-        internal static void LDHLmr_(CPU cpu, string regI) {
+        private static void LDHLmr_(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
             cpu.memory.WriteByte(reg.HL, b);
@@ -48,7 +48,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// </summary>
         /// <param name="cpu"></param>
         /// <param name="regO"></param>
-        internal static void LDrn_(CPU cpu, string regO) {
+        private static void LDrn_(CPU cpu, string regO) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -61,7 +61,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// Writes byte from Program Memory into Memory (H/L). Increments Program Counter
         /// </summary>
         /// <param name="cpu"></param>
-        internal static void LDHLmn(CPU cpu) {
+        private static void LDHLmn(CPU cpu) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -77,7 +77,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regH"></param>
         /// <param name="regL"></param>
         /// <param name="regI"></param>
-        internal static void LD__m_(CPU cpu, string regH, string regL, string regI) {
+        private static void LD__m_(CPU cpu, string regH, string regL, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
             var h = reg.GetRegister(regH);
@@ -93,7 +93,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// </summary>
         /// <param name="cpu"></param>
         /// <param name="regI"></param>
-        internal static void LDmm_(CPU cpu, string regI) {
+        private static void LDmm_(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
             var addr = cpu.memory.ReadWord(reg.PC);
@@ -110,7 +110,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="regH"></param>
         /// <param name="regL"></param>
         /// <param name="regO"></param>
-        internal static void LD___m(CPU cpu, string regO, string regH, string regL) {
+        private static void LD___m(CPU cpu, string regO, string regH, string regL) {
             var reg = cpu.reg;
             var h = reg.GetRegister(regH);
             var l = reg.GetRegister(regL);
@@ -126,7 +126,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// </summary>
         /// <param name="cpu"></param>
         /// <param name="regO"></param>
-        internal static void LD_mm(CPU cpu, string regO) {
+        private static void LD_mm(CPU cpu, string regO) {
             var reg = cpu.reg;
             var addr = cpu.memory.ReadWord(reg.PC);
             var b = cpu.memory.ReadByte(addr);
@@ -142,7 +142,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// <param name="cpu"></param>
         /// <param name="regO1"></param>
         /// <param name="regO2"></param>
-        internal static void LD__nn(CPU cpu, string regO1, string regO2) {
+        private static void LD__nn(CPU cpu, string regO1, string regO2) {
             var reg = cpu.reg;
             
             var b = cpu.memory.ReadByte(reg.PC);
@@ -161,7 +161,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// Reads word from Program Counter and stores in SP
         /// </summary>
         /// <param name="cpu"></param>
-        internal static void LDSPnn(CPU cpu) {
+        private static void LDSPnn(CPU cpu) {
             var reg = cpu.reg;
             var u = cpu.memory.ReadWord(reg.PC);
             reg.PC += 2;
@@ -170,7 +170,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void LDmmSP(CPU cpu) {
+        private static void LDmmSP(CPU cpu) {
             var reg = cpu.reg;
             var addr = cpu.memory.ReadWord(reg.PC);
             reg.PC += 2;
@@ -184,7 +184,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 //        /// Reads an address from PC position and writes addr to L and addr + 1 to H
 //        /// </summary>
 //        /// <param name="cpu"></param>
-//        internal static void LDHLmm(CPU cpu) {
+//        private static void LDHLmm(CPU cpu) {
 //            var reg = cpu.reg;
 //            var u = cpu.memory.ReadWord(reg.PC);
 //            reg.PC += 2;
@@ -198,7 +198,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 //        /// Reads an address from PC position and writes word from H/L
 //        /// </summary>
 //        /// <param name="cpu"></param>
-//        internal static void LDmmHL(CPU cpu) {
+//        private static void LDmmHL(CPU cpu) {
 //            var reg = cpu.reg;
 //            var u = cpu.memory.ReadWord(reg.PC);
 //            reg.PC += 2;
@@ -211,7 +211,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// Sets A to Memory at H/L and increments HL.
         /// </summary>
         /// <param name="cpu"></param>
-        internal static void LDHLIA(CPU cpu) {
+        private static void LDHLIA(CPU cpu) {
             var reg = cpu.reg;
             var b = reg.A;
             cpu.memory.WriteByte(reg.HL, b);
@@ -228,7 +228,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         /// Reads byte from H/L into A and decrements H/L
         /// </summary>
         /// <param name="cpu"></param>
-        internal static void LDAHLI(CPU cpu) {
+        private static void LDAHLI(CPU cpu) {
             var reg = cpu.reg;
             reg.A = cpu.memory.ReadByte(reg.HL);
             reg.L--;
@@ -240,7 +240,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 8;
         }
 
-        internal static void LDHLDA(CPU cpu) {
+        private static void LDHLDA(CPU cpu) {
             var reg = cpu.reg;
             cpu.memory.WriteByte(reg.HL, reg.A);
             
@@ -254,7 +254,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 8;
         }
 
-        internal static void LDAHLD(CPU cpu) {
+        private static void LDAHLD(CPU cpu) {
             var reg = cpu.reg;
             reg.A = cpu.memory.ReadByte(reg.HL);
             reg.L--;
@@ -266,7 +266,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 8;
         }
 
-        internal static void LDAIOn(CPU cpu) {
+        private static void LDAIOn(CPU cpu) {
             var reg = cpu.reg;
             var addr = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -276,7 +276,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void LDIOnA(CPU cpu) {
+        private static void LDIOnA(CPU cpu) {
             var reg = cpu.reg;
             var addr = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -286,7 +286,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void LDAIOC(CPU cpu) {
+        private static void LDAIOC(CPU cpu) {
             var reg = cpu.reg;
             reg.A = cpu.memory.ReadByte(0xFF00 + reg.C);
 
@@ -294,7 +294,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 8;
         }
 
-        internal static void LDIOCA(CPU cpu) {
+        private static void LDIOCA(CPU cpu) {
             var reg = cpu.reg;
             cpu.memory.WriteByte(0xFF00 + reg.C, reg.A);
             
@@ -302,7 +302,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 8;
         }
 
-        internal static void LDHLSPn(CPU cpu) {
+        private static void LDHLSPn(CPU cpu) {
             var reg = cpu.reg;
             var v = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -318,7 +318,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void LDHLSPr(CPU cpu) {
+        private static void LDHLSPr(CPU cpu) {
             var reg = cpu.reg;
             reg.SP = reg.HL;
 
@@ -328,54 +328,54 @@ namespace GameBoyEmulator.Desktop.GBC {
         #endregion
         #region Data Processing
 
-        internal static void ADDr(CPU cpu, string regI) {
+        private static void ADDr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var z = (int)reg.GetRegister(regI);
             var a = reg.A;
             var sum = reg.A + z;
             
             if (sum > 255) {
-                reg.F |= 0x10;
+                reg.F |= Flags.FLAG_CARRY;
             }
 
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ z ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ z ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             } 
 
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void ADDHL(CPU cpu) {
+        private static void ADDHL(CPU cpu) {
             var reg = cpu.reg;
             var z = (int) cpu.memory.ReadByte(reg.HL);
             var a = reg.A;
             var sum = reg.A + z;
             if (sum > 255) {
-                reg.F |= 0x10;
+                reg.F |= Flags.FLAG_CARRY;
             }
 
             reg.A = (byte) sum;
             
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ z ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ z ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             } 
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void ADDn(CPU cpu) {
+        private static void ADDn(CPU cpu) {
             var reg = cpu.reg;
             var z = (int) cpu.memory.ReadByte(reg.PC);
             var a = reg.A;
@@ -383,24 +383,24 @@ namespace GameBoyEmulator.Desktop.GBC {
             var sum = reg.A + z;
             
             if (sum > 255) {
-                reg.F |= 0x10;
+                reg.F |= Flags.FLAG_CARRY;
             }
 
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ z ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ z ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void ADDHL(CPU cpu, string regA, string regB) {
+        private static void ADDHL(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
             var hl = reg.HL;
             var a = reg.GetRegister(regA);
@@ -409,7 +409,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var sum = hl + (a << 8) + b;
             
             if (sum > 65535) {
-                reg.F |= 0x10;
+                reg.F |= Flags.FLAG_CARRY;
             } else {
                 reg.F &= 0xEF;
             }
@@ -421,13 +421,13 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
         
-        internal static void ADDHLSP(CPU cpu) {
+        private static void ADDHLSP(CPU cpu) {
             var reg = cpu.reg;
             var hl = (int) reg.HL;
             var sum = hl + reg.SP;
             
             if (sum > 65535) {
-                reg.F |= 0x10;
+                reg.F |= Flags.FLAG_CARRY;
             } else {
                 reg.F &= 0xEF;
             }
@@ -439,7 +439,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void ADDSPn(CPU cpu) {
+        private static void ADDSPn(CPU cpu) {
             var reg = cpu.reg;
             var a = (int)cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -453,423 +453,423 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 16;
         }
 
-        internal static void ADCr(CPU cpu, string regI) {
+        private static void ADCr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var a = reg.A;
             var b = (int) reg.GetRegister(regI);
-            var sum = reg.A + b + ((reg.F & 0x10) != 0 ? 1 : 0);
+            var sum = reg.A + b + ((reg.F & Flags.FLAG_CARRY) != 0 ? 1 : 0);
             
             if (sum > 255) {
-                reg.F = 0x10;
+                reg.F = Flags.FLAG_CARRY;
             }
            
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-        internal static void ADCHL(CPU cpu) {
+        private static void ADCHL(CPU cpu) {
             var reg = cpu.reg;
             var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.HL);
-            var sum = reg.A + b + ((reg.F & 0x10) != 0 ? 1 : 0);
+            var sum = reg.A + b + ((reg.F & Flags.FLAG_CARRY) != 0 ? 1 : 0);
             
             if (sum > 255) {
-                reg.F = 0x10;
+                reg.F = Flags.FLAG_CARRY;
             }
 
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-        internal static void ADCn(CPU cpu) {
+        private static void ADCn(CPU cpu) {
             var reg = cpu.reg;
             var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            var sum = reg.A + b + ((reg.F & 0x10) != 0 ? 1 : 0);
+            var sum = reg.A + b + ((reg.F & Flags.FLAG_CARRY) != 0 ? 1 : 0);
             
             if (sum > 255) {
-                reg.F = 0x10;
+                reg.F = Flags.FLAG_CARRY;
             }
 
             reg.A = (byte) sum;
             
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-        internal static void SUBr(CPU cpu, string regI) {
+        private static void SUBr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var a = reg.A;
             var b = (int) reg.GetRegister(regI);
             var sum = reg.A - b;
             
-            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = sum < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
 
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void SUBHL(CPU cpu) {
+        private static void SUBHL(CPU cpu) {
             var reg = cpu.reg;
             var a = reg.A;
             var z = (int) cpu.memory.ReadByte(reg.HL);
             var sum = reg.A - z;
             
-            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = sum < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
 
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ z ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ z ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void SUBn(CPU cpu) {
+        private static void SUBn(CPU cpu) {
             var reg = cpu.reg;
             var a = reg.A;
             var z = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             var sum = reg.A - z;
             
-            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = sum < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
 
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ z ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ z ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
 
-        internal static void SBCr(CPU cpu, string regI) {
+        private static void SBCr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var a = reg.A;
             var b = (int) reg.GetRegister(regI);
-            var sum = reg.A - b - ((reg.F & 0x10) != 0 ? 1 : 0);
+            var sum = reg.A - b - ((reg.F & Flags.FLAG_CARRY) != 0 ? 1 : 0);
 
-            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = sum < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
             
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void SBCHL(CPU cpu) {
+        private static void SBCHL(CPU cpu) {
             var reg = cpu.reg;
             var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.HL);
-            var sum = reg.A - b - ((reg.F & 0x10) != 0 ? 1 : 0);
+            var sum = reg.A - b - ((reg.F & Flags.FLAG_CARRY) != 0 ? 1 : 0);
 
-            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = sum < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
             
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void SBCn(CPU cpu) {
+        private static void SBCn(CPU cpu) {
             var reg = cpu.reg;
             var a = reg.A;
             var b = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            var sum = reg.A - b - ((reg.F & 0x10) != 0 ? 1 : 0);
+            var sum = reg.A - b - ((reg.F & Flags.FLAG_CARRY) != 0 ? 1 : 0);
 
-            reg.F = sum < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = sum < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
             
             reg.A = (byte) sum;
 
             if (reg.A == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
 
-        internal static void CPr(CPU cpu, string regI) {
+        private static void CPr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var a = (int) reg.A;
             var b = reg.GetRegister(regI);
             a -= b;
 
-            reg.F = a < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = a < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
 
             a = (byte) a;
 
             if (a == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-        internal static void CPHL(CPU cpu) {
+        private static void CPHL(CPU cpu) {
             var reg = cpu.reg;
             var a = (int) reg.A;
             var b = cpu.memory.ReadByte(reg.HL);
             a -= b;
 
-            reg.F = a < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = a < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
 
             a = (byte) a;
 
             if (a == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
 
-        internal static void CPn(CPU cpu) {
+        private static void CPn(CPU cpu) {
             var reg = cpu.reg;
             var a = (int) reg.A;
             var b =  cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             a -= b;
-            reg.F = a < 0 ? (byte) 0x50 : (byte) 0x40;
+            reg.F = a < 0 ? (byte) (Flags.FLAG_SUB | Flags.FLAG_CARRY) : (byte) Flags.FLAG_SUB;
 
             a = (byte) a;
 
             if (a == 0) {
-                reg.F |= 0x80;
+                reg.F |= Flags.FLAG_ZERO;
             }
 
-            if (((reg.A ^ b ^ a) & 0x10) != 0) {
-                reg.F |= 0x20;
+            if (((reg.A ^ b ^ a) & Flags.FLAG_CARRY) != 0) {
+                reg.F |= Flags.FLAG_HALF_CARRY;
             }
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
 
-        internal static void DAA(CPU cpu) {
+        private static void DAA(CPU cpu) {
             var reg = cpu.reg;
             var a = reg.A;
-            if (((reg.F & 0x10) != 0) || ((reg.A & 15) > 9)) {
+            if (((reg.F & Flags.FLAG_CARRY) != 0) || ((reg.A & 15) > 9)) {
                 reg.A += 6;
             }
 
             reg.F &= 0xEF;
 
-            if (((reg.F & 0x20) != 0) || (a > 0x99)) {
+            if (((reg.F & Flags.FLAG_HALF_CARRY) != 0) || (a > 0x99)) {
                 reg.A += 0x60;
-                reg.F |= 0x10;
+                reg.F |= Flags.FLAG_CARRY;
             }
 
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-        internal static void ANDr(CPU cpu, string regI) {
+        private static void ANDr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A &= reg.GetRegister(regI);
 
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void ANDHL(CPU cpu) {
+        private static void ANDHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A &= cpu.memory.ReadByte(reg.HL);
             
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void ANDn(CPU cpu) {
+        private static void ANDn(CPU cpu) {
             var reg = cpu.reg;
             reg.A &= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
 
-        internal static void ORr(CPU cpu, string regI) {
+        private static void ORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A |= reg.GetRegister(regI);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void ORHL(CPU cpu) {
+        private static void ORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.HL);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void ORn(CPU cpu) {
+        private static void ORn(CPU cpu) {
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void XORr(CPU cpu, string regI) {
+        private static void XORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A ^= reg.GetRegister(regI);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void XORHL(CPU cpu) {
+        private static void XORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.HL);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
         
-        internal static void XORn(CPU cpu) {
+        private static void XORn(CPU cpu) {
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
 
-        internal static void INCr(CPU cpu, string regI) {
+        private static void INCr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var v = (byte) (reg.GetRegister(regI) + 1);
             reg.SetRegister(regI, v);
 
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void INCHLm(CPU cpu) {
+        private static void INCHLm(CPU cpu) {
             var reg = cpu.reg;
             var v = (byte) (cpu.memory.ReadByte(reg.HL) + 1);
             cpu.memory.WriteByte(reg.HL, v);
             
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
         }
         
-        internal static void DECr(CPU cpu, string regI) {
+        private static void DECr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var v = (byte) (reg.GetRegister(regI) - 1); 
             reg.SetRegister(regI, v);
             
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void DECHLm(CPU cpu) {
+        private static void DECHLm(CPU cpu) {
             var reg = cpu.reg;
             var v = (byte)(cpu.memory.ReadByte(reg.HL) - 1);
             cpu.memory.WriteByte(reg.HL, v);
             
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
         }
         
-        internal static void INC(CPU cpu, string regA, string regB) {
+        private static void INC(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
             var v = (byte) (reg.GetRegister(regB) + 1); 
             reg.SetRegister(regB, v);
@@ -883,11 +883,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 4;
         }
         
-        internal static void INCHL(CPU cpu) {
+        private static void INCHL(CPU cpu) {
             INC(cpu, "H", "L");
         }
 
-        internal static void INCSP(CPU cpu) {
+        private static void INCSP(CPU cpu) {
             var reg = cpu.reg;
             reg.SP++;
 
@@ -895,7 +895,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 4;
         }
 
-        internal static void DEC(CPU cpu, string regA, string regB) {
+        private static void DEC(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
             var v = (byte) (reg.GetRegister(regB) - 1);
             reg.SetRegister(regB, v);
@@ -909,11 +909,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 4;
         }
         
-        internal static void DECHL(CPU cpu) {
+        private static void DECHL(CPU cpu) {
             DEC(cpu, "H", "L");
         }
         
-        internal static void DECSP(CPU cpu) {
+        private static void DECSP(CPU cpu) {
             var reg = cpu.reg;
             reg.SP--;
 
@@ -924,9 +924,9 @@ namespace GameBoyEmulator.Desktop.GBC {
         #endregion
         #region Bit Manipulation
 
-        internal static void RLA(CPU cpu) {
+        private static void RLA(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.F & 0x10) != 0x00 ? 0x01 : 0x00;
+            var ci = (reg.F & Flags.FLAG_CARRY) != 0x00 ? 0x01 : 0x00;
             var co = (reg.A & 0x80) != 0x00 ? 0x10 : 0x00;
 
             reg.A = (byte) ((reg.A << 1) + ci);
@@ -935,7 +935,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }  
-        internal static void RLCA(CPU cpu) {
+        private static void RLCA(CPU cpu) {
             var reg = cpu.reg;
             var ci = (reg.A & 0x80) != 0x00 ? 0x01 : 0x00;
             var co = (reg.A & 0x80) != 0x00 ? 0x10 : 0x00;
@@ -946,9 +946,9 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
-        internal static void RRA(CPU cpu) {
+        private static void RRA(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.F & 0x10) != 0 ? 0x80 : 0x00;
+            var ci = (reg.F & Flags.FLAG_CARRY) != 0 ? 0x80 : 0x00;
             var co = (reg.A & 0x01) != 0 ? 0x10 : 0x00;
 
             reg.A = (byte) ((reg.A >> 1) + ci);
@@ -957,7 +957,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
-        internal static void RRCA(CPU cpu) {
+        private static void RRCA(CPU cpu) {
             var reg = cpu.reg;
             var ci = (reg.A & 0x01) != 0 ? 0x80 : 0x00;
             var co = (reg.A & 0x01) != 0 ? 0x10 : 0x00;
@@ -969,33 +969,33 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 4;
         }
 
-        internal static void CPL(CPU cpu) {
+        private static void CPL(CPU cpu) {
             var reg = cpu.reg;
             reg.A = (byte) (0 - reg.A);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-//        internal static void NEG(CPU cpu) {
+//        private static void NEG(CPU cpu) {
 //            var reg = cpu.reg;
 //            var v = 0 - reg.A;
 // 
-//            reg.F = v < 0 ? (byte) 0x10 : (byte) 0x00;
+//            reg.F = v < 0 ? (byte) Flags.FLAG_CARRY : (byte) 0x00;
 //            reg.A = (byte) v;
 //
 //            if (reg.A == 0) {
-//                reg.F |= 0x80;
+//                reg.F |= Flags.FLAG_ZERO;
 //            }
 //
 //            reg.lastClockM = 2;
 //            reg.lastClockT = 8;
 //        }
 
-        internal static void CCF(CPU cpu) {
+        private static void CCF(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.F & 0x10) != 0x00 ? 0x00 : 0x0;
+            var ci = (reg.F & Flags.FLAG_CARRY) != 0x00 ? 0x00 : 0x0;
 
             reg.F = (byte) ((reg.F & 0xEF) + ci);
             
@@ -1003,9 +1003,9 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 4;
         }
 
-        internal static void SCF(CPU cpu) {
+        private static void SCF(CPU cpu) {
             var reg = cpu.reg;
-            reg.F |= 0x10;
+            reg.F |= Flags.FLAG_CARRY;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
@@ -1026,7 +1026,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         #endregion
         #region Stack Management
 
-        internal static void PUSH(CPU cpu, string regA, string regB) {
+        private static void PUSH(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
             reg.SP--;
             var b = reg.GetRegister(regA);
@@ -1039,7 +1039,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void POP(CPU cpu, string regA, string regB) {
+        private static void POP(CPU cpu, string regA, string regB) {
             var reg = cpu.reg;
             reg.SetRegister(regB, cpu.memory.ReadByte(reg.SP));
             reg.SP++;
@@ -1053,7 +1053,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         #endregion
         #region Jumps
 
-        internal static void JPnn(CPU cpu) {
+        private static void JPnn(CPU cpu) {
             var reg = cpu.reg;
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
@@ -1061,7 +1061,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
         
-        internal static void JPHL(CPU cpu) {
+        private static void JPHL(CPU cpu) {
             var reg = cpu.reg;
             reg.PC = reg.HL;
 
@@ -1069,7 +1069,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 4;
         }
         
-        internal static void JPNZnn(CPU cpu) {
+        private static void JPNZnn(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
@@ -1084,7 +1084,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 16;
         }
         
-        internal static void JPZnn(CPU cpu) {
+        private static void JPZnn(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
@@ -1099,7 +1099,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 16;
         }
         
-        internal static void JPNCnn(CPU cpu) {
+        private static void JPNCnn(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
@@ -1114,10 +1114,10 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 16;
         }
         
-        internal static void JPCnn(CPU cpu) {
+        private static void JPCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & 0x10) != 0x10) {
+            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -1129,7 +1129,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 16;
         }
 
-        internal static void JRn(CPU cpu) {
+        private static void JRn(CPU cpu) {
             var reg = cpu.reg;
             var v = (int)cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -1144,7 +1144,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void JRNZn(CPU cpu) {
+        private static void JRNZn(CPU cpu) {
             var reg = cpu.reg;
             var v = (int)cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -1165,7 +1165,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void JRZn(CPU cpu) {
+        private static void JRZn(CPU cpu) {
             var reg = cpu.reg;
             var v = (int)cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -1186,7 +1186,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
         
-        internal static void JRNCn(CPU cpu) {
+        private static void JRNCn(CPU cpu) {
             var reg = cpu.reg;
             var v = (int)cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -1207,7 +1207,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void JRCn(CPU cpu) {
+        private static void JRCn(CPU cpu) {
             var reg = cpu.reg;
             var v = (int)cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -1228,7 +1228,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void DJNZn(CPU cpu) {
+        private static void DJNZn(CPU cpu) {
             var reg = cpu.reg;
             var v = (int)cpu.memory.ReadByte(reg.PC);
             reg.PC++;
@@ -1251,7 +1251,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void CALLnn(CPU cpu) {
+        private static void CALLnn(CPU cpu) {
             var reg = cpu.reg;
             reg.SP -= 2;
             cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
@@ -1261,7 +1261,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 20;
         }
 
-        internal static void CALLNZnn(CPU cpu) {
+        private static void CALLNZnn(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
@@ -1279,7 +1279,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 20;
         }
 
-        internal static void CALLZnn(CPU cpu) {
+        private static void CALLZnn(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
@@ -1297,7 +1297,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 20;
         }
 
-        internal static void CALLNCnn(CPU cpu) {
+        private static void CALLNCnn(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
@@ -1315,7 +1315,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 20;
         }
 
-        internal static void CALLCnn(CPU cpu) {
+        private static void CALLCnn(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
@@ -1333,7 +1333,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 20;
         }
         
-        internal static void RET(CPU cpu) {
+        private static void RET(CPU cpu) {
             var reg = cpu.reg;
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
@@ -1342,7 +1342,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void RETI(CPU cpu) {
+        private static void RETI(CPU cpu) {
             var reg = cpu.reg;
             reg.LoadRegs();
             reg.PC = cpu.memory.ReadWord(reg.SP);
@@ -1353,7 +1353,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void RETNZ(CPU cpu) {
+        private static void RETNZ(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
@@ -1368,7 +1368,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void RETNC(CPU cpu) {
+        private static void RETNC(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
@@ -1383,7 +1383,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
         
-        internal static void RETC(CPU cpu) {
+        private static void RETC(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
@@ -1398,7 +1398,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        internal static void RETZ(CPU cpu) {
+        private static void RETZ(CPU cpu) {
             var reg = cpu.reg;
 
             if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
@@ -1413,32 +1413,32 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
         
-        internal static void DI(CPU cpu) {
+        private static void DI(CPU cpu) {
             var reg = cpu.reg;
             reg.InterruptEnable = false;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
-        internal static void EI(CPU cpu) {
+        private static void EI(CPU cpu) {
             var reg = cpu.reg;
             reg.InterruptEnable = true;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
-        internal static void NOP(CPU cpu) {
+        private static void NOP(CPU cpu) {
             var reg = cpu.reg;
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         
-        internal static void NOPWARN(CPU cpu, int opcode) {
+        private static void NOPWARN(CPU cpu, int opcode) {
             var reg = cpu.reg;
             Console.WriteLine($"Unimplemented Opcode!!! 0x{opcode:X2}");
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-        internal static void HALT(CPU cpu) {
+        private static void HALT(CPU cpu) {
             Console.WriteLine("HALT");
             var reg = cpu.reg;
             cpu._halt = true;
@@ -1452,12 +1452,12 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void RLr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var v = reg.GetRegister(regI);
-            var ci = (reg.F & 0x10) != 0 ? 0x01 : 0x00;
+            var ci = (reg.F & Flags.FLAG_CARRY) != 0 ? 0x01 : 0x00;
             var co = (v & 0x80) != 0 ? 0x10 : 0x00;
             v = (byte) ((v << 1) + ci);
             reg.SetRegister(regI, v);
 
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 2;
@@ -1467,12 +1467,12 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void RLHL(CPU cpu) {
             var reg = cpu.reg;
             var v = cpu.memory.ReadByte(reg.HL);
-            var ci = (reg.F & 0x10) != 0 ? 0x01 : 0x00;
+            var ci = (reg.F & Flags.FLAG_CARRY) != 0 ? 0x01 : 0x00;
             var co = (v & 0x80) != 0 ? 0x10 : 0x00;
             v = (byte) ((v << 1) + ci);
             cpu.memory.WriteByte(reg.HL, v);
 
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 2;
@@ -1488,7 +1488,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             v = (byte) ((v << 1) + ci);
             reg.SetRegister(regI, v);
 
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 2;
@@ -1504,7 +1504,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             v = (byte) ((v << 1) + ci);
             cpu.memory.WriteByte(reg.HL, v);
 
-            reg.F = v != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
 
             reg.lastClockM = 4;
@@ -1514,13 +1514,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void RRr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            var ci = (reg.F & 0x10) != 0x00 ? 0x80 : 0x00;
+            var ci = (reg.F & Flags.FLAG_CARRY) != 0x00 ? 0x80 : 0x00;
             var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
 
             b = (byte) ((b >> 1) + ci);
             reg.SetRegister(regI, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1530,14 +1530,14 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void RRHL(CPU cpu) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
-            var ci = (reg.F & 0x10) != 0x00 ? 0x80 : 0x00;
+            var ci = (reg.F & Flags.FLAG_CARRY) != 0x00 ? 0x80 : 0x00;
             var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
 
             b = (byte) ((b >> 1) + ci);
 
             cpu.memory.WriteByte(reg.HL, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -1553,7 +1553,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             b = (byte) ((b >> 1) + ci);
             reg.SetRegister(regI, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1568,7 +1568,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             b = (byte) ((b >> 1) + ci);
             cpu.memory.WriteByte(reg.HL, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             reg.lastClockM = 4;
             reg.lastClockT = 16;
@@ -1582,7 +1582,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             
             reg.SetRegister(regI, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1597,7 +1597,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             cpu.memory.WriteByte(reg.HL, b);
             
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -1613,7 +1613,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             
             reg.SetRegister(regI, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1629,7 +1629,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             cpu.memory.WriteByte(reg.HL, b);
             
-            reg.F = b != 0 ? (byte) 0x00 : (byte) 0x80;
+            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -1642,7 +1642,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
             reg.SetRegister(regI, (byte) swapped);
 
-            reg.F = (byte) (swapped != 0 ? 0 : 0x80);
+            reg.F = (byte) (swapped != 0 ? 0 : Flags.FLAG_ZERO);
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -1654,7 +1654,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
             cpu.memory.WriteByte(reg.HL, (byte) swapped);
             
-            reg.F = (byte) (swapped != 0 ? 0 : 0x80);
+            reg.F = (byte) (swapped != 0 ? 0 : Flags.FLAG_ZERO);
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
@@ -1667,7 +1667,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.SetRegister(regI, b);
             
             
-            reg.F = (byte) (b != 0 ? 0 : 0x80);
+            reg.F = (byte) (b != 0 ? 0 : Flags.FLAG_ZERO);
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 2;
@@ -1681,7 +1681,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             b = (byte) (b >> 1);
             cpu.memory.WriteByte(reg.HL, b);
             
-            reg.F = (byte) (b != 0 ? 0 : 0x80);
+            reg.F = (byte) (b != 0 ? 0 : Flags.FLAG_ZERO);
             reg.F = (byte) ((reg.F & 0xEF) + co);
             
             reg.lastClockM = 4;
@@ -2040,12 +2040,304 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => SET(cpu, 7, "A")
             #endregion
         };
-        internal static void CBCall(CPU cpu) {
+        private static void CBCall(CPU cpu) {
             var reg = cpu.reg;
             var v = cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             CBOPS[v](cpu);
         }
+        #endregion
+        #region CPU Instructions
+        internal static readonly List<Action<CPU>> opcodes = new List<Action<CPU>> {
+            #region 0x00 Group
+            (cpu) => NOP(cpu),
+            (cpu) => LD__nn(cpu, "B", "C"),
+            (cpu) => LD__m_(cpu, "B", "C", "A"),
+            (cpu) => INC(cpu, "B", "C"),
+            (cpu) => INCr(cpu, "B"),
+            (cpu) => DECr(cpu, "B"),
+            (cpu) => LDrn_(cpu, "B"),
+            (cpu) => RLCA(cpu),
+            (cpu) => LDmmSP(cpu),
+            (cpu) => ADDHL(cpu, "B", "C"),
+            (cpu) => LD___m(cpu, "A", "B", "C"),
+            (cpu) => DEC(cpu, "B", "C"),
+            (cpu) => INCr(cpu, "C"),
+            (cpu) => DECr(cpu, "C"),
+            (cpu) => LDrn_(cpu, "C"),
+            (cpu) => RRCA(cpu),
+            #endregion
+            #region 0x10 Group
+            (cpu) => DJNZn(cpu),
+            (cpu) => LD__nn(cpu, "D", "E"),
+            (cpu) => LD__m_(cpu, "D", "E", "A"),
+            (cpu) => INC(cpu, "D", "E"),
+            (cpu) => INCr(cpu, "D"),
+            (cpu) => DECr(cpu, "D"),
+            (cpu) => LDrn_(cpu, "D"),
+            (cpu) => RLA(cpu),
+            (cpu) => JRn(cpu),
+            (cpu) => ADDHL(cpu, "D", "E"),
+            (cpu) => LD___m(cpu, "A", "D", "E"),
+            (cpu) => DEC(cpu, "D", "E"),
+            (cpu) => INCr(cpu, "E"),
+            (cpu) => DECr(cpu, "E"),
+            (cpu) => LDrn_(cpu, "E"),
+            (cpu) => RRA(cpu),
+            #endregion
+            #region 0x20 Group
+            (cpu) => JRNZn(cpu),
+            (cpu) => LD__nn(cpu, "H", "L"),
+            (cpu) => LDHLIA(cpu),
+            (cpu) => INCHL(cpu),
+            (cpu) => INCr(cpu, "H"),
+            (cpu) => DECr(cpu, "H"),
+            (cpu) => LDrn_(cpu, "H"),
+            (cpu) => DAA(cpu),
+            (cpu) => JRZn(cpu),
+            (cpu) => ADDHL(cpu, "H", "L"),
+            (cpu) => LDAHLI(cpu),
+            (cpu) => DECHL(cpu),
+            (cpu) => INCr(cpu, "L"),
+            (cpu) => DECr(cpu, "L"),
+            (cpu) => LDrn_(cpu, "L"),
+            (cpu) => CPL(cpu),
+            #endregion
+            #region 0x30 Group
+            (cpu) => JRNCn(cpu),
+            (cpu) => LDSPnn(cpu),
+            (cpu) => LDHLDA(cpu),
+            (cpu) => INCSP(cpu),
+            (cpu) => INCHLm(cpu),
+            (cpu) => DECHLm(cpu),
+            (cpu) => LDHLmn(cpu),
+            (cpu) => SCF(cpu),
+            (cpu) => JRCn(cpu),
+            (cpu) => ADDHLSP(cpu),
+            (cpu) => LDAHLD(cpu),
+            (cpu) => DECSP(cpu),
+            (cpu) => INCr(cpu, "A"),
+            (cpu) => DECr(cpu, "A"),
+            (cpu) => LDrn_(cpu, "A"),
+            (cpu) => CCF(cpu),
+            #endregion
+            #region 0x40 Group
+            (cpu) => LDrr(cpu, "B", "B"),
+            (cpu) => LDrr(cpu, "B", "C"),
+            (cpu) => LDrr(cpu, "B", "D"),
+            (cpu) => LDrr(cpu, "B", "E"),
+            (cpu) => LDrr(cpu, "B", "H"),
+            (cpu) => LDrr(cpu, "B", "L"),
+            (cpu) => LDrHLm_(cpu, "B"),
+            (cpu) => LDrr(cpu, "B", "A"),
+            (cpu) => LDrr(cpu, "C", "B"),
+            (cpu) => LDrr(cpu, "C", "C"),
+            (cpu) => LDrr(cpu, "C", "D"),
+            (cpu) => LDrr(cpu, "C", "E"),
+            (cpu) => LDrr(cpu, "C", "H"),
+            (cpu) => LDrr(cpu, "C", "L"),
+            (cpu) => LDrHLm_(cpu, "C"),
+            (cpu) => LDrr(cpu, "C", "A"),
+            #endregion
+            #region 0x50 Group
+            (cpu) => LDrr(cpu, "D", "B"),
+            (cpu) => LDrr(cpu, "D", "C"),
+            (cpu) => LDrr(cpu, "D", "D"),
+            (cpu) => LDrr(cpu, "D", "E"),
+            (cpu) => LDrr(cpu, "D", "H"),
+            (cpu) => LDrr(cpu, "D", "L"),
+            (cpu) => LDrHLm_(cpu, "D"),
+            (cpu) => LDrr(cpu, "D", "A"),
+            (cpu) => LDrr(cpu, "E", "B"),
+            (cpu) => LDrr(cpu, "E", "C"),
+            (cpu) => LDrr(cpu, "E", "D"),
+            (cpu) => LDrr(cpu, "E", "E"),
+            (cpu) => LDrr(cpu, "E", "H"),
+            (cpu) => LDrr(cpu, "E", "L"),
+            (cpu) => LDrHLm_(cpu, "E"),
+            (cpu) => LDrr(cpu, "E", "A"),
+            #endregion
+            #region 0x60 Group
+            (cpu) => LDrr(cpu, "H", "B"),
+            (cpu) => LDrr(cpu, "H", "C"),
+            (cpu) => LDrr(cpu, "H", "D"),
+            (cpu) => LDrr(cpu, "H", "E"),
+            (cpu) => LDrr(cpu, "H", "H"),
+            (cpu) => LDrr(cpu, "H", "L"),
+            (cpu) => LDrHLm_(cpu, "H"),
+            (cpu) => LDrr(cpu, "H", "A"),
+            (cpu) => LDrr(cpu, "L", "B"),
+            (cpu) => LDrr(cpu, "L", "C"),
+            (cpu) => LDrr(cpu, "L", "D"),
+            (cpu) => LDrr(cpu, "L", "E"),
+            (cpu) => LDrr(cpu, "L", "H"),
+            (cpu) => LDrr(cpu, "L", "L"),
+            (cpu) => LDrHLm_(cpu, "L"),
+            (cpu) => LDrr(cpu, "L", "A"),
+            #endregion
+            #region 0x70 Group
+            (cpu) => LDHLmr_(cpu, "B"),
+            (cpu) => LDHLmr_(cpu, "C"),
+            (cpu) => LDHLmr_(cpu, "D"),
+            (cpu) => LDHLmr_(cpu, "E"),
+            (cpu) => LDHLmr_(cpu, "H"),
+            (cpu) => LDHLmr_(cpu, "L"),
+            (cpu) => HALT(cpu),
+            (cpu) => LDHLmr_(cpu, "A"),
+            (cpu) => LDrr(cpu, "A", "B"),
+            (cpu) => LDrr(cpu, "A", "C"),
+            (cpu) => LDrr(cpu, "A", "D"),
+            (cpu) => LDrr(cpu, "A", "E"),
+            (cpu) => LDrr(cpu, "A", "H"),
+            (cpu) => LDrr(cpu, "A", "L"),
+            (cpu) => LDrHLm_(cpu, "A"),
+            (cpu) => LDrr(cpu, "A", "A"),
+            #endregion
+            #region 0x80 Group
+            (cpu) => ADDr(cpu, "B"),
+            (cpu) => ADDr(cpu, "C"),
+            (cpu) => ADDr(cpu, "D"),
+            (cpu) => ADDr(cpu, "E"),
+            (cpu) => ADDr(cpu, "H"),
+            (cpu) => ADDr(cpu, "L"),
+            (cpu) => ADDHL(cpu),
+            (cpu) => ADDr(cpu, "A"),
+            (cpu) => ADCr(cpu, "B"),
+            (cpu) => ADCr(cpu, "C"),
+            (cpu) => ADCr(cpu, "D"),
+            (cpu) => ADCr(cpu, "E"),
+            (cpu) => ADCr(cpu, "H"),
+            (cpu) => ADCr(cpu, "L"),
+            (cpu) => ADCHL(cpu),
+            (cpu) => ADCr(cpu, "A"),
+            #endregion
+            #region 0x90 Group
+            (cpu) => SUBr(cpu, "B"),
+            (cpu) => SUBr(cpu, "C"),
+            (cpu) => SUBr(cpu, "D"),
+            (cpu) => SUBr(cpu, "E"),
+            (cpu) => SUBr(cpu, "H"),
+            (cpu) => SUBr(cpu, "L"),
+            (cpu) => SUBHL(cpu),
+            (cpu) => SUBr(cpu, "A"),
+            (cpu) => SBCr(cpu, "B"),
+            (cpu) => SBCr(cpu, "C"),
+            (cpu) => SBCr(cpu, "D"),
+            (cpu) => SBCr(cpu, "E"),
+            (cpu) => SBCr(cpu, "H"),
+            (cpu) => SBCr(cpu, "L"),
+            (cpu) => SBCHL(cpu),
+            (cpu) => SBCr(cpu, "A"),
+            #endregion
+            #region 0xA0 Group
+            (cpu) => ANDr(cpu, "B"),
+            (cpu) => ANDr(cpu, "C"),
+            (cpu) => ANDr(cpu, "D"),
+            (cpu) => ANDr(cpu, "E"),
+            (cpu) => ANDr(cpu, "H"),
+            (cpu) => ANDr(cpu, "L"),
+            (cpu) => ANDHL(cpu),
+            (cpu) => ANDr(cpu, "A"),
+            (cpu) => XORr(cpu, "B"),
+            (cpu) => XORr(cpu, "C"),
+            (cpu) => XORr(cpu, "D"),
+            (cpu) => XORr(cpu, "E"),
+            (cpu) => XORr(cpu, "H"),
+            (cpu) => XORr(cpu, "L"),
+            (cpu) => XORHL(cpu),
+            (cpu) => XORr(cpu, "A"),
+            #endregion
+            #region 0xB0 Group
+            (cpu) => ORr(cpu, "B"),
+            (cpu) => ORr(cpu, "C"),
+            (cpu) => ORr(cpu, "D"),
+            (cpu) => ORr(cpu, "E"),
+            (cpu) => ORr(cpu, "H"),
+            (cpu) => ORr(cpu, "L"),
+            (cpu) => ORHL(cpu),
+            (cpu) => ORr(cpu, "A"),
+            (cpu) => CPr(cpu, "B"),
+            (cpu) => CPr(cpu, "C"),
+            (cpu) => CPr(cpu, "D"),
+            (cpu) => CPr(cpu, "E"),
+            (cpu) => CPr(cpu, "H"),
+            (cpu) => CPr(cpu, "L"),
+            (cpu) => CPHL(cpu),
+            (cpu) => CPr(cpu, "A"),
+            #endregion
+            #region 0xC0 Group
+            (cpu) => RETNZ(cpu),
+            (cpu) => POP(cpu, "B", "C"),
+            (cpu) => JPNZnn(cpu),
+            (cpu) => JPnn(cpu),
+            (cpu) => CALLNZnn(cpu),
+            (cpu) => PUSH(cpu, "B", "C"),
+            (cpu) => ADDn(cpu),
+            (cpu) => RSTXX(cpu, 0x00),
+            (cpu) => RETZ(cpu),
+            (cpu) => RET(cpu),
+            (cpu) => JPZnn(cpu),
+            (cpu) => CBCall(cpu),
+            (cpu) => CALLZnn(cpu),
+            (cpu) => CALLnn(cpu),
+            (cpu) => ADCn(cpu),
+            (cpu) => RSTXX(cpu, 0x08),
+            #endregion
+            #region 0xD0 Group
+            (cpu) => RETNC(cpu),
+            (cpu) => POP(cpu, "D", "E"),
+            (cpu) => JPNCnn(cpu),
+            (cpu) => NOPWARN(cpu, 0xD3),
+            (cpu) => CALLNCnn(cpu),
+            (cpu) => PUSH(cpu, "D", "E"),
+            (cpu) => SUBn(cpu),
+            (cpu) => RSTXX(cpu, 0x10),
+            (cpu) => RETC(cpu),
+            (cpu) => RETI(cpu),
+            (cpu) => JPCnn(cpu),
+            (cpu) => NOPWARN(cpu, 0xDB),
+            (cpu) => CALLCnn(cpu),
+            (cpu) => NOPWARN(cpu, 0xDD),
+            (cpu) => SBCn(cpu),
+            (cpu) => RSTXX(cpu, 0x18),
+            #endregion
+            #region 0xE0 Group
+            (cpu) => LDIOnA(cpu),
+            (cpu) => POP(cpu, "H", "L"),
+            (cpu) => LDIOCA(cpu),
+            (cpu) => NOPWARN(cpu, 0xE3),
+            (cpu) => NOPWARN(cpu, 0xE4),
+            (cpu) => PUSH(cpu, "H", "L"),
+            (cpu) => ANDn(cpu),
+            (cpu) => RSTXX(cpu, 0x20),
+            (cpu) => ADDSPn(cpu),
+            (cpu) => JPHL(cpu),
+            (cpu) => LDmm_(cpu, "A"),
+            (cpu) => NOPWARN(cpu, 0xEB),
+            (cpu) => NOPWARN(cpu, 0xEC),
+            (cpu) => NOPWARN(cpu, 0xED),
+            (cpu) => XORn(cpu),
+            (cpu) => RSTXX(cpu, 0x28),
+            #endregion
+            #region 0xF0 Group
+            (cpu) => LDAIOn(cpu),
+            (cpu) => POP(cpu, "A", "F"),
+            (cpu) => LDAIOC(cpu),
+            (cpu) => DI(cpu),
+            (cpu) => NOPWARN(cpu, 0xF4),
+            (cpu) => PUSH(cpu, "A", "F"),
+            (cpu) => ORn(cpu),
+            (cpu) => RSTXX(cpu, 0x30),
+            (cpu) => LDHLSPn(cpu),
+            (cpu) => LDHLSPr(cpu),
+            (cpu) => LD_mm(cpu, "A"),
+            (cpu) => EI(cpu),
+            (cpu) => NOPWARN(cpu, 0xFC),
+            (cpu) => NOPWARN(cpu, 0xFD),
+            (cpu) => CPn(cpu),
+            (cpu) => RSTXX(cpu, 0x38),
+            #endregion
+        };
         #endregion
     }
 }

@@ -33,8 +33,6 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         public void Increment() {
-            var oldClock = clockMain;
-
             clockSub += cpu.reg.lastClockM;
 
             if (clockSub > 3) {
