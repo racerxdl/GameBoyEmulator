@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace GameBoyEmulator.Desktop.GBC {
@@ -13,6 +14,59 @@ namespace GameBoyEmulator.Desktop.GBC {
         public ushort HL => (ushort) ((H << 8) + L);
         public ushort PC, SP;
         public int lastClockM, lastClockT;
+
+        public bool FlagZero => (F & Flags.FLAG_ZERO) > 0;
+        public bool FlagSub => (F & Flags.FLAG_SUB) > 0;
+        public bool FlagHalfCarry => (F & Flags.FLAG_HALF_CARRY) > 0;
+        public bool FlagCarry => (F & Flags.FLAG_CARRY) > 0;
+
+        public CPURegisters Clone() {
+            var reg = new CPURegisters();
+            reg.A = A;
+            reg.B = B;
+            reg.C = C;
+            reg.D = D;
+            reg.E = E;
+            reg.F = F;
+            reg.H = H;
+            reg.L = L;
+            
+            reg._A = _A;
+            reg._B = _B;
+            reg._C = _C;
+            reg._D = _D;
+            reg._E = _E;
+            reg._F = _F;
+            reg._H = _H;
+            reg._L = _L;
+
+            reg.InterruptEnable = InterruptEnable;
+            reg.EnabledInterrupts = EnabledInterrupts;
+            reg.TriggerInterrupts = TriggerInterrupts;
+            reg.CycleCount = CycleCount;
+            reg.PC = PC;
+            reg.SP = SP;
+            reg.lastClockM = lastClockM;
+            reg.lastClockT = lastClockT;
+
+            return reg;
+        }
+
+        public void RandomizeRegisters() {
+            var random = new Random();
+
+            var regs = new [] {"A", "B", "C", "D", "E", "F", "H", "L"};
+            regs.ToList().ForEach((reg) => {
+                SetRegister(reg, (byte) random.Next(0, 0xFF));
+            });
+
+            PC = (ushort) random.Next(0, 0xFFFF);
+            SP = (ushort) random.Next(0, 0xFFFF);
+
+            InterruptEnable = random.Next(0, 1) > 0;
+            EnabledInterrupts = (byte) random.Next(0, 0xFF);
+            TriggerInterrupts = (byte) random.Next(0, 0xFF);
+        }
 
         public void SaveRegs() {
             _A = A;
@@ -93,7 +147,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             lastClockM = 0;
             lastClockT = 0;
             EnabledInterrupts = 0;
-            Console.WriteLine("Resetting Registers");
+            // Console.WriteLine("Resetting Registers");
         }
     }
 }

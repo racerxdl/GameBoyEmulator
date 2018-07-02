@@ -73,6 +73,23 @@ namespace GameBoyEmulator.Desktop.GBC {
             inBIOS = true;
         }
 
+        public void RandomizeMemory() {
+            var random = new Random();
+            for (var i = 0; i < 0x7FFF; i++) {
+                _romData[i] = (byte) random.Next(0x00, 0xFF);
+            }
+            
+            for (var i = 0; i < 0x2000; i++) {
+                _videoRam[i] = (byte) random.Next(0x00, 0xFF);;
+                _catridgeRam[i] = (byte) random.Next(0x00, 0xFF);;
+                _workRam[i] = (byte) random.Next(0x00, 0xFF);;
+            }
+            
+            for (var i = 0; i < 0x7F; i++) {
+                _highRam[i] = (byte) random.Next(0x00, 0xFF);;
+            }
+        }
+
         public void WriteByte(int addr, byte val) {
             // Console.WriteLine($"Writting 0x{addr:X4} val 0x{val:X2}");
             if (addr <= 0x3FFF) {                          // Catridge ROM

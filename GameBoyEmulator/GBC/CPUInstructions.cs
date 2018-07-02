@@ -1750,7 +1750,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         #endregion
         
-        private static readonly List<Action<CPU>> CBOPS = new List<Action<CPU>> {
+        internal static readonly List<Action<CPU>> CBOPS = new List<Action<CPU>> {
             #region CB00 Group
             (cpu) => RLCr(cpu, "B"),
             (cpu) => RLCr(cpu, "C"),
