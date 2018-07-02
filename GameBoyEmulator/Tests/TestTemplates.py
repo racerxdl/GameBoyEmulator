@@ -278,6 +278,23 @@ def LD__nn(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+
+def LDSPnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "SP" and regA != "PC":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDSPnn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
@@ -288,6 +305,7 @@ TestTemplates = {
   "LD___m": LD___m,
   "LD_mm": LD_mm,
   "LD__nn": LD__nn,
+  "LDSPnn": LDSPnn,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

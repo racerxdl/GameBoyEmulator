@@ -715,6 +715,57 @@ namespace GameBoyEmulator.Desktop.Tests {
             }
         }
         #endregion
+        #region Test LD SP, d16
+        [Test]
+        public void LDSPnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x31) \"LD SP, d16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.PC = (ushort)((0xA0 << 8) + random.Next(0x000, 0xFFF));
+                var var0 = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, var0);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x31](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(var0, regAfter.SP);
+                Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 12);
+                Assert.AreEqual(regAfter.lastClockM, 3);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
         #region Test LD A,d8
         [Test]
         public void LDrnA() {
