@@ -9,12 +9,12 @@
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.{regH} = 0xFF;
-                cpu.reg.{regL} = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.{regH} = 0xA0;
+                cpu.reg.{regL} = (byte) random.Next(0x00, 0xFF);
 
                 var hl = (cpu.reg.{regH} << 8) + cpu.reg.{regL};
-                var val = (byte) (0x80 + random.Next(0x00, 0xFF));
+                var val = (byte) random.Next(0x00, 0xFF);
                 cpu.memory.WriteByte(hl, val);
 
                 var regBefore = cpu.reg.Clone();

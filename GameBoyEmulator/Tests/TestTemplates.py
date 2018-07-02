@@ -241,6 +241,23 @@ def LD___m(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def LD_mm(instr, opcode, args, cycles, flags):
+  regO, = args
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != regO and regA != "PC" and not ((regO == "L" or regO == "H") and regA == "HL"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LD_mm").format(
+    regO=regO,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
 
 TestTemplates = {
   "LDrr": LDrr,
@@ -250,6 +267,7 @@ TestTemplates = {
   "LD__m_": LD__m_,
   "LDmm_": LDmm_,
   "LD___m": LD___m,
+  "LD_mm": LD_mm,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

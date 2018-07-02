@@ -1,6 +1,6 @@
         #region Test {instr}
         [Test]
-        public void LDHLmr{regI}() {{
+        public void LD{regO}mm() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -10,14 +10,20 @@
                 cpu.memory.RandomizeMemory();
 
                 // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xA0;
-                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + random.Next(0x000, 0xFFF));
+
+                var addr = (ushort) ((0xA0 << 8) + random.Next(0x000, 0xFFF));
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(addr, val);
+                cpu.memory.WriteWord(cpu.reg.PC, addr);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x{opcode:02x}](cpu);
                 var regAfter = cpu.reg.Clone();
 
-                Assert.AreEqual(cpu.memory.ReadByte(cpu.reg.HL), regAfter.{regI});
+                Assert.AreEqual(val, regAfter.{regO});
+                Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
 
                 {asserts}
                 {flags}

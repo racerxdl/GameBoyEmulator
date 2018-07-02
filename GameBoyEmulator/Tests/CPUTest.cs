@@ -18,9 +18,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.B = 0xFF;
-                cpu.reg.C = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.B = 0xA0;
+                cpu.reg.C = (byte) random.Next(0x00, 0xFF);
 
                 var hl = (cpu.reg.B << 8) + cpu.reg.C;
 
@@ -71,8 +71,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 
@@ -127,12 +127,12 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.B = 0xFF;
-                cpu.reg.C = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.B = 0xA0;
+                cpu.reg.C = (byte) random.Next(0x00, 0xFF);
 
                 var hl = (cpu.reg.B << 8) + cpu.reg.C;
-                var val = (byte) (0x80 + random.Next(0x00, 0xFF));
+                var val = (byte) random.Next(0x00, 0xFF);
                 cpu.memory.WriteByte(hl, val);
 
                 var regBefore = cpu.reg.Clone();
@@ -181,8 +181,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 
@@ -237,9 +237,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.D = 0xFF;
-                cpu.reg.E = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.D = 0xA0;
+                cpu.reg.E = (byte) random.Next(0x00, 0xFF);
 
                 var hl = (cpu.reg.D << 8) + cpu.reg.E;
 
@@ -290,8 +290,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 
@@ -346,12 +346,12 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.D = 0xFF;
-                cpu.reg.E = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.D = 0xA0;
+                cpu.reg.E = (byte) random.Next(0x00, 0xFF);
 
                 var hl = (cpu.reg.D << 8) + cpu.reg.E;
-                var val = (byte) (0x80 + random.Next(0x00, 0xFF));
+                var val = (byte) random.Next(0x00, 0xFF);
                 cpu.memory.WriteByte(hl, val);
 
                 var regBefore = cpu.reg.Clone();
@@ -400,8 +400,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 
@@ -457,8 +457,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 
@@ -513,8 +513,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 
@@ -569,8 +569,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 
@@ -908,8 +908,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
@@ -1290,8 +1290,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
@@ -1672,8 +1672,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
@@ -2054,8 +2054,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
@@ -2430,8 +2430,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
@@ -2804,8 +2804,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
@@ -2901,9 +2901,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x70](cpu);
@@ -2950,9 +2950,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x71](cpu);
@@ -2999,9 +2999,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x72](cpu);
@@ -3048,9 +3048,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x73](cpu);
@@ -3097,9 +3097,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x74](cpu);
@@ -3146,9 +3146,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x75](cpu);
@@ -3195,9 +3195,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x77](cpu);
@@ -3527,8 +3527,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
@@ -3627,9 +3627,9 @@ namespace GameBoyEmulator.Desktop.Tests {
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.PC = (ushort) ((0xFF << 8) + (0x80 + random.Next(0x00, 0x50)));
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + random.Next(0x000, 0xFFF));
 
-                var addr = (ushort) ((0xFF << 8) + (0x80 + random.Next(0x00, 0x50)));
+                var addr = (ushort) ((0xA0 << 8) + random.Next(0x000, 0xFFF));
 
                 cpu.memory.WriteWord(cpu.reg.PC, addr);
 
@@ -3638,6 +3638,60 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 Assert.AreEqual(cpu.memory.ReadByte(addr), regBefore.A);
+                Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 16);
+                Assert.AreEqual(regAfter.lastClockM, 4);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region Test LD A, [a16]
+        [Test]
+        public void LDAmm() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xfa) \"LD A, [a16]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + random.Next(0x000, 0xFFF));
+
+                var addr = (ushort) ((0xA0 << 8) + random.Next(0x000, 0xFFF));
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(addr, val);
+                cpu.memory.WriteWord(cpu.reg.PC, addr);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xfa](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(val, regAfter.A);
                 Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
 
                 #region Test no change to other regs

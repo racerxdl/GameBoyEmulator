@@ -9,9 +9,9 @@
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
 

@@ -10,8 +10,8 @@
                 cpu.memory.RandomizeMemory();
 
                 // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
 
                 var val = (byte) random.Next(0x00, 0xFF);
 
