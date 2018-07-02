@@ -60,6 +60,12 @@ cycleTestTemplate = '''
                 #endregion
 '''
 
+def LoadTPL(tplname):
+  f = open("CSharp/%s.cs" % tplname)
+  tpl = f.read()
+  f.close()
+  return tpl
+
 def GenFlagAssert(flags):
   flagAssert = '''
                 #region Flag Tests\n'''
@@ -86,11 +92,46 @@ def GenFlagAssert(flags):
   flagAssert = flagAssert + "                #endregion"
   return flagAssert
 
-def LDrr(instr, opcode, regI, regO, cycles, flags):
-  asserts = '''#region Test Difference
-                Assert.AreEqual(regAfter.%s, regBefore.%s);
-                #endregion\n
-                #region Test no change to other regs\n''' % (regI, regO)
+def LDrr(instr, opcode, args, cycles, flags):
+  regI, regO = args
+  asserts = '''
+                #region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != regI and not ((regI == "L" or regI == "H") and regA == "HL"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+  return LoadTPL("LDrr").format(
+    regI=regI,
+    regO=regO,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDrHLm_(instr, opcode, args, cycles, flags):
+  regO, = args
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != regO and not ((regO == "L" or regO == "H") and regA == "HL"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDrHLm_").format(
+    regO=regO,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDHLmr_(instr, opcode, args, cycles, flags):
+  regI, = args
+  asserts = '''#region Test no change to other regs\n'''
 
   for regA in regList:
     if regA != regI:
@@ -98,117 +139,119 @@ def LDrr(instr, opcode, regI, regO, cycles, flags):
 
   asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
 
-  return '''
-        [Test]
-        public void LDrr_%s%s() {
-            var cpu = new CPU();
-            Console.WriteLine("Testing (0x%02x) \\"%s\\"");
-            for (var i = 0; i < RUN_CYCLES; i++) {
-                cpu.Reset();
-                cpu.reg.RandomizeRegisters();
-                cpu.memory.RandomizeMemory();
+  return LoadTPL("LDHLmr_").format(
+    regI=regI,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
 
-                var regBefore = cpu.reg.Clone();
-                CPUInstructions.opcodes[0x%02x](cpu);
-                var regAfter = cpu.reg.Clone();
-
-                %s
-                %s
-            }
-        }
-  ''' %(regI, regO, opcode, instr, opcode, asserts, GenFlagAssert(flags))
-
-def LDrHLm_(instr, opcode, regO, cycles, flags):
+def LDrn_(instr, opcode, args, cycles, flags):
+  regO, = args
   asserts = '''#region Test no change to other regs\n'''
 
   for regA in regList:
-    if regA != regO:
+    if regA != regO and regA != "PC" and not ((regO == "L" or regO == "H") and regA == "HL"):
       asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
 
   asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
 
-  return '''
-        [Test]
-        public void LDrHLm_%s() {
-            var cpu = new CPU();
-            var random = new Random();
-            Console.WriteLine("Testing (0x%02x) \\"%s\\"");
-            for (var i = 0; i < RUN_CYCLES; i++) {
-                cpu.Reset();
-                cpu.reg.RandomizeRegisters();
-                cpu.memory.RandomizeMemory();
+  return LoadTPL("LDrn_").format(
+    regO=regO,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
-
-                var val = (byte) random.Next(0x00, 0xFF);
-
-                cpu.memory.WriteByte(cpu.reg.HL, val);
-
-                var regBefore = cpu.reg.Clone();
-                CPUInstructions.opcodes[0x%02x](cpu);
-                var regAfter = cpu.reg.Clone();
-
-                Assert.AreEqual(regAfter.%s, val);
-
-                %s
-                %s
-            }
-        }
-  ''' %(regO, opcode, instr, opcode, regO, asserts, GenFlagAssert(flags))
-
-def LDrn_(instr, opcode, regO, cycles, flags):
+def LDHLmn(instr, opcode, args, cycles, flags):
+  regO, = args
   asserts = '''#region Test no change to other regs\n'''
 
   for regA in regList:
-    if regA != regO and regA != "PC":
+    if regA != regO and regA != "PC" and not ((regO == "L" or regO == "H") and regA == "HL"):
       asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
 
   asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
 
-  return '''
-        [Test]
-        public void LDrn_%s() {
-            var cpu = new CPU();
-            var random = new Random();
-            Console.WriteLine("Testing (0x%02x) \\"%s\\"");
-            for (var i = 0; i < RUN_CYCLES; i++) {
-                cpu.Reset();
-                cpu.reg.RandomizeRegisters();
-                cpu.memory.RandomizeMemory();
+  return LoadTPL("LDHLmn").format(
+    regO=regO,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
 
-                // Force write to High Ram Random Address (avoid writting to non writeable addresses)
-                cpu.reg.H = 0xFF;
-                cpu.reg.L = (byte) (0x80 + random.Next(0x00, 0x50));
+def LD__m_(instr, opcode, args, cycles, flags):
+  regH, regL, regI = args
+  asserts = '''#region Test no change to other regs\n'''
 
-                cpu.reg.PC = cpu.reg.HL; // Put PC in High Ram random value;
+  for regA in regList:
+    if regA != regI and not ((regI == "L" or regI == "H") and regA == "HL"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
 
-                var val = (byte) random.Next(0x00, 0xFF);
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
 
-                cpu.memory.WriteByte(cpu.reg.PC, val);
+  return LoadTPL("LD__m_").format(
+    regH=regH,
+    regL=regL,
+    regI=regI,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
 
-                var regBefore = cpu.reg.Clone();
-                CPUInstructions.opcodes[0x%02x](cpu);
-                var regAfter = cpu.reg.Clone();
+def LDmm_(instr, opcode, args, cycles, flags):
+  regI, = args
+  asserts = '''#region Test no change to other regs\n'''
 
-                Assert.AreEqual(val, regAfter.%s);
-                Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+  for regA in regList:
+    if regA != regI and regA != "PC" and not ((regI == "L" or regI == "H") and regA == "HL"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
 
-                %s
-                %s
-            }
-        }
-  ''' %(regO, opcode, instr, opcode, regO, asserts, GenFlagAssert(flags))
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
 
+  return LoadTPL("LDmm_").format(
+    regI=regI,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LD___m(instr, opcode, args, cycles, flags):
+  regO, regH, regL = args
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != regO and not ((regO == "L" or regO == "H") and regA == "HL"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LD___m").format(
+    regH=regH,
+    regL=regL,
+    regO=regO,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
 
 
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
-  "LDrn_": LDrn_
+  "LDrn_": LDrn_,
+  "LDHLmr_": LDHLmr_,
+  "LD__m_": LD__m_,
+  "LDmm_": LDmm_,
+  "LD___m": LD___m,
 }
 
-print TestTemplates["LDrr"]("LDrr A, B", 0x78, "A", "B", 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
-print TestTemplates["LDrHLm_"]("LD A, [HL]", 0x7E, "A", 8, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
-print TestTemplates["LDrn_"]("LD A, d8", 0x3E, "A", 8, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
+#print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
+#print TestTemplates["LDrHLm_"]("LD A, [HL]", 0x7E, "A", 8, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
+#print TestTemplates["LDrn_"]("LD A, d8", 0x3E, "A", 8, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
