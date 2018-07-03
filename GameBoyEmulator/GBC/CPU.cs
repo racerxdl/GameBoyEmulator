@@ -50,12 +50,11 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         public void Start() {
-            if (!running) {
-                Console.WriteLine("Starting");
-                running = true;
-                cpuThread.Start();
-                Console.WriteLine("CPU Thread Started");
-            }
+            if (running) return;
+            Console.WriteLine("Starting");
+            running = true;
+            cpuThread.Start();
+            Console.WriteLine("CPU Thread Started");
         }
 
         public void Step() {
@@ -79,11 +78,10 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
         
         public void Stop() {
-            if (running) {
-                Console.WriteLine("Stopping");
-                running = false;
-                cpuThread.Join();
-            }
+            if (!running) return;
+            Console.WriteLine("Stopping");
+            running = false;
+            cpuThread.Join();
         }
 
         public void Reset() {
