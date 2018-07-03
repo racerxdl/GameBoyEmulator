@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class CPURegisters {
@@ -15,10 +16,49 @@ namespace GameBoyEmulator.Desktop.GBC {
         public ushort PC, SP;
         public int lastClockM, lastClockT;
 
-        public bool FlagZero => (F & Flags.FLAG_ZERO) > 0;
-        public bool FlagSub => (F & Flags.FLAG_SUB) > 0;
-        public bool FlagHalfCarry => (F & Flags.FLAG_HALF_CARRY) > 0;
-        public bool FlagCarry => (F & Flags.FLAG_CARRY) > 0;
+        public bool FlagZero {
+            get => (F & Flags.FLAG_ZERO) > 0;
+            set {
+                if (value) {
+                    F |= Flags.FLAG_ZERO;
+                } else {
+                    F &= Flags.INV_FLAG_ZERO;
+                }
+            }
+        }
+
+        public bool FlagSub {
+            get => (F & Flags.FLAG_SUB) > 0;
+            set {
+                if (value) {
+                    F |= Flags.FLAG_SUB;
+                } else {
+                    F &= Flags.INV_FLAG_SUB;
+                }
+            }
+        }
+
+        public bool FlagHalfCarry {
+            get => (F & Flags.FLAG_HALF_CARRY) > 0;
+            set {
+                if (value) {
+                    F |= Flags.FLAG_HALF_CARRY;
+                } else {
+                    F &= Flags.INV_FLAG_HALF_CARRY;
+                }
+            }
+        }
+
+        public bool FlagCarry {
+            get => (F & Flags.FLAG_CARRY) > 0;
+            set {
+                if (value) {
+                    F |= Flags.FLAG_CARRY;
+                } else {
+                    F &= Flags.INV_FLAG_CARRY;
+                }
+            }
+        }
 
         public CPURegisters Clone() {
             var reg = new CPURegisters();

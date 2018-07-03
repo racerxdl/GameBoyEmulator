@@ -13,6 +13,11 @@
         public const int FLAG_SUB = 0x40;
         public const int FLAG_ZERO = 0x80;
 
+        public const int INV_FLAG_CARRY = 0xEF;
+        public const int INV_FLAG_HALF_CARRY = 0xDF;
+        public const int INV_FLAG_SUB = 0xBF;
+        public const int INV_FLAG_ZERO = 0x7F;
+
         #endregion
     }
 }

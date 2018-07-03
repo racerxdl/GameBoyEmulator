@@ -25,10 +25,10 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         public byte Read() {
             switch (selectedInput) {
-                case 0x10: return keys;
-                case 0x20: return directional;
-                case 0x30: return (byte) (keys | directional);
-                default: return 0x00;
+                case 0x10: return (byte) (directional | 0x10);
+                case 0x20: return (byte) (keys | 0x20);
+                case 0x30: return (byte) (keys | directional | 0x20 | 0x10);
+                default: return 0x0F;
             }
         }
 
@@ -51,9 +51,6 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         public void Update(KeyboardState state) {
-            var bDirectional = directional;
-            var bKeys = keys;
-            
             SetDirectionalBit(0, !state.IsKeyDown(Keys.Right));
             SetDirectionalBit(1, !state.IsKeyDown(Keys.Left));
             SetDirectionalBit(2, !state.IsKeyDown(Keys.Up));
@@ -63,15 +60,18 @@ namespace GameBoyEmulator.Desktop.GBC {
             SetKeysBit(1, !state.IsKeyDown(Keys.X));
             SetKeysBit(2, !state.IsKeyDown(Keys.Space));
             SetKeysBit(3, !state.IsKeyDown(Keys.Enter));
+
+            var triggerInterrupt = state.IsKeyDown(Keys.Right) |
+                                   state.IsKeyDown(Keys.Left) |
+                                   state.IsKeyDown(Keys.Up) |
+                                   state.IsKeyDown(Keys.Down) |
+                                   state.IsKeyDown(Keys.Z) |
+                                   state.IsKeyDown(Keys.X) |
+                                   state.IsKeyDown(Keys.Space) |
+                                   state.IsKeyDown(Keys.Enter);
             
-            if ((bDirectional != directional) || (bKeys != keys)) {
-//                Console.WriteLine("Trigger Joy Interrupt");
-//                if (bDirectional != directional) {
-//                    Console.WriteLine($"Dir: {Convert.ToString(bDirectional, 2).PadLeft(8, '0')} - {Convert.ToString(directional, 2).PadLeft(8, '0')}");
-//                }
-//                if (bKeys != keys) {
-//                    Console.WriteLine($"Keys: {Convert.ToString(bKeys, 2).PadLeft(8, '0')} - {Convert.ToString(keys, 2).PadLeft(8, '0')}");
-//                }
+            if (triggerInterrupt) {
+                Console.WriteLine("Trigger Joy Interrupt");
                 cpu.reg.TriggerInterrupts |= Flags.INT_JOYPAD;
             } 
         }

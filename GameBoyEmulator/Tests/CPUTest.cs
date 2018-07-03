@@ -182,7 +182,7 @@ namespace GameBoyEmulator.Desktop.Tests {
 
                 // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
                 cpu.reg.PC = (ushort)((0xA0 << 8) + random.Next(0x000, 0xFFF));
-                var addr = (ushort) ((0xA0 << 8) + random.Next(0x000, 0xFFF));
+                var addr = (ushort)((0xA0 << 8) + random.Next(0x000, 0xFFF));
 
                 cpu.memory.WriteWord(cpu.reg.PC, addr);
 
@@ -654,6 +654,54 @@ namespace GameBoyEmulator.Desktop.Tests {
             }
         }
         #endregion
+        #region Test LD [HL+], A
+        [Test]
+        public void LDHLIA() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x22) \"LD [HL+], A\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x22](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(cpu.memory.ReadByte(regBefore.HL), regBefore.A);
+                Assert.AreEqual(regBefore.HL + 1, regAfter.HL);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
         #region Test LD H,d8
         [Test]
         public void LDrnH() {
@@ -692,6 +740,57 @@ namespace GameBoyEmulator.Desktop.Tests {
                 Assert.AreEqual(regAfter.E, regBefore.E);
                 Assert.AreEqual(regAfter.F, regBefore.F);
                 Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region Test LD A, [HL+]
+        [Test]
+        public void LDAHLI() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x2a) \"LD A, [HL+]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(cpu.reg.HL, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x2a](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(val, regAfter.A);
+                Assert.AreEqual(regBefore.HL - 1, regAfter.HL);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
                 Assert.AreEqual(regAfter.SP, regBefore.SP);
                 #endregion
                 
@@ -805,6 +904,105 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #region Test Cycles
                 Assert.AreEqual(regAfter.lastClockT, 12);
                 Assert.AreEqual(regAfter.lastClockM, 3);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region Test LD [HL-], A
+        [Test]
+        public void LDHLDA() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x32) \"LD [HL-], A\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x32](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(cpu.memory.ReadByte(regBefore.HL), regBefore.A);
+                Assert.AreEqual(regBefore.HL - 1, regAfter.HL);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region Test LD A,[HL-]
+        [Test]
+        public void LDAHLD() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x3a) \"LD A,[HL-]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(cpu.reg.HL, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x3a](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(val, regAfter.A);
+                Assert.AreEqual(regBefore.HL - 1, regAfter.HL);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
                 #endregion
 
                 
@@ -3875,6 +4073,104 @@ namespace GameBoyEmulator.Desktop.Tests {
             }
         }
         #endregion
+        #region Test LD [$FF00+a8], A
+        [Test]
+        public void LDIOnA() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xe0) \"LD [$FF00+a8], A\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + (byte) random.Next(0x00, 0xFF));
+
+                cpu.memory.WriteByte(cpu.reg.PC, 0x80);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xe0](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(regBefore.A, cpu.memory.ReadByte(0xFF80));
+                Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 12);
+                Assert.AreEqual(regAfter.lastClockM, 3);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region Test LD [$FF00+C], A
+        [Test]
+        public void LDIOCA() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xe2) \"LD [$FF00+C], A\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.C = 0x80;
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xe2](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(regBefore.A, cpu.memory.ReadByte(0xFF80));
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
         #region Test LD [a16], A
         [Test]
         public void LDmmA() {
@@ -3915,6 +4211,109 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #region Test Cycles
                 Assert.AreEqual(regAfter.lastClockT, 16);
                 Assert.AreEqual(regAfter.lastClockM, 4);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region Test LD A, [$FF00+a8]
+        [Test]
+        public void LDAIOn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xf0) \"LD A, [$FF00+a8]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + (byte) random.Next(0x00, 0xFF));
+
+                var val = (byte) random.Next(0x00, 0x10);
+
+                cpu.memory.WriteByte(cpu.reg.PC, 0x80);
+                cpu.memory.WriteByte(0xFF80, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xf0](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(val, regAfter.A);
+                Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 12);
+                Assert.AreEqual(regAfter.lastClockM, 3);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region Test LD A, [$FF00+C]
+        [Test]
+        public void LDAIOC() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xf2) \"LD A, [$FF00+C]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.C = 0x80;
+                var val = (byte) random.Next(0x00, 0x10);
+
+                cpu.memory.WriteByte(0xFF80, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xf2](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(val, regAfter.A);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
                 #endregion
 
                 

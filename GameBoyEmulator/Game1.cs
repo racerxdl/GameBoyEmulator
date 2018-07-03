@@ -56,6 +56,7 @@ namespace GameBoyEmulator.Desktop {
             tileBuffer.SetData(cpu.gpu.TileBuffer);
             debuggerFont = Content.Load<SpriteFont>("Debugger");
             var f = File.ReadAllBytes("opus5.gb");
+            // var f = File.ReadAllBytes("cpu_instrs.gb");
             cpu.memory.LoadROM(f);
             GameName = cpu.memory.GetRomName();
             Window.Title = $"GameBoyEmulator: ({GameName}) [{cpu.memory.GetRomSize()} - {cpu.memory.GetCatridgeRamSize()}]";

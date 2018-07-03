@@ -310,6 +310,150 @@ def LDmmSP(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def LDHLIA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "H" and regA != "L" and regA != "HL":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDHLIA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDAHLI(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "H" and regA != "L" and regA != "HL" and regA != "A":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDAHLI").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDHLDA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "H" and regA != "L" and regA != "HL":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDHLDA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDAHLD(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "H" and regA != "L" and regA != "HL" and regA != "A":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDAHLD").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDAIOn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "A":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDAIOn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDAIOnA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "A":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDAIOnA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDIOnA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDIOnA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDAIOC(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDAIOC").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def LDIOCA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A":
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDIOCA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
@@ -322,6 +466,15 @@ TestTemplates = {
   "LD__nn": LD__nn,
   "LDSPnn": LDSPnn,
   "LDmmSP": LDmmSP,
+  "LDHLIA": LDHLIA,
+  "LDAHLI": LDAHLI,
+  "LDHLDA": LDHLDA,
+  "LDAHLD": LDAHLD,
+  "LDAIOn": LDAIOn,
+  "LDAIOn": LDAIOn,
+  "LDIOnA": LDIOnA,
+  "LDAIOC": LDAIOC,
+  "LDIOCA": LDIOCA,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
