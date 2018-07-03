@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using OpenGL;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public static class CPUInstructions {
@@ -1497,14 +1498,17 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void RRCr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            var ci = (b & 0x01) != 0 ? 0x80 : 0x00;
-            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            var c = b & 1;
+
+            b = (byte) ((b >> 1) | (c << 7));
             
-            b = (byte) ((b >> 1) + ci);
             reg.SetRegister(regI, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c > 0;
+            
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
@@ -1512,14 +1516,17 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void RRCHL(CPU cpu) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
-            var ci = (b & 0x01) != 0 ? 0x80 : 0x00;
-            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            var c = b & 1;
+
+            b = (byte) ((b >> 1) | (c << 7));
             
-            b = (byte) ((b >> 1) + ci);
             cpu.memory.WriteByte(reg.HL, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c > 0;
+            
             reg.lastClockM = 4;
             reg.lastClockT = 16;
         }
@@ -1527,13 +1534,15 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SLAr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            var co = (b & 0x80) != 0x00 ? 0x10 : 0x00;
+            var c = b >> 7;
             b = (byte) (b << 1);
             
             reg.SetRegister(regI, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c > 0;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1542,13 +1551,15 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SLAHL(CPU cpu) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
-            var co = (b & 0x80) != 0x00 ? 0x10 : 0x00;
+            var c = b >> 7;
             b = (byte) (b << 1);
 
             cpu.memory.WriteByte(reg.HL, b);
-            
-            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c > 0;
             
             reg.lastClockM = 4;
             reg.lastClockT = 16;
@@ -1557,14 +1568,17 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SRAr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            var ci = (b & 0x80) != 0x00 ? 0x01 : 0x00;
-            var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
-            b = (byte) ((b >> 1) + ci);
+            var c = (b & 1) > 0;
+            var ext = b & 0x80;
+
+            b = (byte) ((b >> 1) | ext);
             
             reg.SetRegister(regI, b);
 
-            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1573,14 +1587,17 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SRAHL(CPU cpu) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
-            var ci = (b & 0x80) != 0x00 ? 0x01 : 0x00;
-            var co = (b & 0x01) != 0x00 ? 0x10 : 0x00;
-            b = (byte) ((b >> 1) + ci);
+            var c = (b & 1) > 0;
+            var ext = b & 0x80;
+
+            b = (byte) ((b >> 1) | ext);
 
             cpu.memory.WriteByte(reg.HL, b);
-            
-            reg.F = b != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c;
             
             reg.lastClockM = 4;
             reg.lastClockT = 16;
@@ -1592,7 +1609,10 @@ namespace GameBoyEmulator.Desktop.GBC {
             var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
             reg.SetRegister(regI, (byte) swapped);
 
-            reg.F = (byte) (swapped != 0 ? 0 : Flags.FLAG_ZERO);
+            reg.FlagZero = swapped == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -1604,7 +1624,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             var swapped = ((b & 0x0F) << 4) | ((b & 0xF0) >> 4);
             cpu.memory.WriteByte(reg.HL, (byte) swapped);
             
-            reg.F = (byte) (swapped != 0 ? 0 : Flags.FLAG_ZERO);
+            reg.FlagZero = swapped == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
+            
             reg.lastClockM = 2;
             reg.lastClockT = 8;
         }
@@ -1612,13 +1636,16 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SRLr(CPU cpu, string regI) {
             var reg = cpu.reg;
             var b = reg.GetRegister(regI);
-            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            var c = (b & 1) > 0;
+
             b = (byte) (b >> 1);
+
             reg.SetRegister(regI, b);
-            
-            
-            reg.F = (byte) (b != 0 ? 0 : Flags.FLAG_ZERO);
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -1627,12 +1654,17 @@ namespace GameBoyEmulator.Desktop.GBC {
         static void SRLHL(CPU cpu) {
             var reg = cpu.reg;
             var b = cpu.memory.ReadByte(reg.HL);
-            var co = (b & 0x01) != 0 ? 0x10 : 0x00;
+            var c = (b & 1) > 0;
+
             b = (byte) (b >> 1);
-            cpu.memory.WriteByte(reg.HL, b);
             
-            reg.F = (byte) (b != 0 ? 0 : Flags.FLAG_ZERO);
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            cpu.memory.WriteByte(reg.HL, b);
+
+            reg.FlagZero = b == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = c;
+
             
             reg.lastClockM = 4;
             reg.lastClockT = 16;
@@ -1640,7 +1672,10 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         static void BIT(CPU cpu, int n, string regI) {
             var reg = cpu.reg;
-            reg.F = (reg.GetRegister(regI) & (1 << n)) != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+            
+            reg.FlagZero = (reg.GetRegister(regI) & (1 << n)) != 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
             
             reg.lastClockM = 2;
             reg.lastClockT = 4;
@@ -1648,7 +1683,10 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         static void BITm(CPU cpu, int n) {
             var reg = cpu.reg;
-            reg.F = (cpu.memory.ReadByte(reg.HL) & (1 << n)) != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+            
+            reg.FlagZero = (cpu.memory.ReadByte(reg.HL) & (1 << n)) != 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
