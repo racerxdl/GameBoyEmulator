@@ -21,6 +21,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         internal bool running;
         internal bool paused;
         internal bool step;
+        internal bool stopped;
 
         internal Thread cpuThread;
 
@@ -90,6 +91,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             _halt = false;
             clockT = 0;
             clockM = 0;
+            stopped = false;
             reg.Reset();
             memory.Reset();
             gpu.Reset();

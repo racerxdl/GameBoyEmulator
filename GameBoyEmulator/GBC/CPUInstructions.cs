@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public static class CPUInstructions {
@@ -392,14 +393,13 @@ namespace GameBoyEmulator.Desktop.GBC {
             if (a > 127) {
                 a = -((~a + 1) & 0xFF);
             }
-            
+
             reg.FlagZero = false;
             reg.FlagSub = false;
             reg.FlagCarry = (reg.SP + a) > 0xFFFF;
             reg.FlagHalfCarry = ((reg.SP & 0xF) + (a & 0xF)) > 0xF;
-
+            
             reg.SP = (ushort) (reg.SP + a);
-
             
             reg.lastClockM = 4;
             reg.lastClockT = 16;
@@ -679,8 +679,12 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void ORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A |= reg.GetRegister(regI);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
-            
+
+            reg.FlagZero = reg.A == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
+
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
@@ -688,7 +692,11 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void ORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.HL);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+
+            reg.FlagZero = reg.A == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -698,7 +706,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.A |= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+
+            reg.FlagZero = reg.A == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -707,7 +719,11 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void XORr(CPU cpu, string regI) {
             var reg = cpu.reg;
             reg.A ^= reg.GetRegister(regI);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+
+            reg.FlagZero = reg.A == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -716,7 +732,11 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void XORHL(CPU cpu) {
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.HL);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+
+            reg.FlagZero = reg.A == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
             
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -726,7 +746,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.A ^= cpu.memory.ReadByte(reg.PC);
             reg.PC++;
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+
+            reg.FlagZero = reg.A == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = false;
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -748,10 +772,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         private static void INCHLm(CPU cpu) {
             var reg = cpu.reg;
-            var v = (byte) (cpu.memory.ReadByte(reg.HL) + 1);
-            cpu.memory.WriteByte(reg.HL, v);
+            var v = cpu.memory.ReadByte(reg.HL);
+            var v2 = (byte) (v + 1);
+            cpu.memory.WriteByte(reg.HL, v2);
             
-            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = (v & 0xF) + 1 > 0xF;
+            reg.FlagZero = v2 != 0;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -759,10 +786,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         private static void DECr(CPU cpu, string regI) {
             var reg = cpu.reg;
-            var v = (byte) (reg.GetRegister(regI) - 1); 
-            reg.SetRegister(regI, v);
+            var v = reg.GetRegister(regI);
+            var v2 = (byte) (v - 1);
+            reg.SetRegister(regI, v2);
             
-            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+            reg.FlagSub = true;
+            reg.FlagHalfCarry = (v & 0xF) == 0;
+            reg.FlagZero = v2 == 0;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -770,10 +800,13 @@ namespace GameBoyEmulator.Desktop.GBC {
         
         private static void DECHLm(CPU cpu) {
             var reg = cpu.reg;
-            var v = (byte)(cpu.memory.ReadByte(reg.HL) - 1);
+            var v = cpu.memory.ReadByte(reg.HL);
+            var v2 = (byte) (v - 1);
             cpu.memory.WriteByte(reg.HL, v);
             
-            reg.F = v != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+            reg.FlagSub = true;
+            reg.FlagHalfCarry = (v & 0xF) == 0;
+            reg.FlagZero = v2 == 0;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -836,44 +869,60 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         private static void RLA(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.F & Flags.FLAG_CARRY) != 0x00 ? 0x01 : 0x00;
-            var co = (reg.A & 0x80) != 0x00 ? 0x10 : 0x00;
+            var c = (reg.A >> 7) > 0;
+            var f = reg.FlagCarry ? 1 : 0;
 
-            reg.A = (byte) ((reg.A << 1) + ci);
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.A = (byte) ((reg.A << 1) | f);
+
+            reg.FlagCarry = c;
+            reg.FlagZero = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagSub = false;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }  
         private static void RLCA(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.A & 0x80) != 0x00 ? 0x01 : 0x00;
-            var co = (reg.A & 0x80) != 0x00 ? 0x10 : 0x00;
 
-            reg.A = (byte) ((reg.A << 1) + ci);
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            var c = (reg.A >> 7) & 0x1;
+
+            reg.A = (byte) ((reg.A << 1) | c);
+            
+            reg.FlagCarry = c > 0;
+            reg.FlagZero = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagSub = false;
+
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         private static void RRA(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.F & Flags.FLAG_CARRY) != 0 ? 0x80 : 0x00;
-            var co = (reg.A & 0x01) != 0 ? 0x10 : 0x00;
 
-            reg.A = (byte) ((reg.A >> 1) + ci);
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            var c = reg.A & 1;
+            var f = reg.FlagCarry ? 1 : 0;
+
+            reg.A = (byte)((reg.A >> 1) | (f << 7));
+
+            reg.FlagCarry = c > 0;
+            reg.FlagHalfCarry = false;
+            reg.FlagZero = false;
+            reg.FlagSub = false;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
         private static void RRCA(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.A & 0x01) != 0 ? 0x80 : 0x00;
-            var co = (reg.A & 0x01) != 0 ? 0x10 : 0x00;
+            var c = reg.A & 1;
+            reg.A = (byte) ((reg.A >> 1) | (c << 7));
 
-            reg.A = (byte) ((reg.A >> 1) + ci);
-            reg.F = (byte) ((reg.F & 0xEF) + co);
+            reg.FlagCarry = c > 0;
+            reg.FlagHalfCarry = false;
+            reg.FlagZero = false;
+            reg.FlagSub = false;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -881,33 +930,21 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         private static void CPL(CPU cpu) {
             var reg = cpu.reg;
-            reg.A = (byte) (0 - reg.A);
-            reg.F = reg.A != 0 ? (byte) 0x00 : (byte) Flags.FLAG_ZERO;
+            reg.A = (byte) ~reg.A;
+
+            reg.FlagHalfCarry = true;
+            reg.FlagSub = true;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
 
-//        private static void NEG(CPU cpu) {
-//            var reg = cpu.reg;
-//            var v = 0 - reg.A;
-// 
-//            reg.F = v < 0 ? (byte) Flags.FLAG_CARRY : (byte) 0x00;
-//            reg.A = (byte) v;
-//
-//            if (reg.A == 0) {
-//                reg.F |= Flags.FLAG_ZERO;
-//            }
-//
-//            reg.lastClockM = 2;
-//            reg.lastClockT = 8;
-//        }
-
         private static void CCF(CPU cpu) {
             var reg = cpu.reg;
-            var ci = (reg.F & Flags.FLAG_CARRY) != 0x00 ? 0x00 : 0x0;
 
-            reg.F = (byte) ((reg.F & 0xEF) + ci);
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = false;
+            reg.FlagCarry = !reg.FlagCarry;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -915,7 +952,11 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         private static void SCF(CPU cpu) {
             var reg = cpu.reg;
-            reg.F |= Flags.FLAG_CARRY;
+
+            reg.FlagCarry = true;
+            reg.FlagHalfCarry = false;
+            reg.FlagSub = false;
+            
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }
@@ -982,7 +1023,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void JPNZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
+            if (reg.FlagZero) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -997,7 +1038,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void JPZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
+            if (!reg.FlagZero) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -1012,7 +1053,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void JPNCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
+            if (reg.FlagCarry) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -1027,7 +1068,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void JPCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
+            if (!reg.FlagCarry) {
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
                 reg.PC += 2;
@@ -1063,7 +1104,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
+            if (reg.FlagZero) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1084,7 +1125,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
+            if (!reg.FlagZero) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1105,7 +1146,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
+            if (reg.FlagCarry) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1126,7 +1167,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 v = -((~v + 1) & 0xFF);
             }
 
-            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
+            if (!reg.FlagCarry) {
                 reg.lastClockM = 2;
                 reg.lastClockT = 8;
                 return;
@@ -1138,27 +1179,11 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.lastClockT = 12;
         }
 
-        private static void DJNZn(CPU cpu) {
+        private static void Stop(CPU cpu) {
             var reg = cpu.reg;
-            var v = (int)cpu.memory.ReadByte(reg.PC);
-            reg.PC++;
-
-            if (v > 127) {
-                v = -((~v + 1) & 0xFF);
-            }
-
-            reg.B--;
-
-            if (reg.B == 0x00) {
-                reg.lastClockM = 2;
-                reg.lastClockT = 8;
-                return;
-            }
-            
-            reg.PC = (ushort)(reg.PC + v);
-
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            cpu.stopped = true;
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
         }
 
         private static void CALLnn(CPU cpu) {
@@ -1192,7 +1217,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void CALLZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
+            if (!reg.FlagCarry) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1210,7 +1235,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void CALLNCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
+            if (reg.FlagCarry) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1228,7 +1253,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void CALLCnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
+            if (!reg.FlagCarry) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1266,7 +1291,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void RETNZ(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
+            if (reg.FlagZero) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1281,7 +1306,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void RETNC(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_CARRY) != 0x00) {
+            if (reg.FlagCarry) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1296,7 +1321,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void RETC(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_CARRY) != Flags.FLAG_CARRY) {
+            if (!reg.FlagCarry) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1311,7 +1336,7 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void RETZ(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_ZERO) != Flags.FLAG_ZERO) {
+            if (!reg.FlagZero) {
                 reg.lastClockM = 1;
                 reg.lastClockT = 4;
                 return;
@@ -1978,7 +2003,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             (cpu) => RRCA(cpu),
             #endregion
             #region 0x10 Group
-            (cpu) => DJNZn(cpu),
+            (cpu) => Stop(cpu),
             (cpu) => LD__nn(cpu, "D", "E"),
             (cpu) => LD__m_(cpu, "D", "E", "A"),
             (cpu) => INC(cpu, "D", "E"),
