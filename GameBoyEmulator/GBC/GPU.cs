@@ -89,7 +89,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 VRamBuffer[i] = Color.White;
             }
             oam = new byte[160];
-            switchLCD = false;
+            switchLCD = true;
             switchBg = false;
             objSize = false;
             objs = new GPUObject[40];
