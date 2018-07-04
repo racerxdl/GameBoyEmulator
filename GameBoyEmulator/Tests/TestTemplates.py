@@ -490,6 +490,94 @@ def LDHLSPr(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def ADDr(instr, opcode, args, cycles, flags):
+  regI, = args
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A" and regA != regI and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("ADDr").format(
+    regI=regI,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def ADDHL(instr, opcode, args, cycles, flags):
+  if len(args) == 0:
+    asserts = '''#region Test no change to other regs\n'''
+
+    for regA in regList:
+      if regA != "A" and not (CheckFlagChange(flags) and regA == "F"):
+        asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+    asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+    return LoadTPL("ADDHLm").format(
+      opcode=opcode,
+      instr=instr,
+      asserts=asserts,
+      flags=GenFlagAssert(flags)
+    )
+  else:
+    regA_, regB_ = args
+    asserts = '''#region Test no change to other regs\n'''
+
+    for regA in regList:
+      if regA != "HL" and regA != "H" and regA != "L" and not (CheckFlagChange(flags) and regA == "F"):
+        asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+    asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+    return LoadTPL("ADDHLrr").format(
+      regA = regA_,
+      regB = regB_,
+      opcode=opcode,
+      instr=instr,
+      asserts=asserts,
+      flags=GenFlagAssert(flags)
+    )
+
+
+def ADDHLSP(instr, opcode, args, cycles, flags):
+  if len(args) == 0:
+    asserts = '''#region Test no change to other regs\n'''
+
+    for regA in regList:
+      if regA != "HL" and regA != "H" and regA != "L" and not (CheckFlagChange(flags) and regA == "F"):
+        asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+    asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+    return LoadTPL("ADDHLSP").format(
+      opcode=opcode,
+      instr=instr,
+      asserts=asserts,
+      flags=GenFlagAssert(flags)
+    )
+
+def ADDSPn(instr, opcode, args, cycles, flags):
+  if len(args) == 0:
+    asserts = '''#region Test no change to other regs\n'''
+
+    for regA in regList:
+      if regA != "SP" and regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+        asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+    asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+    return LoadTPL("ADDSPn").format(
+      opcode=opcode,
+      instr=instr,
+      asserts=asserts,
+      flags=GenFlagAssert(flags)
+    )
+
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
@@ -513,6 +601,10 @@ TestTemplates = {
   "LDIOCA": LDIOCA,
   "LDHLSPn": LDHLSPn,
   "LDHLSPr": LDHLSPr,
+  "ADDr": ADDr,
+  "ADDHL": ADDHL,
+  "ADDHLSP": ADDHLSP,
+  "ADDSPn": ADDSPn,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

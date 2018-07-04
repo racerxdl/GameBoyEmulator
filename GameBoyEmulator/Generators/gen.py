@@ -40,7 +40,7 @@ def Gen(data):
         "flagResult": flagResult,
         "templateData": {
           "name": templateName,
-          "args": [ x.replace("\"", "").strip() for x in templateArgs.split(",")]
+          "args": filter(lambda x: len(x) != 0, [ x.replace("\"", "").strip() for x in templateArgs.split(",") ])
         }
       })
       code = code + 1

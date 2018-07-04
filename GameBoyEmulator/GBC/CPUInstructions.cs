@@ -313,13 +313,12 @@ namespace GameBoyEmulator.Desktop.GBC {
             var z = (int)reg.GetRegister(regI);
             var sum = reg.A + z;
 
+            reg.FlagCarry = sum > 255;
+            reg.FlagZero = (sum & 0xFF) == 0;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = (reg.A & 0xF) + (z & 0xF) > 0xF;
             
             reg.A = (byte) sum;
-
-            reg.FlagCarry = sum > 255;
-            reg.FlagZero = reg.A == 0;
-            reg.FlagSub = false;
-            reg.FlagHalfCarry = ((reg.A & 0xF) + (z & 0xF)) > 0xF;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -329,12 +328,13 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var z = (int) cpu.memory.ReadByte(reg.HL);
             var sum = reg.A + z;
-            reg.A = (byte) sum;
             
             reg.FlagCarry = sum > 255;
-            reg.FlagZero = reg.A == 0;
+            reg.FlagZero = (sum & 0xFF) == 0;
             reg.FlagSub = false;
             reg.FlagHalfCarry = ((reg.A & 0xF) + (z & 0xF)) > 0xF;
+
+            reg.A = (byte) sum;
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -345,13 +345,13 @@ namespace GameBoyEmulator.Desktop.GBC {
             var z = (int) cpu.memory.ReadByte(reg.PC);
             reg.PC++;
             var sum = reg.A + z;
-            
-            reg.A = (byte) sum;
 
             reg.FlagCarry = sum > 255;
-            reg.FlagZero = reg.A == 0;
+            reg.FlagZero = (sum & 0xFF) == 0;
             reg.FlagSub = false;
             reg.FlagHalfCarry = ((reg.A & 0xF) + (z & 0xF)) > 0xF;
+            
+            reg.A = (byte) sum;
 
             reg.lastClockM = 2;
             reg.lastClockT = 8;
@@ -372,8 +372,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.H = (byte) (sum >> 8);
             reg.L = (byte) sum;
 
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
         
         private static void ADDHLSP(CPU cpu) {
@@ -388,8 +388,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.H = (byte) (sum >> 8);
             reg.L = (byte) sum;
 
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
 
         private static void ADDSPn(CPU cpu) {
@@ -399,10 +399,10 @@ namespace GameBoyEmulator.Desktop.GBC {
             if (a > 127) {
                 a = -((~a + 1) & 0xFF);
             }
-
+            
             reg.FlagZero = false;
             reg.FlagSub = false;
-            reg.FlagCarry = (reg.SP + a) > 0xFFFF;
+            reg.FlagCarry = (reg.SP & 0xFF) + (a & 0xFF) > 0xFF;
             reg.FlagHalfCarry = ((reg.SP & 0xF) + (a & 0xF)) > 0xF;
             
             reg.SP = (ushort) (reg.SP + a);
