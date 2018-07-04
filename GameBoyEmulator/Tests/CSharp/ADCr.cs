@@ -21,11 +21,10 @@
                 if ("{regI}" != "A") {{
                     Assert.AreEqual(regBefore.{regI}, regAfter.{regI});
                 }}
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 {asserts}

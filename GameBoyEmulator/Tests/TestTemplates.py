@@ -629,6 +629,24 @@ def ADCn(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def SUBr(instr, opcode, args, cycles, flags):
+  regI, = args
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A" and regA != regI and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("SUBr").format(
+    regI=regI,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
 
 
 TestTemplates = {
@@ -661,6 +679,7 @@ TestTemplates = {
   "ADCr": ADCr,
   "ADCHL": ADCHL,
   "ADCn": ADCn,
+  "SUBr": SUBr,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

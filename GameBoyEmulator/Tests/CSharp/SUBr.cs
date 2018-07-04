@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void ADCHLm() {{
+        public void SUBr{regI}() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -9,27 +9,20 @@
                 cpu.reg.RandomizeRegisters();
                 cpu.memory.RandomizeMemory();
 
-                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
-
-                cpu.reg.H = 0xA0;
-                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
-
-                var val = (byte) random.Next(0x00, 0xFF);
-
-                cpu.memory.WriteByte(cpu.reg.HL, val);
-
                 var regBefore = cpu.reg.Clone();
                 CPUInstructions.opcodes[0x{opcode:02x}](cpu);
                 var regAfter = cpu.reg.Clone();
 
-                var f = regBefore.FlagCarry ? 1 : 0;
-                var sum = regBefore.A + val + f;
-                var halfCarry = (regBefore.A & 0xF) + (val & 0xF) + f > 0xF;
+                var sum = regBefore.A - regBefore.{regI};
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.{regI} & 0xF);
 
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("{regI}" != "A") {{
+                    Assert.AreEqual(regBefore.{regI}, regAfter.{regI});
+                }}
 
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 {asserts}

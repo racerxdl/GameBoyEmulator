@@ -4686,11 +4686,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 if ("B" != "A") {
                     Assert.AreEqual(regBefore.B, regAfter.B);
                 }
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -4739,11 +4738,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 if ("C" != "A") {
                     Assert.AreEqual(regBefore.C, regAfter.C);
                 }
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -4792,11 +4790,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 if ("D" != "A") {
                     Assert.AreEqual(regBefore.D, regAfter.D);
                 }
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -4845,11 +4842,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 if ("E" != "A") {
                     Assert.AreEqual(regBefore.E, regAfter.E);
                 }
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -4898,11 +4894,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 if ("H" != "A") {
                     Assert.AreEqual(regBefore.H, regAfter.H);
                 }
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -4951,11 +4946,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 if ("L" != "A") {
                     Assert.AreEqual(regBefore.L, regAfter.L);
                 }
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -5009,11 +5003,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var sum = regBefore.A + val + f;
                 var halfCarry = (regBefore.A & 0xF) + (val & 0xF) + f > 0xF;
 
-                Assert.AreEqual((byte) sum, regAfter.A);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(sum & 0xFF, regAfter.A);
-                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -5063,11 +5056,10 @@ namespace GameBoyEmulator.Desktop.Tests {
                 if ("A" != "A") {
                     Assert.AreEqual(regBefore.A, regAfter.A);
                 }
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
 
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
-                Assert.AreEqual(sum & 0xFF, regAfter.A);
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 
                 #region Test no change to other regs
@@ -5090,6 +5082,357 @@ namespace GameBoyEmulator.Desktop.Tests {
                 
                 #region Flag Tests
                 Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x90 Test SUB A, B
+        [Test]
+        public void SUBrB() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x90) \"SUB A, B\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x90](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - regBefore.B;
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.B & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("B" != "A") {
+                    Assert.AreEqual(regBefore.B, regAfter.B);
+                }
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x91 Test SUB A, C
+        [Test]
+        public void SUBrC() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x91) \"SUB A, C\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x91](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - regBefore.C;
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.C & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("C" != "A") {
+                    Assert.AreEqual(regBefore.C, regAfter.C);
+                }
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x92 Test SUB A, D
+        [Test]
+        public void SUBrD() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x92) \"SUB A, D\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x92](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - regBefore.D;
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.D & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("D" != "A") {
+                    Assert.AreEqual(regBefore.D, regAfter.D);
+                }
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x93 Test SUB A, E
+        [Test]
+        public void SUBrE() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x93) \"SUB A, E\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x93](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - regBefore.E;
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.E & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("E" != "A") {
+                    Assert.AreEqual(regBefore.E, regAfter.E);
+                }
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x94 Test SUB A, H
+        [Test]
+        public void SUBrH() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x94) \"SUB A, H\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x94](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - regBefore.H;
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.H & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("H" != "A") {
+                    Assert.AreEqual(regBefore.H, regAfter.H);
+                }
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x95 Test SUB A, L
+        [Test]
+        public void SUBrL() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x95) \"SUB A, L\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x95](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - regBefore.L;
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.L & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("L" != "A") {
+                    Assert.AreEqual(regBefore.L, regAfter.L);
+                }
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x97 Test SUB A, A
+        [Test]
+        public void SUBrA() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x97) \"SUB A, A\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x97](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - regBefore.A;
+                var halfCarry = (regBefore.A & 0xF) < (regBefore.A & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("A" != "A") {
+                    Assert.AreEqual(regBefore.A, regAfter.A);
+                }
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
                 #endregion
             }
         }
@@ -5120,9 +5463,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var halfCarry = (regBefore.A & 0xF) + (val & 0xF) + f > 0xF;
 
                 Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
-                Assert.AreEqual((byte) sum, regAfter.A);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(sum & 0xFF, regAfter.A);
+
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);

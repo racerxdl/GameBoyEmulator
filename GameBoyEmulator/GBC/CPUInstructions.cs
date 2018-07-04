@@ -453,7 +453,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var f = reg.FlagCarry ? 1 : 0;
             var sum = (reg.A + b + f);
             
-            reg.FlagZero = sum == 0;
+            reg.FlagZero = (sum & 0xFF) == 0;
             reg.FlagCarry = sum > 255;
             reg.FlagSub = false;
             reg.FlagHalfCarry = ((reg.A & 0xF) + (b & 0xF) + f) > 0xF;

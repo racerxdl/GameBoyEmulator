@@ -71,7 +71,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                                    state.IsKeyDown(Keys.Enter);
             
             if (triggerInterrupt) {
-                Console.WriteLine("Trigger Joy Interrupt");
+//                Console.WriteLine("Trigger Joy Interrupt");
                 cpu.reg.TriggerInterrupts |= Flags.INT_JOYPAD;
             } 
         }

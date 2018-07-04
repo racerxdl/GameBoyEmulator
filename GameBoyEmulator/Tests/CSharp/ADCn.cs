@@ -24,9 +24,8 @@
                 var halfCarry = (regBefore.A & 0xF) + (val & 0xF) + f > 0xF;
 
                 Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
-                Assert.AreEqual((byte) sum, regAfter.A);
-                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(sum & 0xFF, regAfter.A);
+
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);
                 Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
