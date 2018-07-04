@@ -284,11 +284,16 @@ namespace GameBoyEmulator.Desktop.GBC {
             if (v > 127) {
                 v = -((~v + 1) & 0xFF);
             }
+            
+            reg.FlagZero = false;
+            reg.FlagSub = false;
+            reg.FlagHalfCarry = (reg.SP & 0xF) + (v & 0xF) > 0xF;
+            reg.FlagCarry = (reg.SP & 0xFF) + (v & 0xFF) > 0xFF;
 
             v += reg.SP;
             reg.H = (byte) (v >> 8);
             reg.L = (byte) v;
-
+            
             reg.lastClockM = 3;
             reg.lastClockT = 12;
         }
@@ -298,7 +303,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.SP = reg.HL;
 
             reg.lastClockM = 2;
-            reg.lastClockT = 4;
+            reg.lastClockT = 8;
         }
         #endregion
         #region Data Processing

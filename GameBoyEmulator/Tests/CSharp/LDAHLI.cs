@@ -1,4 +1,4 @@
-        #region Test {instr}
+        #region 0x{opcode:02x} Test {instr}
         [Test]
         public void LDAHLI() {{
             var cpu = new CPU();

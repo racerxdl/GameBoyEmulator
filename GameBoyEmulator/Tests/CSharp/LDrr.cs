@@ -1,4 +1,4 @@
-        #region #region Test {instr}
+        #region 0x{opcode:02x} Test {instr}
         [Test]
         public void LDrr{regI}{regO}() {{
             var cpu = new CPU();

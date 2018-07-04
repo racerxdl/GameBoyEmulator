@@ -66,6 +66,9 @@ def LoadTPL(tplname):
   f.close()
   return tpl
 
+def CheckFlagChange(flags):
+  return not (flags["carry"] == None and flags["sub"] == None and flags["halfcarry"] == None and flags["zero"] == None)
+
 def GenFlagAssert(flags):
   flagAssert = '''
                 #region Flag Tests\n'''
@@ -454,6 +457,39 @@ def LDIOCA(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def LDHLSPn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "HL" and regA != "PC" and regA != "H" and regA != "L" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDHLSPn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+
+def LDHLSPr(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("LDHLSPr").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
@@ -475,6 +511,8 @@ TestTemplates = {
   "LDIOnA": LDIOnA,
   "LDAIOC": LDAIOC,
   "LDIOCA": LDIOCA,
+  "LDHLSPn": LDHLSPn,
+  "LDHLSPr": LDHLSPr,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

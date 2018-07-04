@@ -147,15 +147,15 @@ LDrHLm_l|LD L, [HL]|8|----|LDrHLm_["L"]
 LDrr_la|LD L, A|4|----|LDrr["L", "A"]
 
 // 70
-LDHLmr_b|LD [HL], X|8|----|LDHLmr_["B"]
-LDHLmr_c|LD [HL], X|8|----|LDHLmr_["C"]
-LDHLmr_d|LD [HL], X|8|----|LDHLmr_["D"]
-LDHLmr_e|LD [HL], X|8|----|LDHLmr_["E"]
+LDHLmr_b|LD [HL], B|8|----|LDHLmr_["B"]
+LDHLmr_c|LD [HL], C|8|----|LDHLmr_["C"]
+LDHLmr_d|LD [HL], D|8|----|LDHLmr_["D"]
+LDHLmr_e|LD [HL], E|8|----|LDHLmr_["E"]
 
-LDHLmr_h|LD [HL], X|8|----|LDHLmr_["H"]
-LDHLmr_l|LD [HL], X|8|----|LDHLmr_["L"]
+LDHLmr_h|LD [HL], H|8|----|LDHLmr_["H"]
+LDHLmr_l|LD [HL], L|8|----|LDHLmr_["L"]
 HALT|HALT|4|----|HALT[]
-LDHLmr_a|LD [HL], X|8|----|LDHLmr_["A"]
+LDHLmr_a|LD [HL], A|8|----|LDHLmr_["A"]
 
 LDrr_ab|LD A, B|4|----|LDrr["A", "B"]
 LDrr_ac|LD A, C|4|----|LDrr["A", "C"]
@@ -326,7 +326,7 @@ ORn|OR A, d8|8|Z000|ORn[]
 RST30|RST 30H|16|----|RSTXX[0x30]
 
 LDHLSPn|LD HL, SP+r8|12|00HC|LDHLSPn[]
-XX|UNDEFINED|0|----|LDHLSPr[]
+LDSPHLr|LD HL, SP|8|----|LDHLSPr[]
 LDAmm|LD A, [a16]|16|----|LD_mm["A"]
 EI|EI|4|----|EI[]
 

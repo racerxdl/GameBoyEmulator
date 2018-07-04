@@ -19,9 +19,9 @@ def Gen(data):
 
       flagResult = {
         "zero":       True if flags[0] == "1" else False if flags[0] == "0" else "Z" if flags[0] == "Z" else None,
-        "sub":        True if flags[1] == "1" else False if flags[1] == "0" else "N" if flags[0] == "N" else None,
-        "halfcarry":  True if flags[2] == "1" else False if flags[2] == "0" else "H" if flags[0] == "H" else None,
-        "carry":      True if flags[3] == "1" else False if flags[3] == "0" else "C" if flags[0] == "C" else None
+        "sub":        True if flags[1] == "1" else False if flags[1] == "0" else "N" if flags[1] == "N" else None,
+        "halfcarry":  True if flags[2] == "1" else False if flags[2] == "0" else "H" if flags[2] == "H" else None,
+        "carry":      True if flags[3] == "1" else False if flags[3] == "0" else "C" if flags[3] == "C" else None
       }
 
       z = templateRgx.match(template)
