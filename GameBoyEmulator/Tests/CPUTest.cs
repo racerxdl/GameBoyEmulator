@@ -4558,7 +4558,7 @@ namespace GameBoyEmulator.Desktop.Tests {
         #endregion
         #region 0x86 Test ADD A, [HL]
         [Test]
-        public void ADDHLr() {
+        public void ADDHLm() {
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x86) \"ADD A, [HL]\"");
@@ -4654,6 +4654,493 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #region Test Cycles
                 Assert.AreEqual(regAfter.lastClockT, 4);
                 Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x88 Test ADC A, B
+        [Test]
+        public void ADCrB() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x88) \"ADC A, B\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x88](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + regBefore.B + f;
+                var halfCarry = (regBefore.A & 0xF) + (regBefore.B & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("B" != "A") {
+                    Assert.AreEqual(regBefore.B, regAfter.B);
+                }
+
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x89 Test ADC A, C
+        [Test]
+        public void ADCrC() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x89) \"ADC A, C\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x89](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + regBefore.C + f;
+                var halfCarry = (regBefore.A & 0xF) + (regBefore.C & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("C" != "A") {
+                    Assert.AreEqual(regBefore.C, regAfter.C);
+                }
+
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x8a Test ADC A, D
+        [Test]
+        public void ADCrD() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x8a) \"ADC A, D\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x8a](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + regBefore.D + f;
+                var halfCarry = (regBefore.A & 0xF) + (regBefore.D & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("D" != "A") {
+                    Assert.AreEqual(regBefore.D, regAfter.D);
+                }
+
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x8b Test ADC A, E
+        [Test]
+        public void ADCrE() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x8b) \"ADC A, E\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x8b](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + regBefore.E + f;
+                var halfCarry = (regBefore.A & 0xF) + (regBefore.E & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("E" != "A") {
+                    Assert.AreEqual(regBefore.E, regAfter.E);
+                }
+
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x8c Test ADC A, H
+        [Test]
+        public void ADCrH() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x8c) \"ADC A, H\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x8c](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + regBefore.H + f;
+                var halfCarry = (regBefore.A & 0xF) + (regBefore.H & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("H" != "A") {
+                    Assert.AreEqual(regBefore.H, regAfter.H);
+                }
+
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x8d Test ADC A, L
+        [Test]
+        public void ADCrL() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x8d) \"ADC A, L\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x8d](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + regBefore.L + f;
+                var halfCarry = (regBefore.A & 0xF) + (regBefore.L & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("L" != "A") {
+                    Assert.AreEqual(regBefore.L, regAfter.L);
+                }
+
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x8e Test ADC A, [HL]
+        [Test]
+        public void ADCHLm() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x8e) \"ADC A, [HL]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(cpu.reg.HL, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x8e](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + val + f;
+                var halfCarry = (regBefore.A & 0xF) + (val & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x8f Test ADC A, A
+        [Test]
+        public void ADCrA() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x8f) \"ADC A, A\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x8f](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + regBefore.A + f;
+                var halfCarry = (regBefore.A & 0xF) + (regBefore.A & 0xF) + f > 0xF;
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                if ("A" != "A") {
+                    Assert.AreEqual(regBefore.A, regAfter.A);
+                }
+
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 4);
+                Assert.AreEqual(regAfter.lastClockM, 1);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xce Test ADC A, d8
+        [Test]
+        public void ADCn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xce) \"ADC A, d8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + random.Next(0x00, 0xFF));
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(cpu.reg.PC, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xce](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var f = regBefore.FlagCarry ? 1 : 0;
+                var sum = regBefore.A + val + f;
+                var halfCarry = (regBefore.A & 0xF) + (val & 0xF) + f > 0xF;
+
+                Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                Assert.AreEqual((byte) sum, regAfter.A);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
                 #endregion
 
                 
