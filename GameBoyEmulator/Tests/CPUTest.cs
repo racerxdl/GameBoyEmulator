@@ -5386,6 +5386,62 @@ namespace GameBoyEmulator.Desktop.Tests {
             }
         }
         #endregion
+        #region 0x96 Test SUB A, [HL]
+        [Test]
+        public void SUBHL() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x96) \"SUB A, [HL]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+
+                cpu.reg.H = 0xA0;
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(cpu.reg.HL, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x96](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - val;
+                var halfCarry = (regBefore.A & 0xF) < (val & 0xF);
+
+                Assert.AreEqual((byte) sum, regAfter.A);
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
         #region 0x97 Test SUB A, A
         [Test]
         public void SUBrA() {
@@ -5433,6 +5489,60 @@ namespace GameBoyEmulator.Desktop.Tests {
                 
                 #region Flag Tests
                 Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xc6 Test ADD A, d8
+        [Test]
+        public void ADDn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xc6) \"ADD A, d8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + random.Next(0x00, 0xFF));
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(cpu.reg.PC, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xc6](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A + val;
+                var halfCarry = (regBefore.A & 0xF) + (val & 0xF) > 0xF;
+
+                Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+
+                Assert.AreEqual(sum > 255, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(false, regAfter.FlagSub);
                 #endregion
             }
         }
@@ -5488,6 +5598,60 @@ namespace GameBoyEmulator.Desktop.Tests {
                 
                 #region Flag Tests
                 Assert.AreEqual(false, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xd6 Test SUB A, d8
+        [Test]
+        public void SUBn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xd6) \"SUB A, d8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                // Force write to Catridge Ram Random Address (avoid writting to non writeable addresses)
+                cpu.reg.PC = (ushort) ((0xA0 << 8) + random.Next(0x00, 0xFF));
+                var val = (byte) random.Next(0x00, 0xFF);
+
+                cpu.memory.WriteByte(cpu.reg.PC, val);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xd6](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                var sum = regBefore.A - val;
+                var halfCarry = (regBefore.A & 0xF) < (val & 0xF);
+
+                Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                Assert.AreEqual(sum & 0xFF, regAfter.A);
+
+                Assert.AreEqual(sum < 0, regAfter.FlagCarry);
+                Assert.AreEqual((sum & 0xFF) == 0, regAfter.FlagZero);
+                Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(regAfter.lastClockT, 8);
+                Assert.AreEqual(regAfter.lastClockM, 2);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(true, regAfter.FlagSub);
                 #endregion
             }
         }
