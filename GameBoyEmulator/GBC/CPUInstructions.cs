@@ -592,8 +592,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.FlagHalfCarry = (a & 0xF) < (b & 0xF);
             reg.FlagCarry = a < b;
 
-            reg.lastClockM = 2;
-            reg.lastClockT = 8;
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
         }
 
         private static void CPn(CPU cpu) {
@@ -704,8 +704,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.FlagHalfCarry = false;
             reg.FlagCarry = false;
             
-            reg.lastClockM = 2;
-            reg.lastClockT = 8;
+            reg.lastClockM = 1;
+            reg.lastClockT = 4;
         }
         
         private static void ORn(CPU cpu) {
@@ -770,7 +770,7 @@ namespace GameBoyEmulator.Desktop.GBC {
 
             reg.FlagSub = false;
             reg.FlagHalfCarry = (v & 0xF) + 1 > 0xF;
-            reg.FlagZero = v2 != 0;
+            reg.FlagZero = v2 == 0;
             
             reg.lastClockM = 1;
             reg.lastClockT = 4;
@@ -784,7 +784,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             
             reg.FlagSub = false;
             reg.FlagHalfCarry = (v & 0xF) + 1 > 0xF;
-            reg.FlagZero = v2 != 0;
+            reg.FlagZero = v2 == 0;
             
             reg.lastClockM = 3;
             reg.lastClockT = 12;
@@ -808,7 +808,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             var v = cpu.memory.ReadByte(reg.HL);
             var v2 = (byte) (v - 1);
-            cpu.memory.WriteByte(reg.HL, v);
+            cpu.memory.WriteByte(reg.HL, v2);
             
             reg.FlagSub = true;
             reg.FlagHalfCarry = (v & 0xF) == 0;
@@ -840,8 +840,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.SP++;
 
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
 
         private static void DEC(CPU cpu, string regA, string regB) {
@@ -866,8 +866,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.SP--;
 
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
 
         #endregion
