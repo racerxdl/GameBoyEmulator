@@ -977,8 +977,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             cpu.memory.WriteWord(reg.SP, reg.PC);
             reg.PC = addr;
 
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
         }
         #endregion
         #region Stack Management

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GameBoyEmulator.Desktop.GBC;
 using NUnit.Framework;
 

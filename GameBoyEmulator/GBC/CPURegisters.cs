@@ -140,6 +140,14 @@ namespace GameBoyEmulator.Desktop.GBC {
                 case "H": return H;
                 case "L": return L;
                 case "F": return F;
+                case "_A": return _A;
+                case "_B": return _B;
+                case "_C": return _C;
+                case "_D": return _D;
+                case "_E": return _E;
+                case "_H": return _H;
+                case "_L": return _L;
+                case "_F": return _F;
                 default:
                     Console.WriteLine($"Unknown Register: {reg}");
                     return 0x00;
