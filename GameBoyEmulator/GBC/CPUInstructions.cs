@@ -884,7 +884,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.FlagZero = false;
             reg.FlagHalfCarry = false;
             reg.FlagSub = false;
-            
+                
             reg.lastClockM = 1;
             reg.lastClockT = 4;
         }  

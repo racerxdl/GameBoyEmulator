@@ -1102,6 +1102,118 @@ def DECSP(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def RLA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("RLA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RLCA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("RLCA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RRA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("RRA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RRCA(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("RRCA").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def CPL(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "A" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("CPL").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def CCF(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("CCF").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def SCF(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("SCF").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
@@ -1158,6 +1270,13 @@ TestTemplates = {
   "DECHLm": DECHLm,
   "INCSP": INCSP,
   "DECSP": DECSP,
+  "RLA": RLA,
+  "RLCA": RLCA,
+  "RRA": RRA,
+  "RRCA": RRCA,
+  "CPL": CPL,
+  "CCF": CCF,
+  "SCF": SCF,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})
