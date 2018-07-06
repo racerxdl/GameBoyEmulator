@@ -13,11 +13,11 @@
                 CPUInstructions.opcodes[0x{opcode:02x}](cpu);
                 var regAfter = cpu.reg.Clone();
 
-                var valA = (byte) (regBefore.{regA} + 1);
-                var valB = (byte) (valA == 0 ? regBefore.{regB} + 1 : regBefore.{regB});
+                var valA = (byte) (regBefore.{regB} - 1);
+                var valB = (byte) (valA == 255 ? regBefore.{regA} - 1 : regBefore.{regA});
 
-                Assert.AreEqual(valA, regAfter.{regA});
-                Assert.AreEqual(valB, regAfter.{regB});
+                Assert.AreEqual(valA, regAfter.{regB});
+                Assert.AreEqual(valB, regAfter.{regA});
 
                 {asserts}
                 {flags}

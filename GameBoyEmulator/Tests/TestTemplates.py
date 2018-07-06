@@ -169,17 +169,15 @@ def LDrn_(instr, opcode, args, cycles, flags):
   )
 
 def LDHLmn(instr, opcode, args, cycles, flags):
-  regO, = args
   asserts = '''#region Test no change to other regs\n'''
 
   for regA in regList:
-    if regA != regO and regA != "PC" and not ((regO == "L" or regO == "H") and regA == "HL"):
+    if regA != "PC":
       asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
 
   asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
 
   return LoadTPL("LDHLmn").format(
-    regO=regO,
     opcode=opcode,
     instr=instr,
     asserts=asserts,
@@ -1787,8 +1785,10 @@ TestTemplates = {
   "XORHL": XORHL,
   "XORn": XORn,
   "INCr": INCr,
+  "INC": INCr,
   "INCHLm": INCHLm,
   "DECr": DECr,
+  "DEC": DECr,
   "DECHLm": DECHLm,
   "INCSP": INCSP,
   "DECSP": DECSP,
@@ -1830,6 +1830,7 @@ TestTemplates = {
   "NOP": NOP,
   "NOPWARN": NOPWARN,
   "HALT": HALT,
+  "LDHLmn": LDHLmn,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

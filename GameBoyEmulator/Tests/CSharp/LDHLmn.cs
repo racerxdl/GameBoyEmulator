@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void LDHLmn{regO}() {{
+        public void LDHLmn() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -28,7 +28,6 @@
 
                 Assert.AreEqual(cpu.memory.ReadByte(cpu.reg.HL), val);
                 Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
-                Assert.AreEqual(regAfter.{regO}, regBefore.{regO});
 
                 {asserts}
                 {flags}

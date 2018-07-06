@@ -828,8 +828,8 @@ namespace GameBoyEmulator.Desktop.GBC {
                 reg.SetRegister(regA, z);
             }
             
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
         
         private static void INCHL(CPU cpu) {
@@ -854,8 +854,8 @@ namespace GameBoyEmulator.Desktop.GBC {
                 reg.SetRegister(regA, z);
             }
             
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 2;
+            reg.lastClockT = 8;
         }
         
         private static void DECHL(CPU cpu) {
