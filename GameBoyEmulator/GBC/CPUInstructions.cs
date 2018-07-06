@@ -1014,8 +1014,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             var reg = cpu.reg;
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
         }
         
         private static void JPHL(CPU cpu) {
@@ -1198,14 +1198,14 @@ namespace GameBoyEmulator.Desktop.GBC {
             cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
-            reg.lastClockM = 5;
-            reg.lastClockT = 20;
+            reg.lastClockM = 6;
+            reg.lastClockT = 24;
         }
 
         private static void CALLNZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if ((reg.F & Flags.FLAG_ZERO) != 0x00) {
+            if (reg.FlagZero) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1216,14 +1216,14 @@ namespace GameBoyEmulator.Desktop.GBC {
             cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
-            reg.lastClockM = 5;
-            reg.lastClockT = 20;
+            reg.lastClockM = 6;
+            reg.lastClockT = 24;
         }
 
         private static void CALLZnn(CPU cpu) {
             var reg = cpu.reg;
 
-            if (!reg.FlagCarry) {
+            if (!reg.FlagZero) {
                 reg.PC += 2;
                 reg.lastClockM = 3;
                 reg.lastClockT = 12;
@@ -1234,8 +1234,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
-            reg.lastClockM = 5;
-            reg.lastClockT = 20;
+            reg.lastClockM = 6;
+            reg.lastClockT = 24;
         }
 
         private static void CALLNCnn(CPU cpu) {
@@ -1252,8 +1252,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
-            reg.lastClockM = 5;
-            reg.lastClockT = 20;
+            reg.lastClockM = 6;
+            reg.lastClockT = 24;
         }
 
         private static void CALLCnn(CPU cpu) {
@@ -1270,8 +1270,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             cpu.memory.WriteWord(reg.SP, (ushort) (reg.PC + 2));
             reg.PC = cpu.memory.ReadWord(reg.PC);
 
-            reg.lastClockM = 5;
-            reg.lastClockT = 20;
+            reg.lastClockM = 6;
+            reg.lastClockT = 24;
         }
         
         private static void RET(CPU cpu) {
@@ -1279,79 +1279,78 @@ namespace GameBoyEmulator.Desktop.GBC {
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
 
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
         }
 
         private static void RETI(CPU cpu) {
             var reg = cpu.reg;
-            reg.LoadRegs();
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
             reg.InterruptEnable = true;
 
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
         }
 
         private static void RETNZ(CPU cpu) {
             var reg = cpu.reg;
 
             if (reg.FlagZero) {
-                reg.lastClockM = 1;
-                reg.lastClockT = 4;
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
                 return;
             }
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
         }
 
         private static void RETNC(CPU cpu) {
             var reg = cpu.reg;
 
             if (reg.FlagCarry) {
-                reg.lastClockM = 1;
-                reg.lastClockT = 4;
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
                 return;
             }
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
         }
         
         private static void RETC(CPU cpu) {
             var reg = cpu.reg;
 
             if (!reg.FlagCarry) {
-                reg.lastClockM = 1;
-                reg.lastClockT = 4;
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
                 return;
             }
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
         }
 
         private static void RETZ(CPU cpu) {
             var reg = cpu.reg;
 
             if (!reg.FlagZero) {
-                reg.lastClockM = 1;
-                reg.lastClockT = 4;
+                reg.lastClockM = 2;
+                reg.lastClockT = 8;
                 return;
             }
 
             reg.PC = cpu.memory.ReadWord(reg.SP);
             reg.SP += 2;
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 5;
+            reg.lastClockT = 20;
         }
         
         private static void DI(CPU cpu) {
@@ -1375,8 +1374,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         private static void NOPWARN(CPU cpu, int opcode) {
             var reg = cpu.reg;
             Console.WriteLine($"Unimplemented Opcode!!! 0x{opcode:X2} at 0x{reg.PC-1:X2}");
-            reg.lastClockM = 1;
-            reg.lastClockT = 4;
+            reg.lastClockM = 0;
+            reg.lastClockT = 0;
         }
 
         private static void HALT(CPU cpu) {

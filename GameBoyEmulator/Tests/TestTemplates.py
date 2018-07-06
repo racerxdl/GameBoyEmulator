@@ -55,8 +55,8 @@ baseTestCBTemplate = '''
 
 cycleTestTemplate = '''
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, %s);
-                Assert.AreEqual(regAfter.lastClockM, %s);
+                Assert.AreEqual(%s, regAfter.lastClockT);
+                Assert.AreEqual(%s, regAfter.lastClockM);
                 #endregion
 '''
 
@@ -1270,6 +1270,472 @@ def POP(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def JPnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("JPnn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JPHL(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("JPHL").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JPNZnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JPNZnn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    cycles=cycles,
+    flags=GenFlagAssert(flags)
+  )
+
+
+def JPZnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JPZnn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    cycles=cycles,
+    flags=GenFlagAssert(flags)
+  )
+
+
+def JPNCnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JPNCnn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JPCnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JPCnn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JRn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JRn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JRNZn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JRNZn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JRZn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JRZn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JRNCn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JRNCn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def JRCn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("JRCn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def STOP(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("STOP").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def CALLnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("CALLnn").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def CALLNZnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("CALLNZnn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def CALLZnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("CALLZnn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def CALLNCnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("CALLNCnn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def CALLCnn(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("CALLCnn").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RET(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("RET").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RETI(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("RETI").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RETNZ(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("RETNZ").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RETZ(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("RETZ").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RETNC(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("RETNC").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def RETC(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "PC" and regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n"
+
+  return LoadTPL("RETC").format(
+    cycles=cycles,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def EI(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("EI").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def DI(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("DI").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def NOP(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("NOP").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def NOPWARN(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("NOPWARN").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def HALT(instr, opcode, args, cycles, flags):
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("HALT").format(
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
@@ -1336,6 +1802,34 @@ TestTemplates = {
   "RSTXX": RSTXX,
   "PUSH": PUSH,
   "POP": POP,
+  "JPnn": JPnn,
+  "JPHL": JPHL,
+  "JPNZnn": JPNZnn,
+  "JPZnn": JPZnn,
+  "JPNCnn": JPNCnn,
+  "JPCnn": JPCnn,
+  "JRn": JRn,
+  "JRNZn": JRNZn,
+  "JRZn": JRZn,
+  "JRNCn": JRNCn,
+  "JRCn": JRCn,
+  "STOP": STOP,
+  "CALLnn": CALLnn,
+  "CALLNZnn": CALLNZnn,
+  "CALLZnn": CALLZnn,
+  "CALLNCnn": CALLNCnn,
+  "CALLCnn": CALLCnn,
+  "RET": RET,
+  "RETI": RETI,
+  "RETNZ": RETNZ,
+  "RETZ": RETZ,
+  "RETNC": RETNC,
+  "RETC": RETC,
+  "EI": EI,
+  "DI": DI,
+  "NOP": NOP,
+  "NOPWARN": NOPWARN,
+  "HALT": HALT,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

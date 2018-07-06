@@ -96,9 +96,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             var random = new Random();
 
             var regs = new [] {"A", "B", "C", "D", "E", "F", "H", "L"};
-            regs.ToList().ForEach((reg) => {
-                SetRegister(reg, (byte) random.Next(0, 0xFF));
-            });
+            regs.ToList().ForEach((reg) => SetRegister(reg, (byte) random.Next(0, 0xFF)));
 
             PC = (ushort) random.Next(0, 0xFFFF);
             SP = (ushort) random.Next(0, 0xFFFF);

@@ -21,7 +21,7 @@ LDrn_c|LD C, d8|8|----|LDrn_["C"]
 RRCA|RRCA|4|000C|RRCA[]
 
 // 10
-STOP|STOP|4|----|DJNZn[]
+STOP|STOP|4|----|STOP[]
 LDDEnn|LD DE, d16|12|----|LD__nn["D", "E"]
 LDDEmA|LD [DE], A|8|----|LD__m_["D", "E", "A"]
 INCDE|INC DE|8|----|INC["D", "E"]

@@ -8,6 +8,50 @@ namespace GameBoyEmulator.Desktop.Tests {
     public class CPUTest {
         private const int RUN_CYCLES = 100;
 
+        #region 0x00 Test NOP
+        [Test]
+        public void NOP() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x00) \"NOP\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x00](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
         #region 0x01 Test LD BC,d16
         [Test]
         public void LDBCnn() {
@@ -47,8 +91,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -99,8 +143,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -148,8 +192,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -195,8 +239,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -250,8 +294,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -298,8 +342,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -348,8 +392,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 20);
-                Assert.AreEqual(regAfter.lastClockM, 5);
+                Assert.AreEqual(20, regAfter.lastClockT);
+                Assert.AreEqual(5, regAfter.lastClockM);
                 #endregion
 
                 
@@ -396,8 +440,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -447,8 +491,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -496,8 +540,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -543,8 +587,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -598,8 +642,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -646,8 +690,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -698,8 +742,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -750,8 +794,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -799,8 +843,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -846,8 +890,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -901,8 +945,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -950,8 +994,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -959,6 +1003,92 @@ namespace GameBoyEmulator.Desktop.Tests {
                 Assert.AreEqual(false, regAfter.FlagHalfCarry);
                 Assert.AreEqual(false, regAfter.FlagSub);
                 Assert.AreEqual(false, regAfter.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x18 Test JR r8
+        [Test]
+        public void JRn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x18) \"JR r8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(-128, 0);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x18](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(0, 127);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x18](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
                 #endregion
             }
         }
@@ -997,8 +1127,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1048,8 +1178,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1097,8 +1227,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1144,8 +1274,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1199,8 +1329,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1249,8 +1379,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1258,6 +1388,108 @@ namespace GameBoyEmulator.Desktop.Tests {
                 Assert.AreEqual(false, regAfter.FlagHalfCarry);
                 Assert.AreEqual(false, regAfter.FlagSub);
                 Assert.AreEqual(false, regAfter.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x20 Test JR NZ, r8
+        [Test]
+        public void JRNZn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x20) \"JR NZ, r8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(-128, 0);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x20](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagZero) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(0, 127);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x20](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagZero) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
                 #endregion
             }
         }
@@ -1300,8 +1532,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1348,8 +1580,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1396,8 +1628,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1442,8 +1674,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1496,8 +1728,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1561,14 +1793,116 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
                 #region Flag Tests
                 Assert.AreEqual(false, regAfter.FlagHalfCarry);
                 Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x28 Test JR Z,r8
+        [Test]
+        public void JRZn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x28) \"JR Z,r8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(-128, 0);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x28](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagZero) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(0, 127);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x28](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagZero) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
                 #endregion
             }
         }
@@ -1607,8 +1941,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1656,8 +1990,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1704,8 +2038,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1750,8 +2084,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1804,8 +2138,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1850,8 +2184,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1859,6 +2193,108 @@ namespace GameBoyEmulator.Desktop.Tests {
                 Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
                 Assert.AreEqual(true, regAfter.FlagHalfCarry);
                 Assert.AreEqual(true, regAfter.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x30 Test JR NC, r8
+        [Test]
+        public void JRNCn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x30) \"JR NC, r8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(-128, 0);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x30](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagCarry) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(0, 127);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x30](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagCarry) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
                 Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
                 #endregion
             }
@@ -1901,8 +2337,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1949,8 +2385,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -1995,8 +2431,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2056,8 +2492,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2115,8 +2551,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2156,8 +2592,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2165,6 +2601,107 @@ namespace GameBoyEmulator.Desktop.Tests {
                 Assert.AreEqual(true, regAfter.FlagCarry);
                 Assert.AreEqual(false, regAfter.FlagHalfCarry);
                 Assert.AreEqual(false, regAfter.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x38 Test JR C, r8
+        [Test]
+        public void JRCn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x38) \"JR C, r8\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(-128, 0);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x38](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagCarry) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var signedV = random.Next(0, 127);
+                var v = (byte) signedV;
+
+                cpu.memory.WriteByte(cpu.reg.PC, v);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x38](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagCarry) {
+                    Assert.AreEqual((regBefore.PC + signedV + 1) & 0xFFFF, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 1, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 8);
+                    Assert.AreEqual(regAfter.lastClockM, 8 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
                 Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
                 #endregion
             }
@@ -2203,8 +2740,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2252,8 +2789,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2298,8 +2835,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2347,8 +2884,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2394,8 +2931,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2449,8 +2986,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2494,8 +3031,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2540,8 +3077,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2587,8 +3124,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2634,8 +3171,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2681,8 +3218,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2728,8 +3265,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2775,8 +3312,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2828,8 +3365,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2875,8 +3412,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2922,8 +3459,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -2969,8 +3506,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3016,8 +3553,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3063,8 +3600,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3110,8 +3647,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3157,8 +3694,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3210,8 +3747,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3257,8 +3794,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3304,8 +3841,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3351,8 +3888,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3398,8 +3935,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3445,8 +3982,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3492,8 +4029,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3539,8 +4076,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3592,8 +4129,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3639,8 +4176,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3686,8 +4223,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3733,8 +4270,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3780,8 +4317,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3827,8 +4364,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3874,8 +4411,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3921,8 +4458,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -3974,8 +4511,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4021,8 +4558,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4067,8 +4604,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4113,8 +4650,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4159,8 +4696,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4205,8 +4742,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4251,8 +4788,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4297,8 +4834,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4349,8 +4886,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4395,8 +4932,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4441,8 +4978,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4487,8 +5024,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4533,8 +5070,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4579,8 +5116,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4625,8 +5162,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4671,8 +5208,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4723,8 +5260,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4769,8 +5306,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4818,8 +5355,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4867,8 +5404,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4916,8 +5453,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -4965,8 +5502,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5014,8 +5551,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5063,8 +5600,54 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0x76 Test HALT
+        [Test]
+        public void HALT() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0x76) \"HALT\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0x76](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.IsTrue(cpu._halt);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5112,8 +5695,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5159,8 +5742,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5206,8 +5789,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5253,8 +5836,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5300,8 +5883,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5347,8 +5930,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5394,8 +5977,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5447,8 +6030,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5494,8 +6077,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5547,8 +6130,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5597,8 +6180,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5647,8 +6230,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5697,8 +6280,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5747,8 +6330,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5797,8 +6380,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5853,8 +6436,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5904,8 +6487,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -5956,8 +6539,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6008,8 +6591,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6060,8 +6643,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6112,8 +6695,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6164,8 +6747,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6216,8 +6799,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6274,8 +6857,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6327,8 +6910,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6377,8 +6960,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6427,8 +7010,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6477,8 +7060,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6527,8 +7110,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6577,8 +7160,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6627,8 +7210,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6683,8 +7266,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6734,8 +7317,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6786,8 +7369,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6838,8 +7421,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6890,8 +7473,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6942,8 +7525,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6994,8 +7577,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7046,8 +7629,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7104,8 +7687,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7157,8 +7740,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7201,8 +7784,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7247,8 +7830,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7293,8 +7876,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7339,8 +7922,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7385,8 +7968,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7431,8 +8014,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7484,8 +8067,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7530,8 +8113,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7576,8 +8159,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7622,8 +8205,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7668,8 +8251,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7714,8 +8297,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7760,8 +8343,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7806,8 +8389,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7859,8 +8442,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7905,8 +8488,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7951,8 +8534,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -7997,8 +8580,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8043,8 +8626,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8089,8 +8672,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8135,8 +8718,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8181,8 +8764,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8234,8 +8817,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8280,8 +8863,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8329,8 +8912,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8376,8 +8959,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8423,8 +9006,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8470,8 +9053,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8517,8 +9100,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8564,8 +9147,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8618,8 +9201,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8665,13 +9248,67 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 4);
-                Assert.AreEqual(regAfter.lastClockM, 1);
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
                 #endregion
 
                 
                 #region Flag Tests
                 Assert.AreEqual(true, regAfter.FlagSub);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xc0 Test RET NZ
+        [Test]
+        public void RETNZ() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xc0) \"RET NZ\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.SP = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.SP, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xc0](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagZero) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(20, regAfter.lastClockT);
+                    Assert.AreEqual(20 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP + 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(8, regAfter.lastClockT);
+                    Assert.AreEqual(8 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
                 #endregion
             }
         }
@@ -8717,8 +9354,169 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xc2 Test JP NZ, a16
+        [Test]
+        public void JPNZnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xc2) \"JP NZ, a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xc2](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagZero) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 16);
+                    Assert.AreEqual(regAfter.lastClockM, 16 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xc3 Test JP a16
+        [Test]
+        public void JPnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xc3) \"JP a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xc3](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(valA, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xc4 Test CALL NZ,a16
+        [Test]
+        public void CALLNZnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xc4) \"CALL NZ,a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xc4](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagZero) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 24);
+                    Assert.AreEqual(regAfter.lastClockM, 24 / 4);
+                    Assert.AreEqual(regBefore.SP - 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
                 #endregion
 
                 
@@ -8769,8 +9567,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8826,8 +9624,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8878,8 +9676,274 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xc8 Test RET Z
+        [Test]
+        public void RETZ() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xc8) \"RET Z\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.SP = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.SP, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xc8](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagZero) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(20, regAfter.lastClockT);
+                    Assert.AreEqual(20 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP + 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(8, regAfter.lastClockT);
+                    Assert.AreEqual(8 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xc9 Test RET
+        [Test]
+        public void RET() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xc9) \"RET\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.SP = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.SP, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xc9](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(valA, regAfter.PC);
+                Assert.AreEqual(regBefore.SP + 2, regAfter.SP);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xca Test JP Z,a16
+        [Test]
+        public void JPZnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xca) \"JP Z,a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xca](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagZero) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 16);
+                    Assert.AreEqual(regAfter.lastClockM, 16 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xcc Test CALL Z,a16
+        [Test]
+        public void CALLZnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xcc) \"CALL Z,a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xcc](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagZero) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 24);
+                    Assert.AreEqual(regAfter.lastClockM, 24 / 4);
+                    Assert.AreEqual(regBefore.SP - 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xcd Test CALL a16
+        [Test]
+        public void CALLnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xcd) \"CALL a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xcd](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(valA, regAfter.PC);
+                Assert.AreEqual(regBefore.SP - 2, regAfter.SP);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(24, regAfter.lastClockT);
+                Assert.AreEqual(6, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8936,8 +10000,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -8988,8 +10052,62 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xd0 Test RET NC
+        [Test]
+        public void RETNC() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xd0) \"RET NC\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.SP = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.SP, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xd0](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagCarry) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(20, regAfter.lastClockT);
+                    Assert.AreEqual(20 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP + 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(8, regAfter.lastClockT);
+                    Assert.AreEqual(8 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
                 #endregion
 
                 
@@ -9043,8 +10161,162 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xd2 Test JP NC,a16
+        [Test]
+        public void JPNCnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xd2) \"JP NC,a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xd2](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagCarry) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 16);
+                    Assert.AreEqual(regAfter.lastClockM, 16 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xd3 Test UNDEFINED
+        [Test]
+        public void NOPWARN_d3() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xd3) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xd3](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xd4 Test CALL NC, a16
+        [Test]
+        public void CALLNCnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xd4) \"CALL NC, a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xd4](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (!regBefore.FlagCarry) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 24);
+                    Assert.AreEqual(regAfter.lastClockM, 24 / 4);
+                    Assert.AreEqual(regBefore.SP - 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
                 #endregion
 
                 
@@ -9095,8 +10367,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9152,8 +10424,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9204,8 +10476,312 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xd8 Test RET C
+        [Test]
+        public void RETC() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xd8) \"RET C\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.SP = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.SP, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xd8](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagCarry) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(20, regAfter.lastClockT);
+                    Assert.AreEqual(20 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP + 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(8, regAfter.lastClockT);
+                    Assert.AreEqual(8 / 4, regAfter.lastClockM);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xd9 Test RETI
+        [Test]
+        public void RETI() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xd9) \"RETI\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.SP = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.SP, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xd9](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(valA, regAfter.PC);
+                Assert.AreEqual(regBefore.SP + 2, regAfter.SP);
+                Assert.IsTrue(regAfter.InterruptEnable);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xda Test JP C, a16
+        [Test]
+        public void JPCnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xda) \"JP C, a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xda](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagCarry) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 16);
+                    Assert.AreEqual(regAfter.lastClockM, 16 / 4);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                }
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xdb Test UNDEFINED
+        [Test]
+        public void NOPWARN_db() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xdb) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xdb](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xdc Test CALL C, a16
+        [Test]
+        public void CALLCnn() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xdc) \"CALL C, a16\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.PC = (ushort) ((0xA1 << 8) + random.Next(0x00, 0xF0));
+
+                var valA = (ushort) random.Next(0x0000, 0xFFFF);
+
+                cpu.memory.WriteWord(cpu.reg.PC, valA);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xdc](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                if (regBefore.FlagCarry) {
+                    Assert.AreEqual(valA, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 24);
+                    Assert.AreEqual(regAfter.lastClockM, 24 / 4);
+                    Assert.AreEqual(regBefore.SP - 2, regAfter.SP);
+                } else {
+                    Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
+                    Assert.AreEqual(regAfter.lastClockT, 12);
+                    Assert.AreEqual(regAfter.lastClockM, 12 / 4);
+                    Assert.AreEqual(regBefore.SP, regAfter.SP);
+                }
+
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xdd Test UNDEFINED
+        [Test]
+        public void NOPWARN_dd() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xdd) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xdd](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9262,8 +10838,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9314,8 +10890,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9365,8 +10941,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9419,8 +10995,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9466,8 +11042,96 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xe3 Test UNDEFINED
+        [Test]
+        public void NOPWARN_e3() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xe3) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xe3](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xe4 Test UNDEFINED
+        [Test]
+        public void NOPWARN_e4() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xe4) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xe4](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9518,8 +11182,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9570,8 +11234,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9624,8 +11288,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9681,8 +11345,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9728,14 +11392,62 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
                 #region Flag Tests
                 Assert.AreEqual(false, regAfter.FlagSub);
                 Assert.AreEqual(false, regAfter.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xe9 Test JP [HL]
+        [Test]
+        public void JPHL() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xe9) \"JP [HL]\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                cpu.reg.H = (byte) random.Next(0x00, 0xFF);
+                cpu.reg.L = (byte) random.Next(0x00, 0xFF);
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xe9](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.AreEqual(regBefore.HL, regAfter.PC);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
                 #endregion
             }
         }
@@ -9778,8 +11490,140 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xeb Test UNDEFINED
+        [Test]
+        public void NOPWARN_eb() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xeb) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xeb](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xec Test UNDEFINED
+        [Test]
+        public void NOPWARN_ec() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xec) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xec](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xed Test UNDEFINED
+        [Test]
+        public void NOPWARN_ed() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xed) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xed](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9830,8 +11674,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9884,8 +11728,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9937,8 +11781,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -9992,8 +11836,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10038,8 +11882,98 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xf3 Test DI
+        [Test]
+        public void DI() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xf3) \"DI\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xf3](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.IsFalse(regAfter.InterruptEnable);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xf4 Test UNDEFINED
+        [Test]
+        public void NOPWARN_f4() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xf4) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xf4](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10090,8 +12024,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10142,8 +12076,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10196,8 +12130,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10248,8 +12182,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10290,8 +12224,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 12);
-                Assert.AreEqual(regAfter.lastClockM, 3);
+                Assert.AreEqual(12, regAfter.lastClockT);
+                Assert.AreEqual(3, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10333,8 +12267,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10387,8 +12321,142 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xfb Test EI
+        [Test]
+        public void EI() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xfb) \"EI\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xfb](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                Assert.IsTrue(regAfter.InterruptEnable);
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(4, regAfter.lastClockT);
+                Assert.AreEqual(1, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xfc Test UNDEFINED
+        [Test]
+        public void NOPWARN_fc() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xfc) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xfc](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
+                #endregion
+
+                
+                #region Flag Tests
+                Assert.AreEqual(regAfter.FlagCarry, regBefore.FlagCarry);
+                Assert.AreEqual(regAfter.FlagHalfCarry, regBefore.FlagHalfCarry);
+                Assert.AreEqual(regAfter.FlagSub, regBefore.FlagSub);
+                Assert.AreEqual(regAfter.FlagZero, regBefore.FlagZero);
+                #endregion
+            }
+        }
+        #endregion
+        #region 0xfd Test UNDEFINED
+        [Test]
+        public void NOPWARN_fd() {
+            var cpu = new CPU();
+            var random = new Random();
+            Console.WriteLine("Testing (0xfd) \"UNDEFINED\"");
+            for (var i = 0; i < RUN_CYCLES; i++) {
+                cpu.Reset();
+                cpu.reg.RandomizeRegisters();
+                cpu.memory.RandomizeMemory();
+
+                var regBefore = cpu.reg.Clone();
+                CPUInstructions.opcodes[0xfd](cpu);
+                var regAfter = cpu.reg.Clone();
+
+                #region Test no change to other regs
+                Assert.AreEqual(regAfter.A, regBefore.A);
+                Assert.AreEqual(regAfter.B, regBefore.B);
+                Assert.AreEqual(regAfter.C, regBefore.C);
+                Assert.AreEqual(regAfter.D, regBefore.D);
+                Assert.AreEqual(regAfter.E, regBefore.E);
+                Assert.AreEqual(regAfter.F, regBefore.F);
+                Assert.AreEqual(regAfter.H, regBefore.H);
+                Assert.AreEqual(regAfter.L, regBefore.L);
+                Assert.AreEqual(regAfter.HL, regBefore.HL);
+                Assert.AreEqual(regAfter.PC, regBefore.PC);
+                Assert.AreEqual(regAfter.SP, regBefore.SP);
+                #endregion
+                
+                #region Test Cycles
+                Assert.AreEqual(0, regAfter.lastClockT);
+                Assert.AreEqual(0, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10445,8 +12513,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 8);
-                Assert.AreEqual(regAfter.lastClockM, 2);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -10497,8 +12565,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(regAfter.lastClockT, 16);
-                Assert.AreEqual(regAfter.lastClockM, 4);
+                Assert.AreEqual(16, regAfter.lastClockT);
+                Assert.AreEqual(4, regAfter.lastClockM);
                 #endregion
 
                 
