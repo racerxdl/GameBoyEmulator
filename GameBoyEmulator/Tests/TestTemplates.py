@@ -1016,7 +1016,6 @@ def INCHLm(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
-
 def DECr(instr, opcode, args, cycles, flags):
   if len(args) == 2:
     regA_, regB_ = args
@@ -1233,6 +1232,44 @@ def RSTXX(instr, opcode, args, cycles, flags):
     flags=GenFlagAssert(flags)
   )
 
+def PUSH(instr, opcode, args, cycles, flags):
+  regA_, regB_ = args
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "SP" and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("PUSH").format(
+    regA=regA_,
+    regB=regB_,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
+def POP(instr, opcode, args, cycles, flags):
+  regA_, regB_ = args
+  asserts = '''#region Test no change to other regs\n'''
+
+  for regA in regList:
+    if regA != "SP" and regA != regA_ and regA != regB_ and not ((regA_ == "H" or regB_ == "L") and regA == "HL") and not (CheckFlagChange(flags) and regA == "F"):
+      asserts = asserts + ("                Assert.AreEqual(regAfter.%s, regBefore.%s);\n" % (regA, regA))
+
+  asserts = asserts + "                #endregion\n                %s" %(cycleTestTemplate %(cycles, cycles/4))
+
+  return LoadTPL("POP").format(
+    regA=regA_,
+    regB=regB_,
+    opcode=opcode,
+    instr=instr,
+    asserts=asserts,
+    flags=GenFlagAssert(flags)
+  )
+
 TestTemplates = {
   "LDrr": LDrr,
   "LDrHLm_": LDrHLm_,
@@ -1297,6 +1334,8 @@ TestTemplates = {
   "CCF": CCF,
   "SCF": SCF,
   "RSTXX": RSTXX,
+  "PUSH": PUSH,
+  "POP": POP,
 }
 
 #print TestTemplates["LDrr"]("LDrr A, B", 0x78, ["A", "B"], 4, {'carry': None, 'halfcarry': None, 'sub': None, 'zero': None})

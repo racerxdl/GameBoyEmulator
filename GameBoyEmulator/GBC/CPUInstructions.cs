@@ -992,8 +992,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             b = reg.GetRegister(regB);
             cpu.memory.WriteByte(reg.SP, b);
             
-            reg.lastClockM = 3;
-            reg.lastClockT = 12;
+            reg.lastClockM = 4;
+            reg.lastClockT = 16;
         }
 
         private static void POP(CPU cpu, string regA, string regB) {
