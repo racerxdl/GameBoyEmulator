@@ -30,6 +30,9 @@
     <Prefer32bit>false</Prefer32bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Disasm\DisasmInstructions.cs" />
+    <Compile Include="Disasm\Disassembler.cs" />
+    <Compile Include="Disasm\Instruction.cs" />
     <Compile Include="GBC\Addresses.cs" />
     <Compile Include="GBC\CPU.cs" />
     <Compile Include="GBC\CPUInstructions.cs" />

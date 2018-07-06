@@ -14,7 +14,7 @@
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.{regI};
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.{regI} & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("{regI}" != "A") {{

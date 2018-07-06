@@ -191,8 +191,8 @@ namespace GameBoyEmulator.Desktop.Tests {
                 #endregion
                 
                 #region Test Cycles
-                Assert.AreEqual(4, regAfter.lastClockT);
-                Assert.AreEqual(1, regAfter.lastClockM);
+                Assert.AreEqual(8, regAfter.lastClockT);
+                Assert.AreEqual(2, regAfter.lastClockM);
                 #endregion
 
                 
@@ -6497,7 +6497,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.B;
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.B & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("B" != "A") {
@@ -6547,7 +6547,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.C;
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.C & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("C" != "A") {
@@ -6597,7 +6597,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.D;
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.D & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("D" != "A") {
@@ -6647,7 +6647,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.E;
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.E & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("E" != "A") {
@@ -6697,7 +6697,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.H;
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.H & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("H" != "A") {
@@ -6747,7 +6747,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.L;
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.L & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("L" != "A") {
@@ -6853,7 +6853,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 var sum = regBefore.A + regBefore.A;
-                var halfCarry = (regBefore.A & 0xF) + (regBefore.A & 0xF) > 0xF;
+                var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
                 if ("A" != "A") {

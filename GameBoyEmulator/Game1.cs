@@ -21,6 +21,7 @@ namespace GameBoyEmulator.Desktop {
         private string Registers = "PC: 0\nA: 0x00 B: 0x00\nC: 0x00 D: 0x00\nE: 0x00 F: 0x00\nH: 0x00 L: 0x00";
         private KeyboardManager keyboardManager;
         private string GameName = "Not loaded";
+        private string disasm = "";
         
         public Game1() {
             graphics = new GraphicsDeviceManager(this);
@@ -75,6 +76,8 @@ namespace GameBoyEmulator.Desktop {
 
         private void OnPause() {
             Console.WriteLine("On Pause");
+            disasm = cpu.GetDisasm(30);
+            Console.WriteLine(disasm);
             // cpu.gpu.UpdateVRAM();
             // tileBuffer.SetData(cpu.gpu.TileBuffer);
         }
@@ -159,10 +162,13 @@ namespace GameBoyEmulator.Desktop {
             spriteBatch.DrawString(debuggerFont, Registers, new Vector2(videoTexture.Width * 2 + 50, 30), Color.Black);
             
             spriteBatch.DrawString(debuggerFont, "Tile Memory", new Vector2(750, 10), Color.Black);
-            spriteBatch.Draw(tileBuffer, new Rectangle(750, 30, tileBuffer.Width * 2, tileBuffer.Height * 2), Color.White);
+            spriteBatch.Draw(tileBuffer, new Rectangle(750, 30, tileBuffer.Width, tileBuffer.Height), Color.White);
 
             spriteBatch.DrawString(debuggerFont, "GPU VRAM", new Vector2(10, 400), Color.Black);
             spriteBatch.Draw(vramBuffer, new Rectangle(10, 420, vramBuffer.Width, vramBuffer.Height), Color.White);
+            
+            spriteBatch.DrawString(debuggerFont, "Disasm", new Vector2(920, 10), Color.Black);
+            spriteBatch.DrawString(debuggerFont, disasm, new Vector2(920, 30), Color.Black);
             
             spriteBatch.End();
             

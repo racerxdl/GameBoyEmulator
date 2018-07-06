@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class Memory {
-        private readonly byte[] _bios = {
+        internal readonly byte[] _bios = {
             0x31, 0xFE, 0xFF, 0xAF, 0x21, 0xFF, 0x9F, 0x32, 0xCB, 0x7C, 0x20, 0xFB, 0x21, 0x26, 0xFF, 0x0E,
             0x11, 0x3E, 0x80, 0x32, 0xE2, 0x0C, 0x3E, 0xF3, 0xE2, 0x32, 0x3E, 0x77, 0x77, 0x3E, 0xFC, 0xE0,
             0x47, 0x11, 0x04, 0x01, 0x21, 0x10, 0x80, 0x1A, 0xCD, 0x95, 0x00, 0xCD, 0x96, 0x00, 0x13, 0x7B,
@@ -207,6 +207,15 @@ namespace GameBoyEmulator.Desktop.GBC {
             var b1 = ReadByte(addr + 1);
 
             return (ushort) ((b1 << 8) + b0);
+        }
+
+        public byte[] ReadBytes(ushort addr, int length) {
+            var brr = new byte[length];
+            for (var i = addr; i < addr + length; i++) {
+                brr[i - addr] = ReadByte(addr);
+            }
+
+            return brr;
         }
 
         public void WriteWord(ushort addr, ushort val) {

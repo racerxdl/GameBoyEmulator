@@ -5,13 +5,50 @@ import re
 
 templateRgx = re.compile("(.*)\[(.*)\]")
 
+def LoadTPL(tplname):
+  f = open("CSharp/%s.cs" % tplname)
+  tpl = f.read()
+  f.close()
+  return tpl
+
+def GenDisasm(opcodes, cbopcodes):
+  instructions = ""
+  cbinstructions = ""
+  tpl = LoadTPL("Instruction")
+  for ins in opcodes:
+    instructions += tpl.format(
+      flags = "\", \"".join(ins["simpleFlags"]),
+      value = ins["instruction"],
+      opcode = ins["code"],
+      length = ins["size"],
+    )
+    instructions += "\n"
+  for ins in cbopcodes:
+    cbinstructions += tpl.format(
+      flags = "\", \"".join(ins["simpleFlags"]),
+      value = ins["instruction"],
+      opcode = ins["code"],
+      length = ins["size"],
+    )
+    instructions += "\n"
+
+  return LoadTPL("DisasmInstructions").format(
+    Instructions = instructions,
+    CBInstructions = cbinstructions,
+  )
+
 def Gen(data):
   opcodes = []
   code = 0x00
 
   for i in data:
     if not i.startswith("//") and not i.startswith("#") and not len(i.strip()) == 0 and i != None:
-      name, instruction, cycles, flags, template = filter(None, i.split("|"))
+      z = filter(None, i.split("|"))
+      if len(z) == 5:
+        name, instruction, cycles, flags, template = z
+        numBytes = 1
+      else:
+        name, instruction, cycles, flags, template, numBytes = z
       if "/" in cycles:
         cycles = [ int(z) for z in cycles.split("/") ]
       else:
@@ -41,11 +78,13 @@ def Gen(data):
         "templateData": {
           "name": templateName,
           "args": filter(lambda x: len(x) != 0, [ x.replace("\"", "").strip() for x in templateArgs.split(",") ])
-        }
+        },
+        "simpleFlags": list(flags),
+        "size": numBytes,
       })
       code = code + 1
 
-  return pprint.pformat(opcodes)
+  return opcodes
 
 
 print "Generating instructions.py"
@@ -53,7 +92,9 @@ print "Generating instructions.py"
 f = open("instructions.txt")
 data = f.read().split("\n")
 f.close()
-formattedOpcodes = Gen(data)
+
+opcodes = Gen(data)
+formattedOpcodes = pprint.pformat(opcodes)
 
 f = open("instructions.py", "w")
 f.write("#!/usr/bin/env python\n\n")
@@ -67,11 +108,19 @@ f = open("instructions_cb.txt")
 data = f.read().split("\n")
 f.close()
 
-formattedOpcodes = Gen(data)
+cbopcodes = Gen(data)
+formattedOpcodes = pprint.pformat(cbopcodes)
 
 f = open("instructions_cb.py", "w")
 f.write("#!/usr/bin/env python\n\n")
 f.write("# AUTO GENERATED FILE - PLEASE CHECK gen.py! #\n\n")
 f.write("InstructionsCB = %s" %formattedOpcodes)
+f.write("\n")
+f.close()
+
+disasm = GenDisasm(opcodes, cbopcodes)
+
+f = open("../Disasm/DisasmInstructions.cs", "w")
+f.write(disasm)
 f.write("\n")
 f.close()

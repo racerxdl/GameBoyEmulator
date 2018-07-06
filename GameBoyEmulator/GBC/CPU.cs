@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
+using GameBoyEmulator.Desktop.Disasm;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class CPU {
@@ -9,6 +10,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         private const float CPU_PERIOD_MS = 1000f / CPU_CLOCK;
 
         private DateTime LastUpdate;
+
+        internal Disassembler disasm;
         
         internal int clockM;
         internal int clockT;
@@ -47,6 +50,13 @@ namespace GameBoyEmulator.Desktop.GBC {
             paused = true;
             step = false;
             lastCycleTimeMs = 0;
+            disasm = new Disassembler();
+
+            Console.WriteLine(disasm.Disasm(0x0000, memory._bios));
+        }
+
+        public string GetDisasm(int lines = 10) {
+            return disasm.DisasmMemoryForLines(memory, reg.PC, lines);
         }
 
         public void Start() {
