@@ -127,6 +127,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             L = _L;
             F = _F;
         }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte GetRegister(string reg) {
             switch (reg.ToUpper()) {

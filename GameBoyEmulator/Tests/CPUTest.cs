@@ -2261,7 +2261,7 @@ namespace GameBoyEmulator.Desktop.Tests {
                 var regAfter = cpu.reg.Clone();
 
                 Assert.AreEqual(val, regAfter.A);
-                Assert.AreEqual(regBefore.HL - 1, regAfter.HL);
+                Assert.AreEqual(regBefore.HL + 1, regAfter.HL);
 
                 #region Test no change to other regs
                 Assert.AreEqual(regAfter.B, regBefore.B);

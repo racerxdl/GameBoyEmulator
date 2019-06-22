@@ -28,7 +28,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                 case 0x10: return (byte) (keys | 0x10);
                 case 0x20: return (byte) (directional | 0x20);
                 case 0x30: return (byte) (keys | directional | 0x20 | 0x10);
-                default: return 0x0F;
+                default: return (byte) (selectedInput & 0xF);
             }
         }
 

@@ -7,6 +7,14 @@
         public static readonly byte INT_SERIAL = 0x08;
         public static readonly byte INT_JOYPAD = 0x10;
         #endregion
+        #region LCDSTAT
+
+        public const int FLAG_LYC_LY = 0x40;
+        public const int FLAG_OAM_MODE = 0x20;
+        public const int FLAG_VBLANK_MODE = 0x10;
+        public const int FLAG_HBLANK_MODE = 0x08;
+
+        #endregion
         #region Registers
 
         public const int FLAG_CARRY = 0x10;

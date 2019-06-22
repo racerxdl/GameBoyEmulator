@@ -1,4 +1,4 @@
-// Name|Instruction|Cycles|ZSHC|Template[arguments]
+// Name|Instruction|Cycles|ZSHC|Template[arguments]|Number Of Bytes
 // 00
 NOP|NOP|4|----|NOP[]|1
 LDBCnn|LD BC, d16|12|----|LD__nn["B", "C"]|3

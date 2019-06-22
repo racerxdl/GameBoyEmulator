@@ -6,8 +6,8 @@ using GameBoyEmulator.Desktop.Disasm;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class CPU {
-        private const int CPU_CLOCK = 4194304;
-        private const float CPU_PERIOD_MS = 1000f / CPU_CLOCK;
+        internal const int CPU_CLOCK = 4194304;
+        internal const float CPU_PERIOD_MS = 1000f / CPU_CLOCK;
 
         private DateTime LastUpdate;
 
@@ -120,7 +120,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                     
                     if (!step) continue;
                     
-                    step = false;
+                        step = false;
                     paused = true;
                     OnPause?.Invoke();
                 } else {
@@ -158,16 +158,19 @@ namespace GameBoyEmulator.Desktop.GBC {
                     totalClockM += reg.lastClockM;
                     totalClockT += reg.lastClockT;
                 } else if ((interruptsFired & Flags.INT_LCDSTAT) > 0) {
+                    Console.WriteLine("Handling LCDSTAT Int");
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_LCDSTAT;
                     CPUInstructions.RSTXX(this, Addresses.INT_LCDSTAT); // LCD Stat
                     totalClockM += reg.lastClockM;
                     totalClockT += reg.lastClockT;
                 } else if ((interruptsFired & Flags.INT_TIMER) > 0) {
+                    Console.WriteLine("Handling Timer Int");
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_TIMER;
                     CPUInstructions.RSTXX(this, Addresses.INT_TIMER);  // Timer
                     totalClockM += reg.lastClockM;
                     totalClockT += reg.lastClockT;
                 } else if ((interruptsFired & Flags.INT_SERIAL) > 0) {
+                    Console.WriteLine("Handling Serial Int");
                     reg.TriggerInterrupts &= (byte) ~Flags.INT_SERIAL;
                     CPUInstructions.RSTXX(this, Addresses.INT_SERIAL); // Serial
                     totalClockM += reg.lastClockM;
@@ -184,13 +187,15 @@ namespace GameBoyEmulator.Desktop.GBC {
             
             clockM += totalClockM;
             clockT += totalClockT;
-            
-            // GPU
-            gpu.Cycle();
-            
-            // Timers
-            timer.Increment();
-            
+
+            if (!stopped) {
+                // GPU
+                gpu.Cycle();
+
+                // Timers
+                timer.Increment();
+            }
+
             mtx.ReleaseMutex();
         }
     }

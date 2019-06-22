@@ -22,7 +22,7 @@
                 var regAfter = cpu.reg.Clone();
 
                 Assert.AreEqual(val, regAfter.A);
-                Assert.AreEqual(regBefore.HL - 1, regAfter.HL);
+                Assert.AreEqual(regBefore.HL + 1, regAfter.HL);
 
                 {asserts}
                 {flags}

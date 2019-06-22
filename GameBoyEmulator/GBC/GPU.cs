@@ -1,25 +1,37 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security;
 using Microsoft.Xna.Framework;
 
 namespace GameBoyEmulator.Desktop.GBC {
     public class GPU {
+        #region Constants
+        // Divide by 4 since we use Processor Cycles instead Clock Cycles
+        private const int HorizontalBlankCycles = 207 / 4;
+        private const int VerticalBlankCycles = 4560 / 4;
+        private const int OamCycles = 83 / 4;
+        private const int VRamCycles = 175 / 4;
+        #endregion
+        
         private int modeClocks;
         private int line;
         private GPUModes mode;
         private CPU cpu;
 
-        internal int scrollX, scrollY;
+        internal bool FlagLycLy => (lcdStat & Flags.FLAG_LYC_LY) > 0;
+        internal bool FlagOamMode => (lcdStat & Flags.FLAG_OAM_MODE) > 0;
+        internal bool FlagVBlankMode => (lcdStat & Flags.FLAG_VBLANK_MODE) > 0;
+        internal bool FlagHBlankMode => (lcdStat & Flags.FLAG_HBLANK_MODE) > 0;
+
+        internal int scrollX, scrollY, winX, winY;
         internal bool switchBg;
         internal bool switchLCD;
         internal bool objSize;
         internal bool switchObj;
-        private byte raster;
-        private byte enabledInterrupts;
+        internal bool switchWin;
+        private byte lineCompare;
+        private byte lcdStat;
         private byte interruptsFired;
-        private byte[] currentRow;
+        private readonly byte[] currentRow;
 
         internal ushort bgTileBase;
         internal ushort bgMapBase;
@@ -27,33 +39,33 @@ namespace GameBoyEmulator.Desktop.GBC {
 
         internal byte[] oam;
 
-        internal GPUObject[] objs;
-        internal GPUObject[] prioObjects;
+        private GPUObject[] objs;
+        private GPUObject[] prioObjects;
         
-        private Color[] BgPallete = {
+        private readonly Color[] BgPallete = {
             Color.Black,
             Color.DarkGray,
             Color.Gray,
             Color.White,
         };
         
-        private Color[] Obj0Pallete = {
+        private readonly Color[] Obj0Pallete = {
             Color.Black,
             Color.DarkGray,
             Color.Gray,
             Color.White,
         };
 
-        private Color[] Obj1Pallete = {
+        private readonly Color[] Obj1Pallete = {
             Color.Black,
             Color.DarkGray,
             Color.Gray,
             Color.White,
         };
-        
-        internal byte[] registers;
 
-        public Color[] TileBuffer;
+        private readonly byte[] registers;
+
+        public readonly Color[] TileBuffer;
         public Color[] VRamBuffer;
 
         private GPUTile[] tileSet;
@@ -78,6 +90,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             modeClocks = 0;
             scrollX = 0;
             scrollY = 0;
+            winX = 0;
+            winY = 0;
             line = 0;
             mode = GPUModes.OAM_READ;
             tileSet = new GPUTile[512];
@@ -91,6 +105,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             oam = new byte[160];
             switchLCD = true;
             switchBg = false;
+            switchWin = false;
             objSize = false;
             objs = new GPUObject[40];
             prioObjects = new GPUObject[40];
@@ -108,8 +123,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             }
 
             switchObj = false;
-            raster = 0;
-            enabledInterrupts = 0;
+            lineCompare = 0;
+            lcdStat = 0;
             interruptsFired = 0;
             bgTileBase = 0x0000;
             bgMapBase = 0x1800;
@@ -125,13 +140,16 @@ namespace GameBoyEmulator.Desktop.GBC {
                         (switchObj ? 0x02 : 0x00) |
                         (objSize ? 0x04 : 0x00) |
                         (bgMapBase == 0x1C00 ? 0x08 : 0x00) | 
-                        (bgTileBase == 0x0000 ? 0x10 : 0x00) | 
+                        (bgTileBase == 0x0000 ? 0x10 : 0x00) |
+                        (switchWin ? 0x20 : 0x00) |
+                        (winMapBase == 0x1C00 ? 0x40 : 0x00) |
                         (switchLCD ? 0x80 : 0x00)
                         );
                 case 0xFF41:
                     var ift = interruptsFired;
                     interruptsFired = 0x00;
-                    return (byte) ((interruptsFired << 3) | (line == raster ? 4 : 0) | (int)mode);
+                    var res = ((int)mode & 0x3) | (line == lineCompare ? 4 : 0) | (ift << 3) | 0x80;
+                    return (byte) res;
                 case 0xFF42:
                     return (byte) scrollY;
                 case 0xFF43:
@@ -139,7 +157,11 @@ namespace GameBoyEmulator.Desktop.GBC {
                 case 0xFF44:
                     return (byte) line;
                 case 0xFF45:
-                    return raster;
+                    return lineCompare;
+                case 0xFF4A:
+                    return (byte) winY;
+                case 0xFF4B:
+                    return (byte) winX;
                 default:
                     return registers[addr - 0xFF40];
             }
@@ -155,10 +177,12 @@ namespace GameBoyEmulator.Desktop.GBC {
                     objSize = (val & 0x04) > 0;
                     bgMapBase = (ushort) ((val & 0x08) > 0 ? 0x1C00 : 0x1800);
                     bgTileBase = (ushort) ((val & 0x10) > 0 ? 0x0000 : 0x0800);
+                    switchWin = (val & 0x20) > 0;
+                    winMapBase = (ushort) ((val & 0x40) > 0 ? 0x1C00 : 0x1800);
                     switchLCD = (val & 0x80) > 0;
                     break;
                 case 0xFF41:
-                    enabledInterrupts = (byte) ((val >> 3) & 0xF);
+                    lcdStat = (byte) (val & 0x78);
                     break;
                 case 0xFF42:
                     scrollY = val;
@@ -167,7 +191,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                     scrollX = val;
                     break;
                 case 0xFF45:
-                    raster = val;
+                    lineCompare = val;
                     break;
                 case 0xFF46:
                     for (var i = 0; i < 160; i++) {
@@ -221,11 +245,17 @@ namespace GameBoyEmulator.Desktop.GBC {
                             case 1: Obj1Pallete[i] = Color.FromNonPremultiplied(192, 192, 192, 255);
                                 break;
                             case 2: Obj1Pallete[i] = Color.FromNonPremultiplied(96, 96, 96, 255);
-                                break;
+                                 break;
                             case 3: Obj1Pallete[i] = Color.FromNonPremultiplied(0, 0, 0, 255);
                                 break;
                         }
                     }
+                    break;
+                case 0xFF4A:
+                    winY = val;
+                    break;
+                case 0xFF4B:
+                    winX = val;
                     break;
             }
         }
@@ -233,15 +263,45 @@ namespace GameBoyEmulator.Desktop.GBC {
         public void RenderScanline() {
             if (switchLCD) {
                 #region Background Draw
-                if (switchBg) {
-                    var vramOffset = Addresses.VRAMBASE;
-                    vramOffset += bgMapBase;
-                    vramOffset += (((line + scrollY) & 0xFF) / 8) * 32;
+                if (switchBg || switchWin) {
                     
-                    var y = (line + scrollY) % 8;
-                    var x = scrollX % 8;
-                    var tileOffset = (scrollX / 8) % 32;
                     var bufferOffset = line * 160;
+                    
+                    #region Background
+                    var bgVramOffset = Addresses.VRAMBASE;
+                    bgVramOffset += bgMapBase;
+                    bgVramOffset += (((line + scrollY) & 0xFF) / 8) * 32;
+                    
+                    var bgY = (line + scrollY) % 8;
+                    var bgX = scrollX % 8;
+                    var bgTileOffset = (scrollX / 8) % 32;
+                    #endregion
+                    #region Window
+                    var winVramOffset = Addresses.VRAMBASE;
+                    winVramOffset += winMapBase;
+                    winVramOffset += (((line + winY) & 0xFF) / 8) * 32;
+                    
+                    var wY = (line + winY) % 8;
+                    var wX = winX % 8;
+                    var wTileOffset = (winX / 8) % 32;  
+                    #endregion
+
+                    var x = 0;
+                    var y = 0;
+                    var tileOffset = 0; 
+                    var vramOffset = 0;
+
+                    if (switchWin) {
+                        x = wX;
+                        y = wY;
+                        tileOffset = wTileOffset;
+                        vramOffset = winVramOffset;
+                    } else {
+                        x = bgX;
+                        y = bgY;
+                        tileOffset = bgTileOffset;
+                        vramOffset = bgVramOffset;
+                    }
 
                     var tile = (int) cpu.memory.ReadByte(vramOffset + tileOffset);
                     
@@ -273,8 +333,14 @@ namespace GameBoyEmulator.Desktop.GBC {
                 #region Object Draw 
 
                 if (switchObj) {
+                    var spriteCount = 0;
                     for (var i = 0; i < 40; i++) {
                         var obj = prioObjects[i];
+
+                        if (spriteCount > 10) break;
+                        if (obj.X < 0 || obj.X >= 168) continue;
+                        if (obj.Y < 0 || obj.Y >= 160) continue;
+                        
                         if (obj.Y <= line && (obj.Y + 8) > line) {
                             var tileData = tileSet[obj.Tile];
                             var tileRow = obj.YFlip
@@ -290,7 +356,9 @@ namespace GameBoyEmulator.Desktop.GBC {
                                 }
 
                                 bufferOffset++;
-                            }    
+                            }
+
+                            spriteCount++;
                         }
                     }
                 }
@@ -419,44 +487,67 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
         
         public void Cycle() {
+            // if (!switchLCD) return;
             modeClocks += cpu.reg.lastClockM;
-            
             switch (mode) {
                 case GPUModes.HBLANK:
-                    if (modeClocks >= 51) {
-                        if (line == 143) {
-                            mode = GPUModes.VBLANK;
-                            cpu.reg.TriggerInterrupts |= Flags.INT_VBLANK;
-                        } else {
-                            mode = GPUModes.OAM_READ;
-                        }
-                        
+                    if (modeClocks >= HorizontalBlankCycles) {
                         modeClocks = 0;
                         line++;
+                        
+                        if (line == 144) {
+                            mode = GPUModes.VBLANK;
+                            cpu.reg.TriggerInterrupts |= Flags.INT_VBLANK;
+                            if (FlagVBlankMode && cpu.reg.InterruptEnable) {
+                                cpu.reg.TriggerInterrupts |= Flags.INT_LCDSTAT;
+                            }
+                        } else {
+                            mode = GPUModes.OAM_READ;
+                            if (FlagOamMode && cpu.reg.InterruptEnable) {
+                                cpu.reg.TriggerInterrupts |= Flags.INT_LCDSTAT;
+                            }
+                        }
+
+                        if (line == lineCompare && FlagLycLy && cpu.reg.InterruptEnable) {
+                            cpu.reg.TriggerInterrupts |= Flags.INT_LCDSTAT;
+                        }
                     }
                     break;
                 case GPUModes.VBLANK:
-                    if (modeClocks >= 114) {
+                    if (modeClocks >= (VerticalBlankCycles/9)) {
                         modeClocks = 0;
                         line++;
+                        if (line == lineCompare && FlagLycLy) {
+                            cpu.reg.TriggerInterrupts |= Flags.INT_LCDSTAT;
+                        }
                         if (line > 153) {
                             mode = GPUModes.OAM_READ;
                             line = 0;
+                            if (FlagOamMode && cpu.reg.InterruptEnable) {
+                                cpu.reg.TriggerInterrupts |= Flags.INT_LCDSTAT;
+                            }
                         }
                     }
-
                     break;
                 case GPUModes.OAM_READ:
-                    if (modeClocks >= 20) {
+                    if (modeClocks >= OamCycles) {
                         modeClocks = 0;
                         mode = GPUModes.VRAM_READ;
                     }
                     break;
                 case GPUModes.VRAM_READ:
-                    if (modeClocks >= 43) {
+                    if (modeClocks >= VRamCycles) {
                         modeClocks = 0;
-                        mode = GPUModes.HBLANK;
+                        
                         RenderScanline();
+                        
+                        mode = GPUModes.HBLANK;
+                        
+                        // TODO: DMA
+                        
+                        if (FlagHBlankMode && cpu.reg.InterruptEnable) {
+                            cpu.reg.TriggerInterrupts |= Flags.INT_LCDSTAT;
+                        }
                     }
                     break;
                 default:
