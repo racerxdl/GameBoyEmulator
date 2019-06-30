@@ -27,7 +27,7 @@ namespace GameBoyEmulator.Desktop.GBC {
             switch (selectedInput) {
                 case 0x10: return (byte) (keys | 0x10);
                 case 0x20: return (byte) (directional | 0x20);
-                case 0x30: return (byte) (keys | directional | 0x20 | 0x10);
+                // case 0x30: return (byte) (keys | directional | 0x20 | 0x10);
                 default: return (byte) (selectedInput & 0xF);
             }
         }
@@ -51,6 +51,8 @@ namespace GameBoyEmulator.Desktop.GBC {
         }
 
         public void Update(KeyboardState state) {
+            byte lastKeys = keys;
+            byte lastDir = directional;
             SetDirectionalBit(0, !state.IsKeyDown(Keys.Right));
             SetDirectionalBit(1, !state.IsKeyDown(Keys.Left));
             SetDirectionalBit(2, !state.IsKeyDown(Keys.Up));
@@ -60,17 +62,8 @@ namespace GameBoyEmulator.Desktop.GBC {
             SetKeysBit(1, !state.IsKeyDown(Keys.X));
             SetKeysBit(2, !state.IsKeyDown(Keys.Space));
             SetKeysBit(3, !state.IsKeyDown(Keys.Enter));
-
-            var triggerInterrupt = state.IsKeyDown(Keys.Right) |
-                                   state.IsKeyDown(Keys.Left) |
-                                   state.IsKeyDown(Keys.Up) |
-                                   state.IsKeyDown(Keys.Down) |
-                                   state.IsKeyDown(Keys.Z) |
-                                   state.IsKeyDown(Keys.X) |
-                                   state.IsKeyDown(Keys.Space) |
-                                   state.IsKeyDown(Keys.Enter);
             
-            if (triggerInterrupt) {
+            if (lastKeys != keys || lastDir != directional) {
 //                Console.WriteLine("Trigger Joy Interrupt");
                 cpu.reg.TriggerInterrupts |= Flags.INT_JOYPAD;
             } 
