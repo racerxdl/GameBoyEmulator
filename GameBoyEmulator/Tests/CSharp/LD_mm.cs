@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void LD{regO}mm() {{
+        public void LD{Arg0}mm() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -22,7 +22,7 @@
                 CPUInstructions.opcodes[0x{opcode:02x}](cpu);
                 var regAfter = cpu.reg.Clone();
 
-                Assert.AreEqual(val, regAfter.{regO});
+                Assert.AreEqual(val, regAfter.{Arg0});
                 Assert.AreEqual(regBefore.PC + 2, regAfter.PC);
 
                 {asserts}

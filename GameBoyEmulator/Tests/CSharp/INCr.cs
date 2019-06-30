@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void INCr{regI}() {{
+        public void INCr{Arg0}() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -13,10 +13,10 @@
                 CPUInstructions.opcodes[0x{opcode:02x}](cpu);
                 var regAfter = cpu.reg.Clone();
 
-                var val = (byte) (regBefore.{regI} + 1);
-                var halfCarry = (regBefore.{regI} & 0xF) + 1 > 0xF;
+                var val = (byte) (regBefore.{Arg0} + 1);
+                var halfCarry = (regBefore.{Arg0} & 0xF) + 1 > 0xF;
 
-                Assert.AreEqual(val, regAfter.{regI});
+                Assert.AreEqual(val, regAfter.{Arg0});
                 Assert.AreEqual(val == 0, regAfter.FlagZero);
                 Assert.AreEqual(halfCarry, regAfter.FlagHalfCarry);
 

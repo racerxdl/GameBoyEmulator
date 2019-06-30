@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void POP{regA}{regB}() {{
+        public void POP{Arg0}{Arg1}() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -24,8 +24,8 @@
                 var regAfter = cpu.reg.Clone();
 
                 Assert.AreEqual(regBefore.SP + 2, regAfter.SP);
-                Assert.AreEqual(valA, regAfter.{regA});
-                Assert.AreEqual(valB, regAfter.{regB});
+                Assert.AreEqual(valA, regAfter.{Arg0});
+                Assert.AreEqual(valB, regAfter.{Arg1});
 
                 {asserts}
                 {flags}

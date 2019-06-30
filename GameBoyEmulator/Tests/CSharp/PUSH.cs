@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void PUSH{regA}{regB}() {{
+        public void PUSH{Arg0}{Arg1}() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -19,8 +19,8 @@
                 var valA = cpu.memory.ReadByte(regAfter.SP+1);
 
                 Assert.AreEqual(regBefore.SP - 2, regAfter.SP);
-                Assert.AreEqual(regBefore.{regA}, valA);
-                Assert.AreEqual(regBefore.{regB}, valB);
+                Assert.AreEqual(regBefore.{Arg0}, valA);
+                Assert.AreEqual(regBefore.{Arg1}, valB);
 
                 {asserts}
                 {flags}
