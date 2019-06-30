@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void ADDHL{regA}{regB}() {{
+        public void ADDHL{Arg0}{Arg1}() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -13,7 +13,7 @@
                 CPUInstructions.opcodes[0x{opcode:02x}](cpu);
                 var regAfter = cpu.reg.Clone();
 
-                var ab = (regBefore.{regA} << 8) + regBefore.{regB};
+                var ab = (regBefore.{Arg0} << 8) + regBefore.{Arg1};
                 var sum = regBefore.HL + ab;
                 var halfCarry = (regBefore.HL & 0xFFF) + (ab & 0xFFF) > 0xFFF;
 

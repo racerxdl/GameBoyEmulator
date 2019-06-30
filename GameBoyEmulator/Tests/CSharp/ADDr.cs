@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void ADDr{regI}() {{
+        public void ADDr{Arg0}() {{
             var cpu = new CPU();
             var random = new Random();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
@@ -13,12 +13,12 @@
                 CPUInstructions.opcodes[0x{opcode:02x}](cpu);
                 var regAfter = cpu.reg.Clone();
 
-                var sum = regBefore.A + regBefore.{regI};
+                var sum = regBefore.A + regBefore.{Arg0};
                 var halfCarry = (sum & 0xF) < (regBefore.A & 0xF);
 
                 Assert.AreEqual((byte) sum, regAfter.A);
-                if ("{regI}" != "A") {{
-                    Assert.AreEqual(regBefore.{regI}, regAfter.{regI});
+                if ("{Arg0}" != "A") {{
+                    Assert.AreEqual(regBefore.{Arg0}, regAfter.{Arg0});
                 }}
 
                 Assert.AreEqual(sum > 255, regAfter.FlagCarry);

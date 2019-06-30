@@ -1,6 +1,6 @@
         #region 0x{opcode:02x} Test {instr}
         [Test]
-        public void LDrr{regI}{regO}() {{
+        public void LDrr{Arg0}{Arg1}() {{
             var cpu = new CPU();
             Console.WriteLine("Testing (0x{opcode:02x}) \"{instr}\"");
             for (var i = 0; i < RUN_CYCLES; i++) {{
@@ -13,7 +13,7 @@
                 var regAfter = cpu.reg.Clone();
 
                 #region Test Difference
-                Assert.AreEqual(regAfter.{regI}, regBefore.{regO});
+                Assert.AreEqual(regAfter.{Arg0}, regBefore.{Arg1});
                 #endregion
 
                 {asserts}
