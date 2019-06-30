@@ -114,7 +114,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                     case 0x00:
                         switch (addr) {
                             case 0xFF00: 
-                                // cpu.GbKeys.Write(val);
+                                cpu.GbKeys.Write(val);
                                 break;
                             case 0xFF04:
                             case 0xFF05:
@@ -175,8 +175,7 @@ namespace GameBoyEmulator.Desktop.GBC {
                     case 0x00:
                         switch (addr) {
                             case 0xFF00: 
-                                // return cpu.GbKeys.Read();
-                                return 0x00;
+                                return cpu.GbKeys.Read();
                             case 0xFF04:
                             case 0xFF05:
                             case 0xFF06:
